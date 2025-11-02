@@ -338,11 +338,20 @@ export const ApplicationMinigame: React.FC<MiniGameProps & {type: 'Forensics' | 
     )
 }
 
-export const InfoDisplay: React.FC<MiniGameProps> = ({ onComplete }) => {
+export const InfoDisplay: React.FC<MiniGameProps & { description?: string }> = ({ onComplete, description }) => {
     return (
-        <div className="text-center">
-            <p className="text-sm mb-4">This is an informational display. Read the description above to learn more.</p>
-             <MiniGameButton onClick={onComplete} className="mt-4 bg-blue-700 hover:bg-blue-800">Continue</MiniGameButton>
+        <div className="flex flex-col h-full w-full">
+            <div className="flex-grow bg-gray-800 p-6 rounded-lg">
+                <p className="text-lg text-white whitespace-pre-wrap leading-relaxed">{description}</p>
+            </div>
+            <div className="mt-4 flex justify-end">
+                <button 
+                    onClick={onComplete} 
+                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-semibold"
+                >
+                    Close
+                </button>
+            </div>
         </div>
     );
 };
@@ -389,6 +398,237 @@ export const StepsImageDisplay: React.FC<MiniGameProps & {src?: string}> = ({ on
         </div>
     );
 };
+
+        // Display advantages with icons and better formatting
+        export const AdvantagesDisplay: React.FC<MiniGameProps> = ({ onComplete }) => {
+            const advantages = [
+                { icon: '🎯', title: 'Semi-Dominant Markers', text: 'Produces semi-dominant markers, allowing determination of homozygosity or heterozygosity.' },
+                { icon: '🔬', title: 'Stable & Reproducible', text: 'Gives constant, reliable results over time and across different locations.' },
+                { icon: '📚', title: 'No Prior Sequence Info', text: 'No prior information on DNA sequence is required to perform the analysis.' },
+                { icon: '⚡', title: 'Relatively Simple', text: 'Conceptually straightforward technique with well-established protocols.' }
+            ];
+
+            return (
+                <div className="flex flex-col h-full w-full">
+                    <h3 className="text-2xl font-bold text-green-300 mb-4 text-center">Advantages of RFLP</h3>
+                    <div className="flex-grow overflow-auto bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-lg border border-gray-700 shadow-lg space-y-4">
+                        {advantages.map((adv, idx) => (
+                            <div 
+                                key={idx} 
+                                className="bg-gray-700 bg-opacity-50 p-4 rounded-lg border border-green-500 border-opacity-30 hover:border-opacity-60 transition-all"
+                            >
+                                <div className="flex items-start gap-3">
+                                    <span className="text-3xl">{adv.icon}</span>
+                                    <div>
+                                        <h4 className="font-bold text-green-300 mb-1">{adv.title}</h4>
+                                        <p className="text-gray-300 text-sm leading-relaxed">{adv.text}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="mt-4 flex justify-end">
+                        <button 
+                            onClick={onComplete} 
+                            className="px-6 py-2 bg-green-600 hover:bg-green-700 rounded text-white font-semibold transition-all shadow-md hover:shadow-lg"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        // Display limitations with icons and better formatting
+        export const LimitationsDisplay: React.FC<MiniGameProps> = ({ onComplete }) => {
+            const limitations = [
+                { icon: '🧪', text: 'Requires large amounts of high-quality DNA sample' },
+                { icon: '⏱️', text: 'Slow and time-consuming process (5-7 days)' },
+                { icon: '👨‍🔬', text: 'Labor-intensive and technically complex' },
+                { icon: '🔍', text: 'Detects polymorphisms only at restriction sites' },
+                { icon: '📉', text: 'Low sensitivity; cannot detect very small mutations' },
+                { icon: '🎯', text: 'Limited number of loci analyzed per experiment' },
+                { icon: '☢️', text: 'Requires radioactive or labeled probes for detection' },
+                { icon: '🧬', text: 'May have low polymorphism levels in some species' }
+            ];
+
+            return (
+                <div className="flex flex-col h-full w-full">
+                    <h3 className="text-2xl font-bold text-red-300 mb-4 text-center">Limitations of RFLP</h3>
+                    <div className="flex-grow overflow-auto bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-lg border border-gray-700 shadow-lg">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {limitations.map((lim, idx) => (
+                                <div 
+                                    key={idx} 
+                                    className="bg-gray-700 bg-opacity-50 p-3 rounded-lg border border-red-500 border-opacity-30 hover:border-opacity-60 transition-all"
+                                >
+                                    <div className="flex items-start gap-3">
+                                        <span className="text-2xl flex-shrink-0">{lim.icon}</span>
+                                        <p className="text-gray-300 text-sm leading-relaxed">{lim.text}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="mt-4 flex justify-end">
+                        <button 
+                            onClick={onComplete} 
+                            className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded text-white font-semibold transition-all shadow-md hover:shadow-lg"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        // Display comparison table for RFLP vs PCR
+        export const ComparisonTable: React.FC<MiniGameProps> = ({ onComplete }) => {
+            const comparisonData = [
+                { characteristic: 'Full Form', rflp: 'Restriction Fragment Length Polymorphism', pcr: 'Polymerase Chain Reaction' },
+                { characteristic: 'Principle', rflp: 'Cuts DNA with enzymes, detects fragment differences', pcr: 'Amplifies specific DNA segment rapidly' },
+                { characteristic: 'DNA Amount Required', rflp: 'Large amounts (microgram level)', pcr: 'Very small amounts (nanogram level)' },
+                { characteristic: 'Time Required', rflp: 'Several days (5-7 days)', pcr: 'A few hours (2-4 hours)' },
+                { characteristic: 'Sensitivity', rflp: 'Less sensitive', pcr: 'Highly sensitive' },
+                { characteristic: 'Process Steps', rflp: 'Digestion → Gel → Blotting → Hybridization', pcr: 'Thermal cycling with primers' },
+                { characteristic: 'Primary Application', rflp: 'Genetic mapping, forensics, diagnosis', pcr: 'Cloning, diagnostics, mutation detection' },
+                { characteristic: 'Cost & Complexity', rflp: 'More expensive and technically complex', pcr: 'Cost-effective and simpler' },
+                { characteristic: 'Automation', rflp: 'Difficult to automate', pcr: 'Easily automated' },
+                { characteristic: 'Detection Method', rflp: 'Radioactive/fluorescent probes', pcr: 'Electrophoresis or real-time detection' }
+            ];
+
+            return (
+                <div className="flex flex-col h-full w-full max-h-[70vh]">
+                    <h3 className="text-2xl font-bold text-blue-300 mb-4 text-center">RFLP vs PCR Comparison</h3>
+                    <div className="flex-grow overflow-auto bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg border border-gray-700 shadow-lg">
+                        <table className="w-full text-sm">
+                            <thead className="sticky top-0 bg-gray-900 z-10">
+                                <tr className="border-b-2 border-blue-500">
+                                    <th className="p-3 text-left font-semibold text-blue-300 w-1/4">Characteristic</th>
+                                    <th className="p-3 text-left font-semibold text-green-300 w-3/8">RFLP</th>
+                                    <th className="p-3 text-left font-semibold text-purple-300 w-3/8">PCR</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {comparisonData.map((row, idx) => (
+                                    <tr 
+                                        key={idx} 
+                                        className={`border-b border-gray-700 hover:bg-gray-700 transition-colors ${idx % 2 === 0 ? 'bg-gray-800' : 'bg-gray-850'}`}
+                                    >
+                                        <td className="p-3 font-medium text-gray-200">{row.characteristic}</td>
+                                        <td className="p-3 text-gray-300">{row.rflp}</td>
+                                        <td className="p-3 text-gray-300">{row.pcr}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="mt-4 flex justify-end">
+                        <button 
+                            onClick={onComplete} 
+                            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-semibold transition-all shadow-md hover:shadow-lg"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        // Display references with better formatting
+        export const ReferencesDisplay: React.FC<MiniGameProps> = ({ onComplete }) => {
+            const references = [
+                {
+                    authors: 'Southern, E.M.',
+                    year: '1975',
+                    title: 'Detection of specific sequences among DNA fragments separated by gel electrophoresis',
+                    journal: 'Journal of Molecular Biology',
+                    type: 'Foundational Paper'
+                },
+                {
+                    authors: 'Botstein, D., White, R.L., Skolnick, M., & Davis, R.W.',
+                    year: '1980',
+                    title: 'Construction of a genetic linkage map in man using restriction fragment length polymorphisms',
+                    journal: 'American Journal of Human Genetics',
+                    type: 'Key Application'
+                }
+            ];
+
+            return (
+                <div className="flex flex-col h-full w-full">
+                    <h3 className="text-2xl font-bold text-blue-300 mb-4 text-center">Key References</h3>
+                    <div className="flex-grow overflow-auto bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-lg border border-gray-700 shadow-lg space-y-4">
+                        {references.map((ref, idx) => (
+                            <div 
+                                key={idx} 
+                                className="bg-gray-700 bg-opacity-50 p-4 rounded-lg border border-blue-500 border-opacity-30"
+                            >
+                                <div className="flex items-start gap-2 mb-2">
+                                    <span className="text-blue-300 font-bold text-lg">{idx + 1}.</span>
+                                    <div className="flex-grow">
+                                        <div className="inline-block px-2 py-1 bg-blue-600 bg-opacity-30 rounded text-xs text-blue-300 mb-2">
+                                            {ref.type}
+                                        </div>
+                                        <p className="text-gray-200 font-medium mb-1">{ref.authors} ({ref.year})</p>
+                                        <p className="text-gray-300 italic mb-1">{ref.title}</p>
+                                        <p className="text-gray-400 text-sm">{ref.journal}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                        <div className="mt-6 p-4 bg-gray-700 bg-opacity-30 rounded-lg border border-gray-600">
+                            <h4 className="font-bold text-gray-200 mb-2">📚 Additional Resources</h4>
+                            <ul className="text-gray-300 text-sm space-y-1 list-disc list-inside">
+                                <li>National Center for Biotechnology Information (NCBI) - RFLP Database</li>
+                                <li>Molecular Biology of the Cell (Alberts et al.) - Chapter on DNA Analysis</li>
+                                <li>Forensic DNA Typing (Butler, J.M.) - RFLP Applications in Forensics</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="mt-4 flex justify-end">
+                        <button 
+                            onClick={onComplete} 
+                            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-semibold transition-all shadow-md hover:shadow-lg"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        // Completion certificate display
+        export const CompletionDisplay: React.FC<MiniGameProps> = ({ onComplete }) => {
+            return (
+                <div className="flex flex-col h-full w-full">
+                    <div className="flex-grow bg-gradient-to-br from-blue-900 via-purple-900 to-pink-900 p-8 rounded-lg border-4 border-yellow-400 shadow-2xl flex flex-col items-center justify-center text-center">
+                        <div className="text-6xl mb-4">🎓</div>
+                        <h2 className="text-4xl font-bold text-yellow-300 mb-4">Congratulations!</h2>
+                        <div className="bg-white bg-opacity-10 p-6 rounded-lg backdrop-blur-sm border border-white border-opacity-20 max-w-lg">
+                            <p className="text-xl text-gray-100 mb-4">You have successfully completed your</p>
+                            <h3 className="text-3xl font-bold text-blue-300 mb-4">RFLP Training</h3>
+                            <p className="text-gray-200 leading-relaxed mb-4">
+                                You've mastered the principles, methodology, applications, and limitations of Restriction Fragment Length Polymorphism analysis.
+                            </p>
+                            <div className="border-t border-gray-400 pt-4 mt-4">
+                                <p className="text-yellow-300 font-semibold">You are now ready to graduate from the lab!</p>
+                            </div>
+                        </div>
+                        <div className="mt-6 text-sm text-gray-300">
+                            Certificate of Completion • RFLP Virtual Laboratory
+                        </div>
+                    </div>
+                    <div className="mt-4 flex justify-end">
+                        <button 
+                            onClick={onComplete} 
+                            className="px-6 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 rounded text-white font-bold transition-all shadow-md hover:shadow-lg"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            );
+        };
 
 
 // Keep old ones for constants file to not break types, though they are unused.

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Station, Wall, Step, InventoryItem, Npc, Character, RoomId, RoomData, Door, Display, Decor } from './types';
-import { EvidenceCollection, DnaExtraction, EnzymeSelection, DnaDigestion, GelPrep, GelLoading, Electrophoresis, UvImaging, Analysis, SouthernBlotting, ProbeHybridization, AutoradiographyAnalysis, ApplicationMinigame, InfoDisplay, StepsImageDisplay } from './components/minigames';
+import { EvidenceCollection, DnaExtraction, EnzymeSelection, DnaDigestion, GelPrep, GelLoading, Electrophoresis, UvImaging, Analysis, SouthernBlotting, ProbeHybridization, AutoradiographyAnalysis, ApplicationMinigame, InfoDisplay, StepsImageDisplay, ComparisonTable, AdvantagesDisplay, LimitationsDisplay, ReferencesDisplay, CompletionDisplay } from './components/minigames';
 import { FileText, TestTube, Dna, Beaker, FlaskConical, Gavel, Scan, Layers, Sigma, Film, BookOpen } from 'lucide-react';
 
 export const PLAYER_SIZE = 32;
@@ -74,7 +74,7 @@ export const ROOM_DATA: Record<RoomId, RoomData> = {
             { id: 'digestion', type: 'station', name: 'Restriction Digestion', position: { x: 150, y: 180 }, size: { w: 80, h: 50 }, color: 'bg-red-500', step: STEPS[1] },
             { id: 'electrophoresis', type: 'station', name: 'Gel Electrophoresis', position: { x: 300, y: 50 }, size: { w: 100, h: 60 }, color: 'bg-indigo-500', step: STEPS[2] },
             { id: 'blotting', type: 'station', name: 'Southern Blotting', position: { x: 500, y: 180 }, size: { w: 80, h: 50 }, color: 'bg-yellow-500', step: STEPS[3] },
-            { id: 'hybridization', type: 'station', name: 'Probe Hybridization', position: { x: 650, y: 50 }, size: { w: 80, h: 50 }, color: 'bg-purple-500', step: STEPS[4] },
+            { id: 'hybridization', type: 'station', name: 'Probe Hybridization', position: { x: 650, y: 150 }, size: { w: 80, h: 50 }, color: 'bg-purple-500', step: STEPS[4] },
             { id: 'detection', type: 'station', name: 'Autoradiography & Analysis', position: { x: 680, y: 450 }, size: { w: 80, h: 50 }, color: 'bg-pink-500', step: STEPS[5] },
         ],
         displays: [
@@ -108,10 +108,10 @@ export const ROOM_DATA: Record<RoomId, RoomData> = {
             // Fix: Changed minigame definition to avoid JSX and fix parsing errors.
             { id: 'app-forensics', type: 'display', name: 'Forensic Science', position: { x: 50, y: 50 }, size: { w: 120, h: 80 }, step: { stationId: 'app-forensics', objective: 'Solve a case.', description: 'RFLP is used to create DNA fingerprints. Match the crime scene sample to the correct suspect.', miniGame: ApplicationMinigame, miniGameProps: { type: "Forensics" }, requiredItems: [], resultingItems: [] } },
             // Fix: Changed minigame definition to avoid JSX and fix parsing errors.
-            { id: 'app-paternity', type: 'display', name: 'Paternity Testing', position: { x: 630, y: 50 }, size: { w: 120, h: 80 }, step: { stationId: 'app-paternity', objective: 'Determine paternity.', description: 'A child inherits DNA from both parents. Compare the child\'s DNA bands to the potential fathers to find the match.', miniGame: ApplicationMinigame, miniGameProps: { type: "Paternity" }, requiredItems: [], resultingItems: [] } },
+            { id: 'app-paternity', type: 'display', name: 'Paternity Testing', position: { x: 630, y: 150 }, size: { w: 120, h: 80 }, step: { stationId: 'app-paternity', objective: 'Determine paternity.', description: 'A child inherits DNA from both parents. Compare the child\'s DNA bands to the potential fathers to find the match.', miniGame: ApplicationMinigame, miniGameProps: { type: "Paternity" }, requiredItems: [], resultingItems: [] } },
             // Fix: Changed minigame definition to avoid JSX and fix parsing errors.
-            { id: 'app-diseases', type: 'display', name: 'Genetic Diseases', position: { x: 50, y: 450 }, size: { w: 120, h: 80 }, step: { stationId: 'app-diseases', objective: 'Diagnose a disease.', description: 'Certain genetic diseases alter DNA, creating unique RFLP patterns. Identify the patient carrying the disease allele.', miniGame: ApplicationMinigame, miniGameProps: { type: "Disease" }, requiredItems: [], resultingItems: [] } },
-            { id: 'app-mapping', type: 'display', name: 'Genome Mapping', position: { x: 630, y: 450 }, size: { w: 120, h: 80 }, step: { stationId: 'app-mapping', objective: 'Learn about Genome Mapping.', description: 'RFLP was a crucial early tool for creating genetic maps, helping scientists locate genes on chromosomes and understand genetic linkage.', miniGame: InfoDisplay, requiredItems: [], resultingItems: [] } },
+            { id: 'app-diseases', type: 'display', name: 'Genetic Diseases', position: { x: 50, y: 350 }, size: { w: 120, h: 80 }, step: { stationId: 'app-diseases', objective: 'Diagnose a disease.', description: 'Certain genetic diseases alter DNA, creating unique RFLP patterns. Identify the patient carrying the disease allele.', miniGame: ApplicationMinigame, miniGameProps: { type: "Disease" }, requiredItems: [], resultingItems: [] } },
+            { id: 'app-mapping', type: 'display', name: 'Genome Mapping', position: { x: 630, y: 350 }, size: { w: 120, h: 80 }, step: { stationId: 'app-mapping', objective: 'Learn about Genome Mapping.', description: 'RFLP was a crucial early tool for creating genetic maps, helping scientists locate genes on chromosomes and understand genetic linkage.', miniGame: InfoDisplay, requiredItems: [], resultingItems: [] } },
         ],
         doors: [
             { id: 'apps-methodology', type: 'door', name: 'To Methodology', position: { x: 775, y: 280 }, size: { w: 15, h: 60 }, to: 'METHODOLOGY', targetDoorId: 'methodology-apps' },
@@ -119,20 +119,20 @@ export const ROOM_DATA: Record<RoomId, RoomData> = {
         ]
     },
     LIMITATIONS: {
-        id: 'LIMITATIONS',
-        name: 'Advantages, Limitations & References',
-        walls: [...BASE_WALLS],
-        displays: [
-             { id: 'adv-board', type: 'display', name: 'Advantages', position: { x: 50, y: 100 }, size: { w: 150, h: 100 }, step: { stationId: 'adv-board', objective: 'Learn Advantages', description: 'ADVANTAGES: High discrimination power, well-established technique, and reliable results.', miniGame: InfoDisplay, requiredItems: [], resultingItems: [] } },
-             { id: 'lim-board', type: 'display', name: 'Limitations', position: { x: 600, y: 100 }, size: { w: 150, h: 100 }, step: { stationId: 'lim-board', objective: 'Learn Limitations', description: 'LIMITATIONS: Requires large DNA samples, is time-consuming (weeks), labor-intensive, and often uses radioactive materials.', miniGame: InfoDisplay, requiredItems: [], resultingItems: [] } },
-             { id: 'pcr-compare', type: 'display', name: 'RFLP vs PCR', position: { x: 325, y: 50 }, size: { w: 150, h: 100 }, step: { stationId: 'pcr-compare', objective: 'Compare with PCR', description: 'RFLP has largely been replaced by PCR-based methods, which are much faster, require far less DNA, and are easier to automate.', miniGame: InfoDisplay, requiredItems: [], resultingItems: [] } },
-             { id: 'references', type: 'display', name: 'References', position: { x: 50, y: 400 }, size: { w: 150, h: 100 }, step: { stationId: 'references', objective: 'View References', description: 'Key Papers: Southern, E.M. (1975). "Detection of specific sequences among DNA fragments separated by gel electrophoresis." Journal of Molecular Biology. | Botstein, D., White, R.L., Skolnick, M., & Davis, R.W. (1980). "Construction of a genetic linkage map in man using restriction fragment length polymorphisms."', miniGame: InfoDisplay, requiredItems: [], resultingItems: [] } },
-             { id: 'completion', type: 'display', name: 'Complete Training', position: { x: 325, y: 450 }, size: { w: 150, h: 50 }, step: { stationId: 'completion', objective: 'Complete Training', description: 'You have completed your RFLP training. You are now ready to graduate from the lab!', miniGame: InfoDisplay, requiredItems: [], resultingItems: [] } },
-        ],
-        doors: [
-            { id: 'limitations-apps', type: 'door', name: 'To Applications', position: { x: 380, y: 575 }, size: { w: 60, h: 15 }, to: 'APPLICATIONS', targetDoorId: 'apps-limitations' }
-        ]
-    }
+    id: 'LIMITATIONS',
+    name: 'Advantages, Limitations & References',
+    walls: [...BASE_WALLS],
+    displays: [
+         { id: 'adv-board', type: 'display', name: 'Advantages', position: { x: 50, y: 100 }, size: { w: 150, h: 100 }, step: { stationId: 'adv-board', objective: 'Learn Advantages', description: '', miniGame: AdvantagesDisplay, requiredItems: [], resultingItems: [] } },
+         { id: 'lim-board', type: 'display', name: 'Limitations', position: { x: 600, y: 100 }, size: { w: 150, h: 100 }, step: { stationId: 'lim-board', objective: 'Learn Limitations', description: '', miniGame: LimitationsDisplay, requiredItems: [], resultingItems: [] } },
+         { id: 'pcr-compare', type: 'display', name: 'RFLP vs PCR', position: { x: 325, y: 50 }, size: { w: 150, h: 100 }, step: { stationId: 'pcr-compare', objective: 'Compare with PCR', description: '', miniGame: ComparisonTable, requiredItems: [], resultingItems: [] } },
+         { id: 'references', type: 'display', name: 'References', position: { x: 50, y: 400 }, size: { w: 150, h: 100 }, step: { stationId: 'references', objective: 'View References', description: '', miniGame: ReferencesDisplay, requiredItems: [], resultingItems: [] } },
+         { id: 'completion', type: 'display', name: 'Complete Training', position: { x: 325, y: 450 }, size: { w: 150, h: 50 }, step: { stationId: 'completion', objective: 'Complete Training', description: '', miniGame: CompletionDisplay, requiredItems: [], resultingItems: [] } },
+    ],
+    doors: [
+        { id: 'limitations-apps', type: 'door', name: 'To Applications', position: { x: 380, y: 575 }, size: { w: 60, h: 15 }, to: 'APPLICATIONS', targetDoorId: 'apps-limitations' }
+    ]
+}
 };
 
 export const DOOR_POSITIONS = {

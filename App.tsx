@@ -29,11 +29,19 @@ const App: React.FC = () => {
         if (interactingWith?.type === 'display') {
             return interactingWith.step;
         }
-        // For stations in methodology room, use the current step from STEPS
-        if (currentRoom === 'METHODOLOGY' && currentStepIndex < STEPS.length && interactingWith?.type === 'station') {
-            return STEPS[currentStepIndex];
+        // For stations in methodology room, make sure we're using the correct step for each station
+        if (currentRoom === 'METHODOLOGY' && interactingWith?.type === 'station') {
+            // Find the step that matches this station's ID
+            const matchingStep = STEPS.find(step => step.stationId === interactingWith.id);
+            if (!matchingStep) return null;
+            
+            // Only allow interaction if this is the current step in the sequence
+            if (STEPS.indexOf(matchingStep) === currentStepIndex) {
+                return matchingStep;
+            }
+            return null;
         }
-        // For other cases
+        // For other cases (non-methodology room stations)
         if (interactingWith?.type === 'station') {
             return interactingWith.step;
         }
@@ -194,11 +202,19 @@ const App: React.FC = () => {
              const step = nearbyInteractiveObject.step;
              if (!step) return;
 
-             // Logic for stations in methodology room
-             if(currentRoom === 'METHODOLOGY' && currentStep) {
-                if (nearbyInteractiveObject.id !== currentStep.stationId) {
-                    const correctStation = roomData.stations?.find(s => s.id === currentStep.stationId);
-                    showNotification(`Wrong station. Go to the ${correctStation ? correctStation.name : 'correct station'}.`);
+             // Special logic for methodology room stations
+             if(currentRoom === 'METHODOLOGY' && nearbyInteractiveObject.type === 'station') {
+                const stationIndex = STEPS.findIndex(s => s.stationId === nearbyInteractiveObject.id);
+                if (stationIndex === -1) return;
+
+                // If trying to interact with a station out of sequence
+                if (stationIndex !== currentStepIndex) {
+                    if (stationIndex < currentStepIndex) {
+                        showNotification("You've already completed this step.");
+                    } else {
+                        const correctStation = roomData.stations?.find(s => s.id === STEPS[currentStepIndex].stationId);
+                        showNotification(`You need to go to the ${correctStation ? correctStation.name : 'correct station'} first.`);
+                    }
                     return;
                 }
              }
