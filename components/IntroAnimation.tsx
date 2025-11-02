@@ -21,15 +21,19 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
     const murderRef = useRef<HTMLAudioElement | null>(null);
     const screamRef = useRef<HTMLAudioElement | null>(null);
     const stingRef = useRef<HTMLAudioElement | null>(null);
+    const sabotageRef = useRef<HTMLAudioElement | null>(null);
+    const themeRef = useRef<HTMLAudioElement | null>(null);
     const timersRef = useRef<number[]>([]);
     const audioTimersRef = useRef<number[]>([]);
 
     // Initialize audio elements on mount. Files are placeholders; add your MP3s under public/audio.
     useEffect(() => {
-        ambientRef.current = new Audio('/audio/night.mp3');
-        murderRef.current = new Audio('/audio/among.mp3');
-        screamRef.current = new Audio('/audio/among2.mp3');
-        stingRef.current = new Audio('/audio/dramatic-sting.mp3');
+        ambientRef.current = new Audio('/cricket-ambience-night.mp3   ');
+        murderRef.current = new Audio('/among-us-sound-157106.mp3');
+        screamRef.current = new Audio('/among2.mp3');
+        stingRef.current = new Audio('/dramatic-sting.mp3');
+        sabotageRef.current = new Audio('/among-us-alarme-sabotage-393155.mp3');
+        themeRef.current = new Audio('/cricket-ambience-night.mp3');
 
         // Try to play ambient (may be blocked until user gesture) — non-blocking
         if (ambientRef.current) {
@@ -45,10 +49,14 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
             try { murderRef.current?.pause(); murderRef.current && (murderRef.current.currentTime = 0); } catch {}
             try { screamRef.current?.pause(); screamRef.current && (screamRef.current.currentTime = 0); } catch {}
             try { stingRef.current?.pause(); stingRef.current && (stingRef.current.currentTime = 0); } catch {}
+            try { sabotageRef.current?.pause(); sabotageRef.current && (sabotageRef.current.currentTime = 0); } catch {}
+            try { themeRef.current?.pause(); themeRef.current && (themeRef.current.currentTime = 0); } catch {}
             ambientRef.current = null;
             murderRef.current = null;
             screamRef.current = null;
             stingRef.current = null;
+            sabotageRef.current = null;
+            themeRef.current = null;
         };
     }, []);
 
@@ -88,6 +96,18 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
             try { if (murderRef.current) { murderRef.current.loop = false; murderRef.current.pause(); murderRef.current.currentTime = 0; } } catch {}
             try { if (screamRef.current) { screamRef.current.pause(); screamRef.current.currentTime = 0; } } catch {}
             try { if (stingRef.current) { stingRef.current.pause(); stingRef.current.currentTime = 0; } } catch {}
+            try { if (sabotageRef.current) { sabotageRef.current.pause(); sabotageRef.current.currentTime = 0; } } catch {}
+            if (currentScene === 3) { // Lab Scene
+                try {
+                    if (themeRef.current) {
+                        themeRef.current.volume = 0.4;
+                        themeRef.current.loop = true;
+                        themeRef.current.play().catch(() => {});
+                    }
+                } catch {}
+            } else {
+                try { if (themeRef.current) { themeRef.current.pause(); themeRef.current.currentTime = 0; } } catch {}
+            }
         }
 
         return () => {
@@ -117,7 +137,15 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
 
         // longer timing so the dramatic fall/sting lingers visibly
         const tEmergence = window.setTimeout(() => setCrimePhase(1), 2000);
-        const tStruggle = window.setTimeout(() => setCrimePhase(2), 3600);
+        const tStruggle = window.setTimeout(() => {
+            setCrimePhase(2);
+            try {
+                if (sabotageRef.current) {
+                    sabotageRef.current.volume = 0.6;
+                    sabotageRef.current.play().catch(() => {});
+                }
+            } catch {}
+        }, 3600);
         const tFall = window.setTimeout(() => setCrimePhase(3), 4200);
         const tFlee = window.setTimeout(() => setCrimePhase(4), 5200);
 

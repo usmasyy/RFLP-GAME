@@ -58,12 +58,17 @@ const AutoradiographyStation = () => (
     </div>
 );
 
-const PosterDisplay = ({name}: {name: string}) => (
-    <div className="w-full h-full bg-white border-2 border-gray-400 p-1 shadow-md">
-        <p className="text-center font-bold text-sm border-b border-black">{name}</p>
-        <div className="w-full h-1 bg-blue-500 my-1"></div>
-        <div className="w-3/4 h-1 bg-blue-500 my-1"></div>
-        <div className="w-full h-1 bg-blue-500 my-1"></div>
+const PosterDisplay = ({ name }: { name: string }) => (
+    <div className="w-full h-full bg-gradient-to-br from-blue-100 to-indigo-200 border-2 border-blue-300 rounded-lg p-2 shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
+        <div className="flex items-center justify-center mb-2">
+            <svg className="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <p className="text-center font-bold text-sm text-gray-800">{name}</p>
+        </div>
+        <div className="space-y-2 px-1">
+            <div className="w-full h-1 bg-blue-400 rounded-full animate-pulse"></div>
+            <div className="w-3/4 h-1 bg-indigo-400 rounded-full ml-auto animate-pulse delay-100"></div>
+            <div className="w-full h-1 bg-blue-400 rounded-full animate-pulse delay-200"></div>
+        </div>
     </div>
 );
 

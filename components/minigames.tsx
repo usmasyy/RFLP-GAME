@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { Dna, GitCommit, Map, Target, BookCheck, Factory, Binary, Microscope } from 'lucide-react';
 
 interface MiniGameProps {
     onComplete: () => void;
+    onClose?: () => void;
 }
 
 const MiniGameButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ children, className, ...props }) => (
@@ -13,7 +15,7 @@ const MiniGameButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = 
     </button>
 );
 
-export const EvidenceCollection: React.FC<MiniGameProps> = ({ onComplete }) => {
+export const EvidenceCollection: React.FC<MiniGameProps> = ({ onComplete, onClose }) => {
     const [currentSlide, setCurrentSlide] = useState<number | null>(null);
 
     const slides = [
@@ -83,20 +85,42 @@ export const EvidenceCollection: React.FC<MiniGameProps> = ({ onComplete }) => {
             </div>
 
             {currentSlide !== null && (
-                <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-[4000]">
-                    <div className="bg-gray-800 p-6 rounded-lg max-w-2xl w-full border-2 border-blue-400">
-                        <h4 className="text-xl font-bold mb-4 text-blue-300">{slides[currentSlide].title}</h4>
-                        <div className="space-y-2 text-gray-100">
+                <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-[4000] backdrop-blur-sm">
+                    <div className="bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 p-8 rounded-2xl max-w-3xl w-full border-4 border-blue-400 shadow-2xl shadow-blue-500/50 transform transition-all animate-slide-in">
+                        <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-blue-400">
+                            <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
+                                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                </svg>
+                            </div>
+                            <h4 className="text-2xl font-bold text-blue-200 flex-grow">{slides[currentSlide].title}</h4>
+                            <span className="text-blue-300 font-semibold bg-blue-800 bg-opacity-50 px-3 py-1 rounded-full text-sm">
+                                Slide {currentSlide + 1}/3
+                            </span>
+                        </div>
+                        <div className="space-y-3 text-gray-100 bg-gray-800 bg-opacity-40 p-6 rounded-xl border border-blue-500 border-opacity-30 max-h-[60vh] overflow-y-auto">
                             {slides[currentSlide].content.map((line, i) => (
-                                <p key={i} className="whitespace-pre-wrap">{line}</p>
+                                <p key={i} className={`whitespace-pre-wrap leading-relaxed ${line.startsWith('•') || line.startsWith('1.') || line.startsWith('2.') ? 'ml-4 text-blue-100' : line === '' ? 'h-2' : 'text-gray-200 font-medium'}`}>
+                                    {line}
+                                </p>
                             ))}
                         </div>
-                        <button
-                            onClick={() => setCurrentSlide(null)}
-                            className="mt-6 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded transition-all"
-                        >
-                            Close
-                        </button>
+                        <div className="flex justify-between items-center mt-6">
+                            <div className="flex gap-2">
+                                {slides.map((_, idx) => (
+                                    <div 
+                                        key={idx} 
+                                        className={`h-2 rounded-full transition-all ${idx === currentSlide ? 'w-8 bg-blue-400' : 'w-2 bg-gray-600'}`}
+                                    />
+                                ))}
+                            </div>
+                            <button
+                                onClick={() => setCurrentSlide(null)}
+                                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-lg transition-all font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
+                            >
+                                Close
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
@@ -111,7 +135,7 @@ export const EvidenceCollection: React.FC<MiniGameProps> = ({ onComplete }) => {
     );
 };
 
-export const DnaExtraction: React.FC<MiniGameProps> = ({ onComplete }) => {
+export const DnaExtraction: React.FC<MiniGameProps> = ({ onComplete, onClose }) => {
     const steps = ["Add Lysis Buffer", "Incubate", "Add Proteinase", "Centrifuge", "Collect DNA"];
     const [currentStep, setCurrentStep] = useState(0);
 
@@ -135,7 +159,7 @@ export const DnaExtraction: React.FC<MiniGameProps> = ({ onComplete }) => {
     );
 };
 
-export const DnaDigestion: React.FC<MiniGameProps> = ({ onComplete }) => {
+export const DnaDigestion: React.FC<MiniGameProps> = ({ onComplete, onClose }) => {
     const steps = ["Select EcoRI Enzyme", "Combine DNA and Enzyme", "Incubate mixture", "Stop reaction"];
     const [currentStep, setCurrentStep] = useState(0);
 
@@ -160,7 +184,7 @@ export const DnaDigestion: React.FC<MiniGameProps> = ({ onComplete }) => {
     );
 };
 
-export const Electrophoresis: React.FC<MiniGameProps> = ({ onComplete }) => {
+export const Electrophoresis: React.FC<MiniGameProps> = ({ onComplete, onClose }) => {
     const [running, setRunning] = useState(false);
     
     useEffect(() => {
@@ -193,7 +217,7 @@ export const Electrophoresis: React.FC<MiniGameProps> = ({ onComplete }) => {
 };
 
 
-export const SouthernBlotting: React.FC<MiniGameProps> = ({ onComplete }) => {
+export const SouthernBlotting: React.FC<MiniGameProps> = ({ onComplete, onClose }) => {
     const steps = ["Transfer DNA to Membrane", "UV Crosslink DNA to Membrane", "Wash Membrane"];
     const [currentStep, setCurrentStep] = useState(0);
 
@@ -214,7 +238,7 @@ export const SouthernBlotting: React.FC<MiniGameProps> = ({ onComplete }) => {
     );
 };
 
-export const ProbeHybridization: React.FC<MiniGameProps> = ({ onComplete }) => {
+export const ProbeHybridization: React.FC<MiniGameProps> = ({ onComplete, onClose }) => {
     const steps = ["Prepare Radioactive Probe", "Add Probe to Membrane", "Incubate in Hybridization Oven", "Wash Excess Probe"];
     const [currentStep, setCurrentStep] = useState(0);
     
@@ -226,7 +250,7 @@ export const ProbeHybridization: React.FC<MiniGameProps> = ({ onComplete }) => {
     return (
         <div>
             <h3 className="text-lg font-bold mb-2">Probe Hybridization Protocol</h3>
-             <p className="text-sm mb-4 text-yellow-500">Caution: Handling radioactive materials.</p>
+             <p className="text-sm mb-4">Caution: Handling radioactive materials.</p>
             {steps.map((step, index) => (
                 <MiniGameButton key={step} onClick={handleStep} disabled={index !== currentStep}>
                     {index < currentStep ? `✓ ${step}` : step}
@@ -237,7 +261,7 @@ export const ProbeHybridization: React.FC<MiniGameProps> = ({ onComplete }) => {
 };
 
 
-export const AutoradiographyAnalysis: React.FC<MiniGameProps> = ({ onComplete }) => {
+export const AutoradiographyAnalysis: React.FC<MiniGameProps> = ({ onComplete, onClose }) => {
     const [suspect, setSuspect] = useState<number | null>(null);
     const [step, setStep] = useState(0);
 
@@ -290,7 +314,7 @@ const GEL_PATTERNS = {
     }
 }
 
-export const ApplicationMinigame: React.FC<MiniGameProps & {type: 'Forensics' | 'Paternity' | 'Disease'}> = ({ onComplete, type }) => {
+export const ApplicationMinigame: React.FC<MiniGameProps & {type: 'Forensics' | 'Paternity' | 'Disease'}> = ({ onComplete, onClose, type }) => {
     const { labels, bands, correctIndex } = GEL_PATTERNS[type];
     const [selected, setSelected] = useState<number|null>(null);
     const isPaternity = type === "Paternity";
@@ -338,7 +362,15 @@ export const ApplicationMinigame: React.FC<MiniGameProps & {type: 'Forensics' | 
     )
 }
 
-export const InfoDisplay: React.FC<MiniGameProps & { description?: string }> = ({ onComplete, description }) => {
+export const InfoDisplay: React.FC<MiniGameProps & { description?: string }> = ({ onComplete, onClose, description }) => {
+    const handleClose = () => {
+        if (onClose) {
+            onClose();
+        } else {
+            onComplete();
+        }
+    };
+
     return (
         <div className="flex flex-col h-full w-full">
             <div className="flex-grow bg-gray-800 p-6 rounded-lg">
@@ -346,7 +378,7 @@ export const InfoDisplay: React.FC<MiniGameProps & { description?: string }> = (
             </div>
             <div className="mt-4 flex justify-end">
                 <button 
-                    onClick={onComplete} 
+                    onClick={handleClose} 
                     className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-semibold"
                 >
                     Close
@@ -357,7 +389,7 @@ export const InfoDisplay: React.FC<MiniGameProps & { description?: string }> = (
 };
 
 // Display a large protocol steps image inside the interaction modal.
-export const StepsImageDisplay: React.FC<MiniGameProps & {src?: string}> = ({ onComplete, src }) => {
+export const StepsImageDisplay: React.FC<MiniGameProps & {src?: string}> = ({ onComplete, onClose, src }) => {
     const [imageError, setImageError] = React.useState(false);
     
     React.useEffect(() => {
@@ -371,6 +403,14 @@ export const StepsImageDisplay: React.FC<MiniGameProps & {src?: string}> = ({ on
 
     const handleImageLoad = () => {
         console.log('Image loaded successfully:', src);
+    };
+
+    const handleClose = () => {
+        if (onClose) {
+            onClose();
+        } else {
+            onComplete();
+        }
     };
 
     return (
@@ -393,20 +433,28 @@ export const StepsImageDisplay: React.FC<MiniGameProps & {src?: string}> = ({ on
                 )}
             </div>
             <div className="w-full mt-4 flex justify-end space-x-2">
-                <button onClick={onComplete} className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded">Done</button>
+                <button onClick={handleClose} className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded">Done</button>
             </div>
         </div>
     );
 };
 
         // Display advantages with icons and better formatting
-        export const AdvantagesDisplay: React.FC<MiniGameProps> = ({ onComplete }) => {
+        export const AdvantagesDisplay: React.FC<MiniGameProps> = ({ onComplete, onClose }) => {
             const advantages = [
                 { icon: '🎯', title: 'Semi-Dominant Markers', text: 'Produces semi-dominant markers, allowing determination of homozygosity or heterozygosity.' },
                 { icon: '🔬', title: 'Stable & Reproducible', text: 'Gives constant, reliable results over time and across different locations.' },
                 { icon: '📚', title: 'No Prior Sequence Info', text: 'No prior information on DNA sequence is required to perform the analysis.' },
                 { icon: '⚡', title: 'Relatively Simple', text: 'Conceptually straightforward technique with well-established protocols.' }
             ];
+
+            const handleClose = () => {
+                if (onClose) {
+                    onClose();
+                } else {
+                    onComplete();
+                }
+            };
 
             return (
                 <div className="flex flex-col h-full w-full">
@@ -429,7 +477,7 @@ export const StepsImageDisplay: React.FC<MiniGameProps & {src?: string}> = ({ on
                     </div>
                     <div className="mt-4 flex justify-end">
                         <button 
-                            onClick={onComplete} 
+                            onClick={handleClose} 
                             className="px-6 py-2 bg-green-600 hover:bg-green-700 rounded text-white font-semibold transition-all shadow-md hover:shadow-lg"
                         >
                             Close
@@ -440,7 +488,7 @@ export const StepsImageDisplay: React.FC<MiniGameProps & {src?: string}> = ({ on
         };
 
         // Display limitations with icons and better formatting
-        export const LimitationsDisplay: React.FC<MiniGameProps> = ({ onComplete }) => {
+        export const LimitationsDisplay: React.FC<MiniGameProps> = ({ onComplete, onClose }) => {
             const limitations = [
                 { icon: '🧪', text: 'Requires large amounts of high-quality DNA sample' },
                 { icon: '⏱️', text: 'Slow and time-consuming process (5-7 days)' },
@@ -451,6 +499,14 @@ export const StepsImageDisplay: React.FC<MiniGameProps & {src?: string}> = ({ on
                 { icon: '☢️', text: 'Requires radioactive or labeled probes for detection' },
                 { icon: '🧬', text: 'May have low polymorphism levels in some species' }
             ];
+
+            const handleClose = () => {
+                if (onClose) {
+                    onClose();
+                } else {
+                    onComplete();
+                }
+            };
 
             return (
                 <div className="flex flex-col h-full w-full">
@@ -472,7 +528,7 @@ export const StepsImageDisplay: React.FC<MiniGameProps & {src?: string}> = ({ on
                     </div>
                     <div className="mt-4 flex justify-end">
                         <button 
-                            onClick={onComplete} 
+                            onClick={handleClose} 
                             className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded text-white font-semibold transition-all shadow-md hover:shadow-lg"
                         >
                             Close
@@ -483,7 +539,15 @@ export const StepsImageDisplay: React.FC<MiniGameProps & {src?: string}> = ({ on
         };
 
         // Display comparison table for RFLP vs PCR
-        export const ComparisonTable: React.FC<MiniGameProps> = ({ onComplete }) => {
+        export const ComparisonTable: React.FC<MiniGameProps> = ({ onComplete, onClose }) => {
+            const handleClose = () => {
+                if (onClose) {
+                    onClose();
+                } else {
+                    onComplete();
+                }
+            };
+
             const comparisonData = [
                 { characteristic: 'Full Form', rflp: 'Restriction Fragment Length Polymorphism', pcr: 'Polymerase Chain Reaction' },
                 { characteristic: 'Principle', rflp: 'Cuts DNA with enzymes, detects fragment differences', pcr: 'Amplifies specific DNA segment rapidly' },
@@ -525,7 +589,7 @@ export const StepsImageDisplay: React.FC<MiniGameProps & {src?: string}> = ({ on
                     </div>
                     <div className="mt-4 flex justify-end">
                         <button 
-                            onClick={onComplete} 
+                            onClick={handleClose} 
                             className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-semibold transition-all shadow-md hover:shadow-lg"
                         >
                             Close
@@ -536,7 +600,14 @@ export const StepsImageDisplay: React.FC<MiniGameProps & {src?: string}> = ({ on
         };
 
         // Display references with better formatting
-        export const ReferencesDisplay: React.FC<MiniGameProps> = ({ onComplete }) => {
+        export const ReferencesDisplay: React.FC<MiniGameProps> = ({ onComplete, onClose }) => {
+            const handleClose = () => {
+                if (onClose) {
+                    onClose();
+                } else {
+                    onComplete();
+                }
+            };
             const references = [
                 {
                     authors: 'Southern, E.M.',
@@ -587,7 +658,7 @@ export const StepsImageDisplay: React.FC<MiniGameProps & {src?: string}> = ({ on
                     </div>
                     <div className="mt-4 flex justify-end">
                         <button 
-                            onClick={onComplete} 
+                            onClick={handleClose} 
                             className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-semibold transition-all shadow-md hover:shadow-lg"
                         >
                             Close
@@ -598,7 +669,14 @@ export const StepsImageDisplay: React.FC<MiniGameProps & {src?: string}> = ({ on
         };
 
         // Completion certificate display
-        export const CompletionDisplay: React.FC<MiniGameProps> = ({ onComplete }) => {
+        export const CompletionDisplay: React.FC<MiniGameProps> = ({ onComplete, onClose }) => {
+            const handleClose = () => {
+                if (onClose) {
+                    onClose();
+                } else {
+                    onComplete();
+                }
+            };
             return (
                 <div className="flex flex-col h-full w-full">
                     <div className="flex-grow bg-gradient-to-br from-blue-900 via-purple-900 to-pink-900 p-8 rounded-lg border-4 border-yellow-400 shadow-2xl flex flex-col items-center justify-center text-center">
@@ -620,7 +698,7 @@ export const StepsImageDisplay: React.FC<MiniGameProps & {src?: string}> = ({ on
                     </div>
                     <div className="mt-4 flex justify-end">
                         <button 
-                            onClick={onComplete} 
+                            onClick={handleClose} 
                             className="px-6 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 rounded text-white font-bold transition-all shadow-md hover:shadow-lg"
                         >
                             Close
@@ -630,6 +708,56 @@ export const StepsImageDisplay: React.FC<MiniGameProps & {src?: string}> = ({ on
             );
         };
 
+
+// Display for Genome Mapping with custom styling
+export const GenomeMappingDisplay: React.FC<MiniGameProps> = ({ onComplete, onClose }) => {
+    const mappingSteps = [
+        { icon: Dna, text: 'RFLP detects variations in DNA fragment lengths after restriction enzyme digestion.' },
+        { icon: GitCommit, text: 'These variations serve as genetic markers throughout the genome.' },
+        { icon: Map, text: 'By studying inheritance patterns, recombination frequencies are calculated to determine the relative positions of genes on chromosomes.' },
+        { icon: Target, text: 'Multiple RFLP markers are used to create detailed linkage maps showing gene order.' },
+        { icon: BookCheck, text: 'RFLP mapping is crucial for identifying disease genes and genetic trait loci.' },
+        { icon: Factory, text: 'It has been used extensively in plants, animals, and humans for gene localization studies.' },
+        { icon: Binary, text: 'Though now supplemented by newer methods, RFLP provided foundational genetic maps for modern genomics.' }
+    ];
+
+    const handleClose = () => {
+        if (onClose) {
+            onClose();
+        } else {
+            onComplete();
+        }
+    };
+
+    return (
+        <div className="flex flex-col h-full w-full">
+            <h3 className="text-2xl font-bold text-blue-300 mb-6 text-center">Genome Mapping with RFLP</h3>
+            <div className="flex-grow overflow-auto space-y-4 pr-2">
+                {mappingSteps.map((step, idx) => (
+                    <div 
+                        key={idx} 
+                        className="bg-gray-800 p-4 rounded-lg border border-gray-700 hover:border-blue-500 hover:bg-gray-700/50 transition-all duration-300 transform hover:scale-[1.02]"
+                    >
+                        <div className="flex items-start gap-4">
+                            <div className="flex-shrink-0 w-8 h-8 bg-blue-900/50 rounded-full flex items-center justify-center border border-blue-700">
+                                <step.icon className="text-blue-300" size={20} />
+                            </div>
+                            <p className="text-gray-300 text-base leading-relaxed pt-1">{step.text}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+            <div className="mt-6 flex justify-end">
+                <button 
+                    onClick={handleClose} 
+                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-semibold transition-all shadow-md hover:shadow-lg"
+                >
+                    Close
+                </button>
+            </div>
+        </div>
+    );
+};
 
 // Keep old ones for constants file to not break types, though they are unused.
 export const EnzymeSelection = () => <div />;

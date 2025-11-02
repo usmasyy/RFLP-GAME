@@ -1,6 +1,6 @@
 import React from 'react';
 import { Station, Wall, Step, InventoryItem, Npc, Character, RoomId, RoomData, Door, Display, Decor } from './types';
-import { EvidenceCollection, DnaExtraction, EnzymeSelection, DnaDigestion, GelPrep, GelLoading, Electrophoresis, UvImaging, Analysis, SouthernBlotting, ProbeHybridization, AutoradiographyAnalysis, ApplicationMinigame, InfoDisplay, StepsImageDisplay, ComparisonTable, AdvantagesDisplay, LimitationsDisplay, ReferencesDisplay, CompletionDisplay } from './components/minigames';
+import { EvidenceCollection, DnaExtraction, EnzymeSelection, DnaDigestion, GelPrep, GelLoading, Electrophoresis, UvImaging, Analysis, SouthernBlotting, ProbeHybridization, AutoradiographyAnalysis, ApplicationMinigame, InfoDisplay, StepsImageDisplay, ComparisonTable, AdvantagesDisplay, LimitationsDisplay, ReferencesDisplay, CompletionDisplay, GenomeMappingDisplay } from './components/minigames';
 import { FileText, TestTube, Dna, Beaker, FlaskConical, Gavel, Scan, Layers, Sigma, Film, BookOpen } from 'lucide-react';
 
 export const PLAYER_SIZE = 32;
@@ -15,10 +15,10 @@ export const ROOM_CONFIG = {
 };
 
 export const PREDEFINED_CHARACTERS: Character[] = [
-    { name: 'Dr. Usama', labCoatColor: 'bg-white', skinColor: 'bg-orange-300', hairColor: 'bg-gray-800', shirtColor: 'bg-blue-500', accessory: 'glasses' },
-    { name: 'Dr. Armeela', labCoatColor: 'bg-white', skinColor: 'bg-yellow-200', hairColor: 'bg-yellow-900', shirtColor: 'bg-green-500' },
-    { name: 'Dr. Aliyan', labCoatColor: 'bg-white', skinColor: 'bg-amber-500', hairColor: 'bg-stone-700', shirtColor: 'bg-red-500' },
-    { name: 'Dr. Zia', labCoatColor: 'bg-white', skinColor: 'bg-stone-400', hairColor: 'bg-gray-400', shirtColor: 'bg-gray-700' },
+    { name: ' Usama', labCoatColor: 'bg-white', skinColor: 'bg-orange-300', hairColor: 'bg-gray-800', shirtColor: 'bg-blue-500', accessory: 'glasses' },
+    { name: ' Armeela', labCoatColor: 'bg-white', skinColor: 'bg-yellow-200', hairColor: 'bg-yellow-900', shirtColor: 'bg-green-500' },
+    { name: ' ZIA', labCoatColor: 'bg-white', skinColor: 'bg-amber-500', hairColor: 'bg-stone-700', shirtColor: 'bg-red-500' },
+    { name: ' Aliyyan', labCoatColor: 'bg-white', skinColor: 'bg-stone-400', hairColor: 'bg-gray-400', shirtColor: 'bg-gray-700' },
 ];
 
 const BASE_WALLS: Wall[] = [
@@ -111,7 +111,7 @@ export const ROOM_DATA: Record<RoomId, RoomData> = {
             { id: 'app-paternity', type: 'display', name: 'Paternity Testing', position: { x: 630, y: 150 }, size: { w: 120, h: 80 }, step: { stationId: 'app-paternity', objective: 'Determine paternity.', description: 'A child inherits DNA from both parents. Compare the child\'s DNA bands to the potential fathers to find the match.', miniGame: ApplicationMinigame, miniGameProps: { type: "Paternity" }, requiredItems: [], resultingItems: [] } },
             // Fix: Changed minigame definition to avoid JSX and fix parsing errors.
             { id: 'app-diseases', type: 'display', name: 'Genetic Diseases', position: { x: 50, y: 350 }, size: { w: 120, h: 80 }, step: { stationId: 'app-diseases', objective: 'Diagnose a disease.', description: 'Certain genetic diseases alter DNA, creating unique RFLP patterns. Identify the patient carrying the disease allele.', miniGame: ApplicationMinigame, miniGameProps: { type: "Disease" }, requiredItems: [], resultingItems: [] } },
-            { id: 'app-mapping', type: 'display', name: 'Genome Mapping', position: { x: 630, y: 350 }, size: { w: 120, h: 80 }, step: { stationId: 'app-mapping', objective: 'Learn about Genome Mapping.', description: 'RFLP was a crucial early tool for creating genetic maps, helping scientists locate genes on chromosomes and understand genetic linkage.', miniGame: InfoDisplay, requiredItems: [], resultingItems: [] } },
+            { id: 'app-mapping', type: 'display', name: 'Genome Mapping', position: { x: 630, y: 350 }, size: { w: 120, h: 80 }, step: { stationId: 'app-mapping', objective: 'Learn about Genome Mapping.', description: 'Explore how RFLP was used to create the first genetic maps.', miniGame: GenomeMappingDisplay, requiredItems: [], resultingItems: [] } },
         ],
         doors: [
             { id: 'apps-methodology', type: 'door', name: 'To Methodology', position: { x: 775, y: 280 }, size: { w: 15, h: 60 }, to: 'METHODOLOGY', targetDoorId: 'methodology-apps' },

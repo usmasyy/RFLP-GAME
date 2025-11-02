@@ -48,8 +48,8 @@ const CharacterCustomization: React.FC<CharacterCustomizationProps> = ({ onStart
 
     return (
         <div className="bg-gray-800 text-white p-8 rounded-lg shadow-2xl border-2 border-blue-400 flex flex-col items-center animate-fade-in-up w-full max-w-2xl">
-            <h1 className="text-4xl font-bold text-yellow-300 mb-2">RFLP Lab Explorer</h1>
-            <p className="text-gray-300 mb-6">Select your scientist to begin the investigation.</p>
+            <h1 className="text-4xl font-bold text-yellow-300 mb-2">PRESENATION MADE BY</h1>
+            <p className="text-gray-300 mb-6">Select a member to begin the investigation.</p>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 {PREDEFINED_CHARACTERS.map((char, index) => (

@@ -22,6 +22,22 @@ const App: React.FC = () => {
     const notificationTimer = useRef<number | null>(null);
     const [currentRoom, setCurrentRoom] = useState<RoomId>('INTRODUCTION');
     const [unlockedRooms, setUnlockedRooms] = useState<RoomId[]>(['INTRODUCTION']);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    useEffect(() => {
+        if (!audioRef.current) {
+            audioRef.current = new Audio('/background-music.mp3'); // Placeholder path
+            audioRef.current.loop = true;
+        }
+
+        const shouldPlay = gameState === GameState.PLAYING || gameState === GameState.INTERACTING;
+
+        if (shouldPlay) {
+            audioRef.current.play().catch(error => console.error("Audio play failed:", error));
+        } else {
+            audioRef.current.pause();
+        }
+    }, [gameState]);
 
     const roomData = useMemo(() => ROOM_DATA[currentRoom], [currentRoom]);
     const currentStep = useMemo((): Step | null => {
@@ -280,10 +296,15 @@ const App: React.FC = () => {
     };
     
     const getObjective = () => {
-        if(currentRoom === 'INTRODUCTION') return "Collect a patient sample from the collection station.";
-        if(currentRoom === 'METHODOLOGY' && currentStep) return currentStep.objective;
-        if(currentRoom === 'APPLICATIONS') return "Explore the real-world applications of RFLP.";
-        if(currentRoom === 'LIMITATIONS') return "Learn about the pros and cons of RFLP and finish your training.";
+        if (currentRoom === 'INTRODUCTION') return "Collect a patient sample from the collection station.";
+        if (currentRoom === 'METHODOLOGY') {
+            if (currentStepIndex < STEPS.length) {
+                return STEPS[currentStepIndex].objective;
+            } 
+            return "Methodology complete! Proceed to the next room.";
+        }
+        if (currentRoom === 'APPLICATIONS') return "Explore the real-world applications of RFLP.";
+        if (currentRoom === 'LIMITATIONS') return "Learn about the pros and cons of RFLP and finish your training.";
         return "Explore the lab.";
     }
 
@@ -301,7 +322,7 @@ const App: React.FC = () => {
     }
 
     return (
-        <div className="w-screen h-screen flex justify-center items-center font-mono select-none overflow-hidden bg-gray-900">
+        <div className="w-screen h-screen flex justify-center items-center font-mono select-none overflow-hidden bg-gray-900" onClick={() => {if(audioRef.current && audioRef.current.paused) audioRef.current.play().catch(e => console.error(e))}}>
             {gameState === GameState.CHARACTER_CREATION && <CharacterCustomization onStart={handleStartGame} />}
             
             {gameState === GameState.INTRO_ANIMATION && <IntroAnimation onComplete={handleIntroComplete} character={player.character} />}
