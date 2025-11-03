@@ -30,14 +30,21 @@ const App: React.FC = () => {
 
     useEffect(() => {
         if (!audioRef.current) {
-            audioRef.current = new Audio('/background-music.mp3'); // Placeholder path
+            audioRef.current = new Audio('/assets/background-music.mp3');
             audioRef.current.loop = true;
+            audioRef.current.volume = 0.3; // Set volume to 30%
         }
 
         const shouldPlay = gameState === GameState.PLAYING || gameState === GameState.INTERACTING;
 
         if (shouldPlay) {
-            audioRef.current.play().catch(error => console.error("Audio play failed:", error));
+            // Try to play, handle autoplay restrictions
+            const playPromise = audioRef.current.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Audio autoplay prevented. Will play on user interaction:", error);
+                });
+            }
         } else {
             audioRef.current.pause();
         }
