@@ -25,6 +25,7 @@ export type Character = {
     hairColor: string;
     shirtColor: string;
     accessory?: 'glasses' | 'clipboard';
+    headImage?: string;
 };
 
 export type Player = {

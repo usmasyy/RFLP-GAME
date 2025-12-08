@@ -25,14 +25,22 @@ const CharacterPortrait: React.FC<{ character: Character; isSelected: boolean; o
                 <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-1 bg-black/10"></div>
             </div>
             {/* Head */}
-            <div className={`absolute w-3/5 h-3/5 ${character.skinColor} rounded-full top-0 left-1/2 -translate-x-1/2 border-2 border-gray-600 overflow-hidden`}>
-                {/* Hair */}
-                <div className={`absolute w-full h-1/2 ${character.hairColor} top-0`}></div>
-                {/* Glasses */}
-                {character.accessory === 'glasses' && (
-                    <div className="absolute w-full h-1 bg-black top-1/2 -translate-y-1/2"></div>
-                )}
-            </div>
+            {character.headImage ? (
+                <img
+                    src={character.headImage}
+                    alt={character.name}
+                    className="absolute w-3/5 h-3/5 top-0 left-1/2 -translate-x-1/2 rounded-full border-2 border-gray-600 object-cover"
+                />
+            ) : (
+                <div className={`absolute w-3/5 h-3/5 ${character.skinColor} rounded-full top-0 left-1/2 -translate-x-1/2 border-2 border-gray-600 overflow-hidden`}>
+                    {/* Hair */}
+                    <div className={`absolute w-full h-1/2 ${character.hairColor} top-0`}></div>
+                    {/* Glasses */}
+                    {character.accessory === 'glasses' && (
+                        <div className="absolute w-full h-1 bg-black top-1/2 -translate-y-1/2"></div>
+                    )}
+                </div>
+            )}
         </div>
         <p className="text-center font-semibold">{character.name}</p>
     </div>

@@ -328,6 +328,30 @@ const DoorComponent: React.FC<{door: Door, isNearby: boolean}> = ({ door, isNear
 };
 
 
+// --- Character Head Component ---
+const CharacterHead: React.FC<{ character: Character }> = ({ character }) => {
+    if (character.headImage) {
+        return (
+            <img
+                src={character.headImage}
+                alt={character.name}
+                className="absolute w-3/5 h-3/5 top-0 left-1/2 -translate-x-1/2 rounded-full border-2 border-gray-600 object-cover"
+            />
+        );
+    }
+    
+    return (
+        <div className={`absolute w-3/5 h-3/5 ${character.skinColor} rounded-full top-0 left-1/2 -translate-x-1/2 border-2 border-gray-600 overflow-hidden`}>
+            {/* Hair */}
+            <div className={`absolute w-full h-1/2 ${character.hairColor} top-0`}></div>
+            {/* Glasses */}
+            {character.accessory === 'glasses' && (
+                <div className="absolute w-full h-1 bg-black top-1/2 -translate-y-1/2"></div>
+            )}
+        </div>
+    );
+};
+
 // --- Main GameWorld Component ---
 
 interface GameWorldProps {
@@ -396,10 +420,7 @@ const GameWorld: React.FC<GameWorldProps> = ({ player, roomData, npcs, nearbyInt
                         <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-1 bg-black/10"></div>
                          {npc.character.accessory === 'clipboard' && <div className="absolute w-1/2 h-1/2 bg-amber-200 border border-black top-1/4 left-0"></div>}
                     </div>
-                    <div className={`absolute w-3/5 h-3/5 ${npc.character.skinColor} rounded-full top-0 left-1/2 -translate-x-1/2 border-2 border-gray-600 overflow-hidden`}>
-                        <div className={`absolute w-full h-1/2 ${npc.character.hairColor} top-0`}></div>
-                         {npc.character.accessory === 'glasses' && <div className="absolute w-full h-1 bg-black top-1/2 -translate-y-1/2"></div>}
-                    </div>
+                    <CharacterHead character={npc.character} />
                 </div>
             ))}
             
@@ -410,10 +431,7 @@ const GameWorld: React.FC<GameWorldProps> = ({ player, roomData, npcs, nearbyInt
                     <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1/4 ${player.character.shirtColor} rounded-b-md`}></div>
                     <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-1 bg-black/10"></div>
                 </div>
-                <div className={`absolute w-3/5 h-3/5 ${player.character.skinColor} rounded-full top-0 left-1/2 -translate-x-1/2 border-2 border-gray-600 overflow-hidden`}>
-                    <div className={`absolute w-full h-1/2 ${player.character.hairColor} top-0`}></div>
-                    {player.character.accessory === 'glasses' && <div className="absolute w-full h-1 bg-black top-1/2 -translate-y-1/2"></div>}
-                </div>
+                <CharacterHead character={player.character} />
                 
                 {/* Kick Animation Leg */}
                 {player.isKicking && (

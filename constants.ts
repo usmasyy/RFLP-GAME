@@ -15,7 +15,7 @@ export const ROOM_CONFIG = {
 };
 
 export const PREDEFINED_CHARACTERS: Character[] = [
-    { name: ' Usama', labCoatColor: 'bg-white', skinColor: 'bg-orange-300', hairColor: 'bg-gray-800', shirtColor: 'bg-blue-500', accessory: 'glasses' },
+    { name: ' Usama', labCoatColor: 'bg-white', skinColor: 'bg-orange-300', hairColor: 'bg-gray-800', shirtColor: 'bg-blue-500', accessory: 'glasses', headImage: '/assets/post-usama_hsnn-mar-02-2023__1_-removebg-preview.png' },
     { name: ' Armeela', labCoatColor: 'bg-white', skinColor: 'bg-yellow-200', hairColor: 'bg-yellow-900', shirtColor: 'bg-green-500' },
     { name: ' ZIA', labCoatColor: 'bg-white', skinColor: 'bg-amber-500', hairColor: 'bg-stone-700', shirtColor: 'bg-red-500' },
     { name: ' Aliyyan', labCoatColor: 'bg-white', skinColor: 'bg-stone-400', hairColor: 'bg-gray-400', shirtColor: 'bg-gray-700' },

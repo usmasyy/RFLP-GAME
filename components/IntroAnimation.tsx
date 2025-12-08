@@ -475,6 +475,61 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                         <p className="text-red-500 text-xl font-bold">🧬 DNA EVIDENCE</p>
                         <p className="text-gray-300 text-sm mt-1">Biological material found</p>
                     </div>
+
+                    {/* Ambulance passing by */}
+                    <div className="absolute top-1/4 left-0 w-full h-24 flex items-center">
+                        {/* Road */}
+                        <div className="absolute inset-0 bg-gray-700/50" />
+                        
+                        {/* Ambulance SVG imported */}
+                        <div className="absolute animate-[ambulancePass_5s_ease-in-out_0.5s_forwards]" style={{ width: '120px', height: '80px', scaleX: -1 }}>
+                            <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+                                {/* Main ambulance body */}
+                                <rect x="20" y="40" width="160" height="50" fill="#E8F4F8" stroke="#000" strokeWidth="2" rx="5" />
+                                
+                                {/* Red stripe on top */}
+                                <rect x="20" y="35" width="160" height="8" fill="#DC2626" stroke="#000" strokeWidth="1" />
+                                
+                                {/* Roof/cabin */}
+                                <polygon points="30,40 50,20 170,20 190,40" fill="#E8F4F8" stroke="#000" strokeWidth="2" />
+                                
+                                {/* Windshield */}
+                                <polygon points="35,35 48,22 52,22 60,35" fill="#87CEEB" stroke="#000" strokeWidth="1" opacity="0.6" />
+                                <polygon points="165,35 177,22 181,22 191,35" fill="#87CEEB" stroke="#000" strokeWidth="1" opacity="0.6" />
+                                
+                                {/* Ambulance cross symbol */}
+                                <g transform="translate(100, 60)">
+                                    <rect x="-15" y="-3" width="30" height="6" fill="#DC2626" />
+                                    <rect x="-3" y="-15" width="6" height="30" fill="#DC2626" />
+                                </g>
+                                
+                                {/* Door lines */}
+                                <line x1="110" y1="40" x2="110" y2="90" stroke="#000" strokeWidth="1" />
+                                
+                                {/* Wheels */}
+                                <circle cx="45" cy="95" r="12" fill="#1F2937" stroke="#000" strokeWidth="2" />
+                                <circle cx="45" cy="95" r="8" fill="#4B5563" />
+                                <circle cx="160" cy="95" r="12" fill="#1F2937" stroke="#000" strokeWidth="2" />
+                                <circle cx="160" cy="95" r="8" fill="#4B5563" />
+                                
+                                {/* Hubcaps */}
+                                <circle cx="45" cy="95" r="4" fill="#888" />
+                                <circle cx="160" cy="95" r="4" fill="#888" />
+                                
+                                {/* Siren on top */}
+                                <circle cx="110" cy="22" r="5" fill="#0EA5E9" stroke="#000" strokeWidth="1" />
+                                <circle cx="110" cy="22" r="3" fill="#60A5FA" />
+                                
+                                {/* Antenna */}
+                                <line x1="185" y1="30" x2="195" y2="15" stroke="#666" strokeWidth="1" />
+                            </svg>
+                        </div>
+                        
+                        {/* Ambulance light pulse effect */}
+                        <div className="absolute left-0 w-full h-full animate-[ambulancePass_5s_ease-in-out_0.5s_forwards]">
+                            <div className="absolute top-0 left-0 w-8 h-full bg-gradient-to-r from-red-500 to-transparent opacity-30 blur-md" />
+                        </div>
+                    </div>
                 </div>
             )
         },
@@ -490,73 +545,205 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                     {/* Floor */}
                     <div className="absolute bottom-0 w-full h-1/2 bg-gray-600" />
                     
-                    {/* Investigator (your character) appears */}
-                    <div className="absolute bottom-1/4 left-1/4 animate-[slideIn_1s_ease-out_forwards]">
-                        <div className="relative w-28 h-40">
-                            {/* Head */}
-                            <div className={`absolute w-16 h-16 ${character.skinColor} rounded-full top-0 left-1/2 -translate-x-1/2 border-2 border-gray-700`}>
-                                {/* Hair */}
-                                <div className={`absolute w-full h-1/2 ${character.hairColor} top-0 rounded-t-full`} />
-                                {/* Glasses */}
-                                {character.accessory === 'glasses' && (
-                                    <>
-                                        <div className="absolute top-1/2 left-1/4 w-4 h-4 border-2 border-black rounded-full" />
-                                        <div className="absolute top-1/2 right-1/4 w-4 h-4 border-2 border-black rounded-full" />
-                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 w-2 h-0.5 bg-black" />
-                                    </>
-                                )}
-                                {/* Eyes */}
-                                {!character.accessory && (
-                                    <>
-                                        <div className="absolute top-1/2 left-1/4 w-2 h-2 bg-gray-900 rounded-full" />
-                                        <div className="absolute top-1/2 right-1/4 w-2 h-2 bg-gray-900 rounded-full" />
-                                    </>
-                                )}
-                                {/* Smile */}
-                                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-6 h-1 bg-gray-900 rounded-full" />
-                            </div>
+                    {/* Spotlight effect on evidence area */}
+                    <div className="absolute bottom-32 right-1/3 w-64 h-64 bg-gradient-radial from-yellow-400/10 via-transparent to-transparent rounded-full blur-3xl" />
+                    
+                    {/* Evidence on ground - more prominent */}
+                    <div className="absolute bottom-32 right-1/3 w-10 h-10 bg-red-600 rounded-full opacity-90 shadow-lg shadow-red-600 animate-[pulse_1.5s_ease-in-out_infinite]" />
+                    <div className="absolute bottom-24 right-2/5 w-6 h-6 bg-red-500 rounded-full opacity-70" />
+
+                    {/* Forensic Doctor - animated SVG */}
+                    <div className="absolute bottom-0 left-1/4 animate-[slideIn_1s_ease-out_forwards] w-56 h-96 transform scale-125" style={{ transformOrigin: 'bottom center' }}>
+                        <svg viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" style={{ filter: 'drop-shadow(4px 4px 8px rgba(0,0,0,0.5))' }}>
+                            {/* Ground shadow */}
+                            <ellipse cx="200" cy="580" rx="80" ry="15" fill="#000" opacity="0.3"/>
                             
-                            {/* Body (Lab Coat) */}
-                            <div className={`absolute w-24 h-28 ${character.labCoatColor} bottom-0 left-1/2 -translate-x-1/2 rounded-lg border-2 border-gray-700`}>
-                                {/* Shirt underneath */}
-                                <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-12 h-6 ${character.shirtColor} rounded-t-md`} />
-                                {/* Lab coat buttons */}
-                                <div className="absolute top-8 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rounded-full" />
-                                <div className="absolute top-12 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rounded-full" />
-                                <div className="absolute top-16 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rounded-full" />
+                            {/* Main body group */}
+                            <g style={{ animation: 'body-sway-intense 3s ease-in-out infinite' }}>
+                                
+                                {/* Legs and feet */}
+                                <g style={{ animation: 'legs-shift 4s ease-in-out infinite' }}>
+                                  <path d="M 180 420 L 165 520 L 170 580" fill="#E8F4F8" stroke="#B8D4DC" strokeWidth="2"/>
+                                  <path d="M 220 420 L 235 520 L 230 580" fill="#E8F4F8" stroke="#B8D4DC" strokeWidth="2"/>
+                                  <ellipse cx="170" cy="580" rx="22" ry="8" fill="#4A90A4"/>
+                                  <ellipse cx="230" cy="580" rx="22" ry="8" fill="#4A90A4"/>
+                                </g>
+                                
+                                {/* Torso */}
+                                <path d="M 160 240 L 150 320 L 145 420 L 180 420 L 220 420 L 255 420 L 250 320 L 240 240 Z" fill="#F0F8FA" stroke="#C0D8E0" strokeWidth="2"/>
+                                <path d="M 160 280 Q 200 285 240 280" fill="none" stroke="#D0E4EC" strokeWidth="1.5" opacity="0.6"/>
+                                <path d="M 155 340 Q 200 345 245 340" fill="none" stroke="#D0E4EC" strokeWidth="1.5" opacity="0.6"/>
+                                
+                                {/* ID badge */}
+                                <rect x="175" y="300" width="35" height="45" fill="#FFF" stroke="#4A90A4" strokeWidth="1.5" rx="2"/>
+                                <text x="192" y="318" fontFamily="Arial" fontSize="8" fill="#4A90A4" textAnchor="middle">ID</text>
+                                <rect x="180" y="322" width="25" height="3" fill="#4A90A4" opacity="0.4"/>
+                                <rect x="180" y="327" width="25" height="3" fill="#4A90A4" opacity="0.4"/>
+                                <rect x="180" y="332" width="20" height="3" fill="#4A90A4" opacity="0.4"/>
+                                
                                 {/* Arms */}
-                                <div className={`absolute -left-2 top-2 w-3 h-16 ${character.skinColor} rounded-full border border-gray-700`} />
-                                <div className={`absolute -right-2 top-2 w-3 h-16 ${character.skinColor} rounded-full border border-gray-700`} />
-                                {/* Pockets */}
-                                <div className="absolute bottom-4 left-2 w-5 h-4 border-2 border-gray-700 rounded-sm" />
-                                <div className="absolute bottom-4 right-2 w-5 h-4 border-2 border-gray-700 rounded-sm" />
-                            </div>
-                            
-                            {/* Evidence collection bag */}
-                            <div className="absolute -right-10 top-1/2 w-14 h-18 bg-blue-200/70 border-2 border-blue-500 animate-[collect_2s_ease-in-out_1.5s_forwards] backdrop-blur-sm rounded-md">
-                                <div className="absolute top-1 left-1/2 -translate-x-1/2 w-10 h-1 bg-blue-600" />
-                                <span className="absolute top-2 left-1/2 -translate-x-1/2 text-[8px] text-blue-900 font-bold">EVIDENCE</span>
-                                {/* Sample inside */}
-                                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-red-600/70 rounded-full border border-red-700" />
-                                <div className="absolute bottom-4 left-1/3 w-2 h-2 bg-red-500/50 rounded-full" />
-                            </div>
-                        </div>
+                                <g style={{ animation: 'left-arm-pickup 3s ease-in-out infinite', transformOrigin: '160px 250px' }}>
+                                  <path d="M 160 250 L 130 290 L 120 350" fill="#E8F4F8" stroke="#B8D4DC" strokeWidth="2"/>
+                                </g>
+                                <g style={{ animation: 'right-arm-analyze 2.5s ease-in-out infinite', transformOrigin: '240px 250px' }}>
+                                  <path d="M 240 250 L 270 290 L 280 350" fill="#E8F4F8" stroke="#B8D4DC" strokeWidth="2"/>
+                                </g>
+                                
+                                {/* Hands */}
+                                {/* Left hand */}
+                                <g style={{ animation: 'hand-pickup-motion 3s ease-in-out infinite', transformOrigin: '120px 360px' }}>
+                                  <ellipse cx="120" cy="360" rx="12" ry="16" fill="#6BA5D9" transform="rotate(-20 120 360)"/>
+                                  <path d="M 115 355 Q 112 348 110 345" fill="none" stroke="#5A95C9" strokeWidth="2"/>
+                                  <path d="M 120 353 Q 118 346 117 343" fill="none" stroke="#5A95C9" strokeWidth="2"/>
+                                  <path d="M 125 355 Q 124 348 124 345" fill="none" stroke="#5A95C9" strokeWidth="2"/>
+                                </g>
+                                
+                                {/* Evidence bag */}
+                                                                <g style={{ animation: 'evidence-bag-collect 3s ease-in-out infinite' }}>
+                                                                    <rect x="95" y="365" width="40" height="50" fill="#FFF" fillOpacity="0.6" stroke="#C00" strokeWidth="2" rx="2"/>
+                                                                    <path d="M 95 370 L 135 370" stroke="#C00" strokeWidth="1.5"/>
+                                                                    <text x="115" y="395" fontFamily="Arial" fontSize="7" fill="#C00" textAnchor="middle" fontWeight="bold">EVIDENCE</text>
+                                                                    <circle cx="115" cy="410" r="6" fill="#DC2626" opacity="0.8"/>
+                                                                </g>
+                                
+                                {/* Right hand */}
+                                <g style={{ animation: 'hand-analyze-motion 2.5s ease-in-out infinite 0.3s', transformOrigin: '280px 360px' }}>
+                                  <ellipse cx="280" cy="360" rx="12" ry="16" fill="#6BA5D9" transform="rotate(20 280 360)"/>
+                                  <path d="M 275 355 Q 273 348 272 345" fill="none" stroke="#5A95C9" strokeWidth="2"/>
+                                  <path d="M 280 353 Q 279 346 279 343" fill="none" stroke="#5A95C9" strokeWidth="2"/>
+                                  <path d="M 285 355 Q 285 348 286 345" fill="none" stroke="#5A95C9" strokeWidth="2"/>
+                                </g>
+                                
+                                {/* Magnifying glass */}
+                                                                <g style={{ animation: 'magnifying-glass-inspect 2.5s ease-in-out infinite', transformOrigin: '295px 370px' }}>
+                                                                    <circle cx="295" cy="370" r="15" fill="none" stroke="#666" strokeWidth="2.5"/>
+                                                                    <circle cx="295" cy="370" r="12" fill="#E0F0FF" opacity="0.3"/>
+                                                                    <circle cx="295" cy="370" r="8" fill="#FFD700" opacity="0.3" />
+                                                                    <path d="M 306 380 L 318 392" stroke="#666" strokeWidth="3" strokeLinecap="round"/>
+                                                                </g>
+                                
+                                {/* Head */}
+                                <g style={{ animation: 'head-focused 2.5s ease-in-out infinite', transformOrigin: '200px 200px' }}>
+                                  <path d="M 150 180 Q 145 200 145 220 L 145 245 L 160 250 L 240 250 L 255 245 L 255 220 Q 255 200 250 180 Z" fill="#F0F8FA" stroke="#C0D8E0" strokeWidth="2"/>
+                                  <ellipse cx="200" cy="200" rx="42" ry="48" fill="#FFE4C4"/>
+                                  
+                                  {/* Eyes */}
+                                  <ellipse cx="185" cy="195" rx="5" ry="6" fill="#FFF"/>
+                                  <ellipse cx="215" cy="195" rx="5" ry="6" fill="#FFF"/>
+                                  <circle cx="185" cy="196" r="3" fill="#5D4E37"/>
+                                  <circle cx="215" cy="196" r="3" fill="#5D4E37"/>
+                                  <circle cx="186" cy="195" r="1.5" fill="#FFF"/>
+                                  <circle cx="216" cy="195" r="1.5" fill="#FFF"/>
+                                  
+                                  {/* Eyebrows */}
+                                  <path d="M 177 188 Q 185 186 192 188" fill="none" stroke="#5D4E37" strokeWidth="2" strokeLinecap="round"/>
+                                  <path d="M 208 188 Q 215 186 223 188" fill="none" stroke="#5D4E37" strokeWidth="2" strokeLinecap="round"/>
+                                  
+                                  {/* Nose */}
+                                  <path d="M 200 200 L 198 210" fill="none" stroke="#E8C4A4" strokeWidth="1.5"/>
+                                  <ellipse cx="196" cy="212" rx="3" ry="2" fill="none" stroke="#E8C4A4" strokeWidth="1"/>
+                                  <ellipse cx="204" cy="212" rx="3" ry="2" fill="none" stroke="#E8C4A4" strokeWidth="1"/>
+                                  
+                                  {/* Face mask */}
+                                  <path d="M 170 210 Q 170 225 175 232 L 225 232 Q 230 225 230 210" fill="#6BA5D9" stroke="#5A95C9" strokeWidth="2"/>
+                                  <path d="M 175 217 L 225 217" stroke="#5A95C9" strokeWidth="1" opacity="0.7"/>
+                                  <path d="M 175 222 L 225 222" stroke="#5A95C9" strokeWidth="1" opacity="0.7"/>
+                                  <path d="M 175 227 L 225 227" stroke="#5A95C9" strokeWidth="1" opacity="0.7"/>
+                                  <path d="M 230 215 Q 245 210 250 205" fill="none" stroke="#5A95C9" strokeWidth="2"/>
+                                  <path d="M 170 215 Q 155 210 150 205" fill="none" stroke="#5A95C9" strokeWidth="2"/>
+                                </g>
+                                
+                                {/* Camera */}
+                                                                <g style={{ animation: 'camera-documenting 2.5s ease-in-out infinite', transformOrigin: '200px 265px' }}>
+                                                                    <rect x="185" y="260" width="30" height="22" fill="#333" rx="2"/>
+                                                                    <circle cx="200" cy="271" r="7" fill="#555"/>
+                                                                    <circle cx="200" cy="271" r="5" fill="#222"/>
+                                                                    <rect x="213" y="263" width="3" height="3" fill="#FF6B6B" opacity="0.8"/>
+                                  <path d="M 175 265 Q 170 250 170 245" fill="none" stroke="#333" strokeWidth="2"/>
+                                  <path d="M 225 265 Q 230 250 230 245" fill="none" stroke="#333" strokeWidth="2"/>
+                                </g>
+                                
+                                {/* Equipment belt */}
+                                <rect x="155" y="380" width="90" height="8" fill="#4A90A4" rx="2" stroke="#2A5A7A" strokeWidth="1"/>
+                                <rect x="165" y="388" width="15" height="20" fill="#3A7A94" rx="1" stroke="#1A4A6A" strokeWidth="1"/>
+                                <rect x="192" y="388" width="15" height="20" fill="#3A7A94" rx="1" stroke="#1A4A6A" strokeWidth="1"/>
+                                <rect x="220" y="388" width="15" height="20" fill="#3A7A94" rx="1" stroke="#1A4A6A" strokeWidth="1"/>
+                            </g>
+                        </svg>
+
+                                                {/* Animation styles for the SVG */}
+                                                <style>{`
+                                                    @keyframes body-sway-intense {
+                                                        0%, 100% { transform: translateX(0) rotate(0deg); }
+                                                        25% { transform: translateX(3px) rotate(1deg); }
+                                                        50% { transform: translateX(0) rotate(0deg); }
+                                                        75% { transform: translateX(-3px) rotate(-1deg); }
+                                                    }
+                                                    @keyframes head-focused {
+                                                        0%, 100% { transform: rotateX(0deg) rotateY(0deg); }
+                                                        50% { transform: rotateX(-2deg) rotateY(-3deg); }
+                                                    }
+                                                    @keyframes left-arm-pickup {
+                                                        0%, 100% { transform: rotate(0deg) translateY(0); }
+                                                        35% { transform: rotate(-25deg) translateY(-15px); }
+                                                        70% { transform: rotate(-20deg) translateY(-10px); }
+                                                    }
+                                                    @keyframes right-arm-analyze {
+                                                        0%, 100% { transform: rotate(0deg) translateX(0); }
+                                                        30% { transform: rotate(35deg) translateX(15px); }
+                                                        60% { transform: rotate(30deg) translateX(12px); }
+                                                    }
+                                                    @keyframes hand-pickup-motion {
+                                                        0%, 100% { transform: scaleY(1) rotate(0deg); }
+                                                        35% { transform: scaleY(0.9) rotate(-5deg); }
+                                                        50% { transform: scaleY(1.15) rotate(-8deg); }
+                                                        70% { transform: scaleY(1.1) rotate(-5deg); }
+                                                    }
+                                                    @keyframes hand-analyze-motion {
+                                                        0%, 100% { transform: scaleY(1) rotate(0deg); }
+                                                        30% { transform: scaleY(1.05) rotate(8deg); }
+                                                        60% { transform: scaleY(1.1) rotate(12deg); }
+                                                    }
+                                                    @keyframes evidence-bag-collect {
+                                                        0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
+                                                        35% { transform: translateY(-8px) scale(1.05); opacity: 0.8; }
+                                                        50% { transform: translateY(-12px) scale(1.1); opacity: 0.9; }
+                                                    }
+                                                    @keyframes magnifying-glass-inspect {
+                                                        0%, 100% { transform: rotate(0deg) scale(1); }
+                                                        30% { transform: rotate(-15deg) scale(1.1); }
+                                                        60% { transform: rotate(15deg) scale(1.1); }
+                                                    }
+                                                    @keyframes legs-shift {
+                                                        0%, 100% { transform: translateY(0); }
+                                                        25% { transform: translateY(2px); }
+                                                        50% { transform: translateY(0); }
+                                                        75% { transform: translateY(-2px); }
+                                                    }
+                                                    @keyframes camera-documenting {
+                                                        0%, 100% { transform: rotate(-8deg) scale(1); }
+                                                        50% { transform: rotate(0deg) scale(1.05); }
+                                                    }
+                                                `}</style>
                     </div>
                     
-                    {/* Evidence on ground */}
-                    <div className="absolute bottom-1/4 right-1/3 w-8 h-8 bg-red-600 rounded-full opacity-80 animate-[fadeOut_1s_ease-out_2s_forwards]" />
+                    {/* (Prominent evidence markers handled above) */}
                     
                     {/* Text */}
                     <div className="absolute top-8 left-1/2 -translate-x-1/2 text-center animate-[fadeIn_1s_ease-in_0.5s_forwards] opacity-0">
-                        <p className="text-white text-2xl font-bold">EVIDENCE COLLECTION</p>
-                        <p className="text-gray-300 text-sm mt-2">Forensic team securing biological samples</p>
+                        <p className="text-white text-3xl font-bold drop-shadow-lg">EVIDENCE COLLECTION</p>
+                        <p className="text-blue-200 text-sm mt-2 font-semibold">Forensic team securing biological samples</p>
                     </div>
                     
-                    {/* Collection checklist */}
-                    <div className="absolute bottom-8 right-8 bg-black/70 p-4 rounded-lg border border-blue-400 animate-[fadeIn_1s_ease-in_2s_forwards] opacity-0">
+                    {/* Collection status - live updates */}
+                    <div className="absolute bottom-12 right-8 bg-black/80 p-4 rounded-lg border-2 border-blue-400 shadow-lg shadow-blue-400/50 animate-[fadeIn_1s_ease-in_1s_forwards] opacity-0">
+                        <p className="text-green-400 text-sm font-bold mb-2">◆ COLLECTING</p>
                         <p className="text-green-400 text-sm">✓ Blood sample</p>
                         <p className="text-green-400 text-sm">✓ Hair follicle</p>
-                        <p className="text-green-400 text-sm">✓ Tissue sample</p>
+                        <p className="text-green-400 text-xs">◆ Tissue sample</p>
+                        <div className="mt-2 h-1 bg-green-900 rounded-full overflow-hidden">
+                            <div className="h-full w-2/3 bg-green-400 animate-[pulse_1.5s_ease-in-out_infinite]"></div>
+                        </div>
                     </div>
                 </div>
             )
