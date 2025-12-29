@@ -69,23 +69,23 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
         return () => {
             timersRef.current.forEach((t) => clearTimeout(t));
             timersRef.current.length = 0;
-            try { ambientRef.current?.pause(); } catch {}
+            try { ambientRef.current?.pause(); } catch { }
             try {
                 if (screamRef.current) {
                     if (screamEndedHandlerRef.current) {
-                        try { screamRef.current.removeEventListener('ended', screamEndedHandlerRef.current); } catch {}
+                        try { screamRef.current.removeEventListener('ended', screamEndedHandlerRef.current); } catch { }
                         screamEndedHandlerRef.current = null;
                     }
                     screamRef.current.pause();
                     screamRef.current.currentTime = 0;
                 }
-            } catch {}
-            try { ambulanceRef.current?.pause(); ambulanceRef.current && (ambulanceRef.current.currentTime = 0); } catch {}
-            try { stingRef.current?.pause(); stingRef.current && (stingRef.current.currentTime = 0); } catch {}
-            try { sabotageRef.current?.pause(); sabotageRef.current && (sabotageRef.current.currentTime = 0); } catch {}
-            try { themeRef.current?.pause(); themeRef.current && (themeRef.current.currentTime = 0); } catch {}
+            } catch { }
+            try { ambulanceRef.current?.pause(); ambulanceRef.current && (ambulanceRef.current.currentTime = 0); } catch { }
+            try { stingRef.current?.pause(); stingRef.current && (stingRef.current.currentTime = 0); } catch { }
+            try { sabotageRef.current?.pause(); sabotageRef.current && (sabotageRef.current.currentTime = 0); } catch { }
+            try { themeRef.current?.pause(); themeRef.current && (themeRef.current.currentTime = 0); } catch { }
             // Stop ambulance only on complete unmount
-            try { if (ambulanceRef.current) { ambulanceRef.current.loop = false; ambulanceRef.current.pause(); ambulanceRef.current.currentTime = 0; } } catch {}
+            try { if (ambulanceRef.current) { ambulanceRef.current.loop = false; ambulanceRef.current.pause(); ambulanceRef.current.currentTime = 0; } } catch { }
             ambientRef.current = null;
             screamRef.current = null;
             ambulanceRef.current = null;
@@ -106,13 +106,13 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
             try {
                 if (screamRef.current) {
                     if (screamEndedHandlerRef.current) {
-                        try { screamRef.current.removeEventListener('ended', screamEndedHandlerRef.current); } catch {}
+                        try { screamRef.current.removeEventListener('ended', screamEndedHandlerRef.current); } catch { }
                         screamEndedHandlerRef.current = null;
                     }
                     screamRef.current.pause();
                     screamRef.current.currentTime = 0;
                 }
-            } catch {}
+            } catch { }
         }
 
         // Theme handling for later scenes
@@ -121,11 +121,11 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                 if (themeRef.current) {
                     themeRef.current.volume = 0.4;
                     themeRef.current.loop = true;
-                    themeRef.current.play().catch(() => {});
+                    themeRef.current.play().catch(() => { });
                 }
-            } catch {}
+            } catch { }
         } else {
-            try { if (themeRef.current) { themeRef.current.pause(); themeRef.current.currentTime = 0; } } catch {}
+            try { if (themeRef.current) { themeRef.current.pause(); themeRef.current.currentTime = 0; } } catch { }
         }
 
         return () => {
@@ -160,9 +160,9 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
             try {
                 if (sabotageRef.current) {
                     sabotageRef.current.volume = 0.6;
-                    sabotageRef.current.play().catch(() => {});
+                    sabotageRef.current.play().catch(() => { });
                 }
-            } catch {}
+            } catch { }
         }, 3600);
         const tFall = window.setTimeout(() => {
             setCrimePhase(3);
@@ -172,7 +172,7 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                 if (screamRef.current) {
                     // remove any previous ended handler
                     if (screamEndedHandlerRef.current && screamRef.current) {
-                        try { screamRef.current.removeEventListener('ended', screamEndedHandlerRef.current); } catch {}
+                        try { screamRef.current.removeEventListener('ended', screamEndedHandlerRef.current); } catch { }
                         screamEndedHandlerRef.current = null;
                     }
 
@@ -212,7 +212,7 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                             audioTimersRef.current.push(tAmb as unknown as number);
                         });
                 }
-            } catch {}
+            } catch { }
         }, 4200);
         const tFlee = window.setTimeout(() => setCrimePhase(4), 5200);
 
@@ -234,7 +234,7 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                     {/* Atmospheric fog/mist layers */}
                     <div className="absolute inset-0 bg-gradient-to-t from-gray-800/30 via-transparent to-transparent" />
                     <div className="absolute bottom-0 w-full h-32 bg-gradient-to-t from-black/60 to-transparent" />
-                    
+
                     {/* Rain effect */}
                     <div className="absolute inset-0 opacity-30">
                         <div className="absolute top-0 left-[10%] w-px h-8 bg-blue-200 animate-[rain_1s_linear_infinite]" />
@@ -244,7 +244,7 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                         <div className="absolute top-0 left-[78%] w-px h-9 bg-blue-200 animate-[rain_1s_linear_infinite_0.7s]" />
                         <div className="absolute top-0 left-[88%] w-px h-11 bg-blue-200 animate-[rain_1.3s_linear_infinite_0.4s]" />
                     </div>
-                    
+
                     {/* Flickering street light */}
                     <div className="absolute top-0 left-1/4">
                         <div className="w-3 h-20 bg-gray-700">
@@ -252,11 +252,11 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                         </div>
                         <div className="w-4 h-32 bg-gradient-to-b from-yellow-300 to-transparent opacity-40 animate-[flicker_0.3s_ease-in-out_infinite]" />
                     </div>
-                    
+
                     {/* Moon with clouds */}
                     <div className="absolute top-12 right-16 w-16 h-16 bg-gray-200 rounded-full opacity-50 blur-sm" />
                     <div className="absolute top-10 right-12 w-20 h-12 bg-gray-800 opacity-60 rounded-full animate-[drift_8s_linear_infinite]" />
-                    
+
                     {/* Detailed building silhouettes */}
                     <div className="absolute bottom-0 left-0 w-40 h-56 bg-black">
                         <div className="absolute top-8 left-4 w-3 h-4 bg-yellow-600/40" />
@@ -273,22 +273,22 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                         <div className="absolute top-16 left-8 w-3 h-4 bg-yellow-600/25" />
                         <div className="absolute top-32 right-8 w-3 h-4 bg-yellow-600/35" />
                     </div>
-                    
+
                     {/* Alley walls */}
                     <div className="absolute bottom-0 left-1/4 w-2 h-full bg-gradient-to-t from-gray-800 to-gray-900 transform -skew-x-12" />
                     <div className="absolute bottom-0 right-1/4 w-2 h-full bg-gradient-to-t from-gray-800 to-gray-900 transform skew-x-12" />
-                    
+
                     {/* Dumpster */}
                     <div className="absolute bottom-16 right-1/4 w-20 h-16 bg-gray-800 border-2 border-gray-700">
                         <div className="absolute top-0 w-full h-2 bg-gray-700" />
                         <div className="absolute top-1/2 left-2 w-1 h-6 bg-gray-600" />
                     </div>
-                    
+
                     {/* Ground/Alley floor */}
                     <div className="absolute bottom-0 w-full h-20 bg-gradient-to-b from-gray-800 to-gray-900">
                         <div className="absolute bottom-4 left-1/3 w-12 h-2 bg-black/40 rounded-full blur-sm" />
                     </div>
-                    
+
                     {/* Victim - walking (visible until fall) */}
                     {crimePhase < 3 && (
                         <div className="absolute bottom-20 left-[45%] animate-[victimWalk_2s_ease-in-out_forwards]">
@@ -313,7 +313,7 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                             </div>
                         </div>
                     )}
-                    
+
                     {/* Attacker - emerges from shadows (shown during emergence and attack phases) */}
                     {crimePhase >= 1 && crimePhase < 4 && (
                         <div className="absolute bottom-20 right-[42%] opacity-0 animate-[attackerEmerge_1.5s_ease-out_forwards]">
@@ -345,14 +345,14 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                             </div>
                         </div>
                     )}
-                    
+
                     {/* Struggle effect (brief, during stabbing/struggle phase) */}
                     {crimePhase >= 2 && crimePhase < 3 && (
                         <div className="absolute bottom-24 left-1/2 -translate-x-1/2 opacity-0 animate-[struggle_0.5s_ease-in-out_forwards]">
                             <div className="w-24 h-24 border-4 border-red-500/30 rounded-full animate-pulse" />
                         </div>
                     )}
-                    
+
                     {/* Blood splatter effect (shows on fall) */}
                     {crimePhase >= 3 && (
                         <div className="absolute bottom-20 left-1/2 -translate-x-1/2 opacity-0 animate-[bloodSplatter_0.6s_ease-out_forwards]">
@@ -363,7 +363,7 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                             <div className="absolute top-2 left-1 w-4 h-1 bg-red-600/50" />
                         </div>
                     )}
-                    
+
                     {/* Victim falls (visible at fall phase) */}
                     {crimePhase >= 3 && (
                         <div className="absolute bottom-20 left-[45%] opacity-0 animate-[victimFall_1s_ease-in_forwards]">
@@ -382,7 +382,7 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                             </div>
                         </div>
                     )}
-                    
+
                     {/* Attacker runs away (shows once fleeing phase starts) */}
                     {crimePhase >= 4 && (
                         <div className="absolute bottom-20 left-1/2 opacity-0 animate-[attackerFlee_2s_ease-in_forwards]">
@@ -405,21 +405,21 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                             </div>
                         </div>
                     )}
-                    
+
                     {/* Thunder/Lightning flash */}
                     <div className="absolute inset-0 bg-white opacity-0 animate-[lightning_0.3s_ease-in-out_3.4s]" />
                     <div className="absolute inset-0 bg-red-600 opacity-0 animate-[flash_0.5s_ease-in-out_3.5s]" />
-                    
+
                     {/* Dramatic shadow cast */}
                     <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-96 h-32 bg-black/40 rounded-full blur-2xl opacity-0 animate-[fadeIn_1s_ease-in_4s_forwards]" />
-                    
+
                     {/* Text overlays */}
                     <div className="absolute top-12 left-1/2 -translate-x-1/2 text-center opacity-0 animate-[fadeIn_1s_ease-in_0.5s_forwards]">
                         <p className="text-gray-400 text-sm tracking-wider">
                             11:47 PM • OCTOBER 15, 2024
                         </p>
                     </div>
-                    
+
                     <div className="absolute bottom-12 left-1/2 -translate-x-1/2 text-center">
                         <p className="text-red-500 text-3xl font-bold animate-[fadeIn_1s_ease-in_4.5s_forwards] opacity-0 drop-shadow-lg">
                             HOMICIDE
@@ -443,17 +443,17 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                     <div className="absolute top-1/4 left-0 w-full h-12 bg-yellow-400 opacity-80 -rotate-6 flex items-center justify-center">
                         <span className="text-black font-bold text-xs">⚠️ CRIME SCENE - DO NOT CROSS ⚠️</span>
                     </div>
-                    
+
                     {/* Ground/Floor */}
                     <div className="absolute bottom-0 w-full h-2/3 bg-gradient-to-b from-gray-800 to-gray-700" />
-                    
+
                     {/* Body outline */}
                     <div className="absolute bottom-1/3 left-1/2 -translate-x-1/2">
                         <div className="w-48 h-32 border-4 border-white opacity-60 rounded-lg relative">
                             <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 border-4 border-white rounded-full opacity-60" />
                         </div>
                     </div>
-                    
+
                     {/* Blood splatter/DNA evidence with pulsing effect */}
                     <div className="absolute bottom-1/3 left-1/2 -translate-x-1/2 translate-y-8">
                         <div className="relative">
@@ -464,12 +464,12 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                             <div className="absolute -bottom-3 -left-3 w-8 h-8 bg-red-600 rounded-full opacity-60" />
                         </div>
                     </div>
-                    
+
                     {/* Evidence markers */}
                     <div className="absolute bottom-1/3 left-1/3 w-8 h-12 bg-yellow-300 clip-triangle animate-[fadeIn_0.5s_ease-in_1s_forwards] opacity-0">
                         <span className="text-black font-bold text-xl">1</span>
                     </div>
-                    
+
                     {/* DNA label appears */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 bg-black/80 px-6 py-3 rounded-lg border-2 border-red-500 animate-[fadeIn_1s_ease-in_1.5s_forwards] opacity-0">
                         <p className="text-red-500 text-xl font-bold">🧬 DNA EVIDENCE</p>
@@ -480,51 +480,51 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                     <div className="absolute top-1/4 left-0 w-full h-24 flex items-center">
                         {/* Road */}
                         <div className="absolute inset-0 bg-gray-700/50" />
-                        
+
                         {/* Ambulance SVG imported */}
                         <div className="absolute animate-[ambulancePass_5s_ease-in-out_0.5s_forwards]" style={{ width: '120px', height: '80px', scaleX: -1 }}>
                             <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
                                 {/* Main ambulance body */}
                                 <rect x="20" y="40" width="160" height="50" fill="#E8F4F8" stroke="#000" strokeWidth="2" rx="5" />
-                                
+
                                 {/* Red stripe on top */}
                                 <rect x="20" y="35" width="160" height="8" fill="#DC2626" stroke="#000" strokeWidth="1" />
-                                
+
                                 {/* Roof/cabin */}
                                 <polygon points="30,40 50,20 170,20 190,40" fill="#E8F4F8" stroke="#000" strokeWidth="2" />
-                                
+
                                 {/* Windshield */}
                                 <polygon points="35,35 48,22 52,22 60,35" fill="#87CEEB" stroke="#000" strokeWidth="1" opacity="0.6" />
                                 <polygon points="165,35 177,22 181,22 191,35" fill="#87CEEB" stroke="#000" strokeWidth="1" opacity="0.6" />
-                                
+
                                 {/* Ambulance cross symbol */}
                                 <g transform="translate(100, 60)">
                                     <rect x="-15" y="-3" width="30" height="6" fill="#DC2626" />
                                     <rect x="-3" y="-15" width="6" height="30" fill="#DC2626" />
                                 </g>
-                                
+
                                 {/* Door lines */}
                                 <line x1="110" y1="40" x2="110" y2="90" stroke="#000" strokeWidth="1" />
-                                
+
                                 {/* Wheels */}
                                 <circle cx="45" cy="95" r="12" fill="#1F2937" stroke="#000" strokeWidth="2" />
                                 <circle cx="45" cy="95" r="8" fill="#4B5563" />
                                 <circle cx="160" cy="95" r="12" fill="#1F2937" stroke="#000" strokeWidth="2" />
                                 <circle cx="160" cy="95" r="8" fill="#4B5563" />
-                                
+
                                 {/* Hubcaps */}
                                 <circle cx="45" cy="95" r="4" fill="#888" />
                                 <circle cx="160" cy="95" r="4" fill="#888" />
-                                
+
                                 {/* Siren on top */}
                                 <circle cx="110" cy="22" r="5" fill="#0EA5E9" stroke="#000" strokeWidth="1" />
                                 <circle cx="110" cy="22" r="3" fill="#60A5FA" />
-                                
+
                                 {/* Antenna */}
                                 <line x1="185" y1="30" x2="195" y2="15" stroke="#666" strokeWidth="1" />
                             </svg>
                         </div>
-                        
+
                         {/* Ambulance light pulse effect */}
                         <div className="absolute left-0 w-full h-full animate-[ambulancePass_5s_ease-in-out_0.5s_forwards]">
                             <div className="absolute top-0 left-0 w-8 h-full bg-gradient-to-r from-red-500 to-transparent opacity-30 blur-md" />
@@ -535,216 +535,267 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
         },
         {
             id: 'collection',
-            duration: 4500,
+            duration: 6000,
             render: () => (
-                <div className="relative w-full h-full bg-gradient-to-b from-gray-700 to-gray-800">
-                    {/* Police lights effect */}
-                    <div className="absolute top-0 left-0 w-1/2 h-2 bg-blue-500 animate-pulse" />
-                    <div className="absolute top-0 right-0 w-1/2 h-2 bg-red-500 animate-pulse" />
-                    
-                    {/* Floor */}
-                    <div className="absolute bottom-0 w-full h-1/2 bg-gray-600" />
-                    
-                    {/* Spotlight effect on evidence area */}
-                    <div className="absolute bottom-32 right-1/3 w-64 h-64 bg-gradient-radial from-yellow-400/10 via-transparent to-transparent rounded-full blur-3xl" />
-                    
-                    {/* Evidence on ground - more prominent */}
-                    <div className="absolute bottom-32 right-1/3 w-10 h-10 bg-red-600 rounded-full opacity-90 shadow-lg shadow-red-600 animate-[pulse_1.5s_ease-in-out_infinite]" />
-                    <div className="absolute bottom-24 right-2/5 w-6 h-6 bg-red-500 rounded-full opacity-70" />
-
-                    {/* Forensic Doctor - animated SVG */}
-                    <div className="absolute bottom-0 left-1/4 animate-[slideIn_1s_ease-out_forwards] w-56 h-96 transform scale-125" style={{ transformOrigin: 'bottom center' }}>
-                        <svg viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" style={{ filter: 'drop-shadow(4px 4px 8px rgba(0,0,0,0.5))' }}>
-                            {/* Ground shadow */}
-                            <ellipse cx="200" cy="580" rx="80" ry="15" fill="#000" opacity="0.3"/>
-                            
-                            {/* Main body group */}
-                            <g style={{ animation: 'body-sway-intense 3s ease-in-out infinite' }}>
-                                
-                                {/* Legs and feet */}
-                                <g style={{ animation: 'legs-shift 4s ease-in-out infinite' }}>
-                                  <path d="M 180 420 L 165 520 L 170 580" fill="#E8F4F8" stroke="#B8D4DC" strokeWidth="2"/>
-                                  <path d="M 220 420 L 235 520 L 230 580" fill="#E8F4F8" stroke="#B8D4DC" strokeWidth="2"/>
-                                  <ellipse cx="170" cy="580" rx="22" ry="8" fill="#4A90A4"/>
-                                  <ellipse cx="230" cy="580" rx="22" ry="8" fill="#4A90A4"/>
-                                </g>
-                                
-                                {/* Torso */}
-                                <path d="M 160 240 L 150 320 L 145 420 L 180 420 L 220 420 L 255 420 L 250 320 L 240 240 Z" fill="#F0F8FA" stroke="#C0D8E0" strokeWidth="2"/>
-                                <path d="M 160 280 Q 200 285 240 280" fill="none" stroke="#D0E4EC" strokeWidth="1.5" opacity="0.6"/>
-                                <path d="M 155 340 Q 200 345 245 340" fill="none" stroke="#D0E4EC" strokeWidth="1.5" opacity="0.6"/>
-                                
-                                {/* ID badge */}
-                                <rect x="175" y="300" width="35" height="45" fill="#FFF" stroke="#4A90A4" strokeWidth="1.5" rx="2"/>
-                                <text x="192" y="318" fontFamily="Arial" fontSize="8" fill="#4A90A4" textAnchor="middle">ID</text>
-                                <rect x="180" y="322" width="25" height="3" fill="#4A90A4" opacity="0.4"/>
-                                <rect x="180" y="327" width="25" height="3" fill="#4A90A4" opacity="0.4"/>
-                                <rect x="180" y="332" width="20" height="3" fill="#4A90A4" opacity="0.4"/>
-                                
-                                {/* Arms */}
-                                <g style={{ animation: 'left-arm-pickup 3s ease-in-out infinite', transformOrigin: '160px 250px' }}>
-                                  <path d="M 160 250 L 130 290 L 120 350" fill="#E8F4F8" stroke="#B8D4DC" strokeWidth="2"/>
-                                </g>
-                                <g style={{ animation: 'right-arm-analyze 2.5s ease-in-out infinite', transformOrigin: '240px 250px' }}>
-                                  <path d="M 240 250 L 270 290 L 280 350" fill="#E8F4F8" stroke="#B8D4DC" strokeWidth="2"/>
-                                </g>
-                                
-                                {/* Hands */}
-                                {/* Left hand */}
-                                <g style={{ animation: 'hand-pickup-motion 3s ease-in-out infinite', transformOrigin: '120px 360px' }}>
-                                  <ellipse cx="120" cy="360" rx="12" ry="16" fill="#6BA5D9" transform="rotate(-20 120 360)"/>
-                                  <path d="M 115 355 Q 112 348 110 345" fill="none" stroke="#5A95C9" strokeWidth="2"/>
-                                  <path d="M 120 353 Q 118 346 117 343" fill="none" stroke="#5A95C9" strokeWidth="2"/>
-                                  <path d="M 125 355 Q 124 348 124 345" fill="none" stroke="#5A95C9" strokeWidth="2"/>
-                                </g>
-                                
-                                {/* Evidence bag */}
-                                                                <g style={{ animation: 'evidence-bag-collect 3s ease-in-out infinite' }}>
-                                                                    <rect x="95" y="365" width="40" height="50" fill="#FFF" fillOpacity="0.6" stroke="#C00" strokeWidth="2" rx="2"/>
-                                                                    <path d="M 95 370 L 135 370" stroke="#C00" strokeWidth="1.5"/>
-                                                                    <text x="115" y="395" fontFamily="Arial" fontSize="7" fill="#C00" textAnchor="middle" fontWeight="bold">EVIDENCE</text>
-                                                                    <circle cx="115" cy="410" r="6" fill="#DC2626" opacity="0.8"/>
-                                                                </g>
-                                
-                                {/* Right hand */}
-                                <g style={{ animation: 'hand-analyze-motion 2.5s ease-in-out infinite 0.3s', transformOrigin: '280px 360px' }}>
-                                  <ellipse cx="280" cy="360" rx="12" ry="16" fill="#6BA5D9" transform="rotate(20 280 360)"/>
-                                  <path d="M 275 355 Q 273 348 272 345" fill="none" stroke="#5A95C9" strokeWidth="2"/>
-                                  <path d="M 280 353 Q 279 346 279 343" fill="none" stroke="#5A95C9" strokeWidth="2"/>
-                                  <path d="M 285 355 Q 285 348 286 345" fill="none" stroke="#5A95C9" strokeWidth="2"/>
-                                </g>
-                                
-                                {/* Magnifying glass */}
-                                                                <g style={{ animation: 'magnifying-glass-inspect 2.5s ease-in-out infinite', transformOrigin: '295px 370px' }}>
-                                                                    <circle cx="295" cy="370" r="15" fill="none" stroke="#666" strokeWidth="2.5"/>
-                                                                    <circle cx="295" cy="370" r="12" fill="#E0F0FF" opacity="0.3"/>
-                                                                    <circle cx="295" cy="370" r="8" fill="#FFD700" opacity="0.3" />
-                                                                    <path d="M 306 380 L 318 392" stroke="#666" strokeWidth="3" strokeLinecap="round"/>
-                                                                </g>
-                                
-                                {/* Head */}
-                                <g style={{ animation: 'head-focused 2.5s ease-in-out infinite', transformOrigin: '200px 200px' }}>
-                                  <path d="M 150 180 Q 145 200 145 220 L 145 245 L 160 250 L 240 250 L 255 245 L 255 220 Q 255 200 250 180 Z" fill="#F0F8FA" stroke="#C0D8E0" strokeWidth="2"/>
-                                  <ellipse cx="200" cy="200" rx="42" ry="48" fill="#FFE4C4"/>
-                                  
-                                  {/* Eyes */}
-                                  <ellipse cx="185" cy="195" rx="5" ry="6" fill="#FFF"/>
-                                  <ellipse cx="215" cy="195" rx="5" ry="6" fill="#FFF"/>
-                                  <circle cx="185" cy="196" r="3" fill="#5D4E37"/>
-                                  <circle cx="215" cy="196" r="3" fill="#5D4E37"/>
-                                  <circle cx="186" cy="195" r="1.5" fill="#FFF"/>
-                                  <circle cx="216" cy="195" r="1.5" fill="#FFF"/>
-                                  
-                                  {/* Eyebrows */}
-                                  <path d="M 177 188 Q 185 186 192 188" fill="none" stroke="#5D4E37" strokeWidth="2" strokeLinecap="round"/>
-                                  <path d="M 208 188 Q 215 186 223 188" fill="none" stroke="#5D4E37" strokeWidth="2" strokeLinecap="round"/>
-                                  
-                                  {/* Nose */}
-                                  <path d="M 200 200 L 198 210" fill="none" stroke="#E8C4A4" strokeWidth="1.5"/>
-                                  <ellipse cx="196" cy="212" rx="3" ry="2" fill="none" stroke="#E8C4A4" strokeWidth="1"/>
-                                  <ellipse cx="204" cy="212" rx="3" ry="2" fill="none" stroke="#E8C4A4" strokeWidth="1"/>
-                                  
-                                  {/* Face mask */}
-                                  <path d="M 170 210 Q 170 225 175 232 L 225 232 Q 230 225 230 210" fill="#6BA5D9" stroke="#5A95C9" strokeWidth="2"/>
-                                  <path d="M 175 217 L 225 217" stroke="#5A95C9" strokeWidth="1" opacity="0.7"/>
-                                  <path d="M 175 222 L 225 222" stroke="#5A95C9" strokeWidth="1" opacity="0.7"/>
-                                  <path d="M 175 227 L 225 227" stroke="#5A95C9" strokeWidth="1" opacity="0.7"/>
-                                  <path d="M 230 215 Q 245 210 250 205" fill="none" stroke="#5A95C9" strokeWidth="2"/>
-                                  <path d="M 170 215 Q 155 210 150 205" fill="none" stroke="#5A95C9" strokeWidth="2"/>
-                                </g>
-                                
-                                {/* Camera */}
-                                                                <g style={{ animation: 'camera-documenting 2.5s ease-in-out infinite', transformOrigin: '200px 265px' }}>
-                                                                    <rect x="185" y="260" width="30" height="22" fill="#333" rx="2"/>
-                                                                    <circle cx="200" cy="271" r="7" fill="#555"/>
-                                                                    <circle cx="200" cy="271" r="5" fill="#222"/>
-                                                                    <rect x="213" y="263" width="3" height="3" fill="#FF6B6B" opacity="0.8"/>
-                                  <path d="M 175 265 Q 170 250 170 245" fill="none" stroke="#333" strokeWidth="2"/>
-                                  <path d="M 225 265 Q 230 250 230 245" fill="none" stroke="#333" strokeWidth="2"/>
-                                </g>
-                                
-                                {/* Equipment belt */}
-                                <rect x="155" y="380" width="90" height="8" fill="#4A90A4" rx="2" stroke="#2A5A7A" strokeWidth="1"/>
-                                <rect x="165" y="388" width="15" height="20" fill="#3A7A94" rx="1" stroke="#1A4A6A" strokeWidth="1"/>
-                                <rect x="192" y="388" width="15" height="20" fill="#3A7A94" rx="1" stroke="#1A4A6A" strokeWidth="1"/>
-                                <rect x="220" y="388" width="15" height="20" fill="#3A7A94" rx="1" stroke="#1A4A6A" strokeWidth="1"/>
-                            </g>
-                        </svg>
-
-                                                {/* Animation styles for the SVG */}
-                                                <style>{`
-                                                    @keyframes body-sway-intense {
-                                                        0%, 100% { transform: translateX(0) rotate(0deg); }
-                                                        25% { transform: translateX(3px) rotate(1deg); }
-                                                        50% { transform: translateX(0) rotate(0deg); }
-                                                        75% { transform: translateX(-3px) rotate(-1deg); }
-                                                    }
-                                                    @keyframes head-focused {
-                                                        0%, 100% { transform: rotateX(0deg) rotateY(0deg); }
-                                                        50% { transform: rotateX(-2deg) rotateY(-3deg); }
-                                                    }
-                                                    @keyframes left-arm-pickup {
-                                                        0%, 100% { transform: rotate(0deg) translateY(0); }
-                                                        35% { transform: rotate(-25deg) translateY(-15px); }
-                                                        70% { transform: rotate(-20deg) translateY(-10px); }
-                                                    }
-                                                    @keyframes right-arm-analyze {
-                                                        0%, 100% { transform: rotate(0deg) translateX(0); }
-                                                        30% { transform: rotate(35deg) translateX(15px); }
-                                                        60% { transform: rotate(30deg) translateX(12px); }
-                                                    }
-                                                    @keyframes hand-pickup-motion {
-                                                        0%, 100% { transform: scaleY(1) rotate(0deg); }
-                                                        35% { transform: scaleY(0.9) rotate(-5deg); }
-                                                        50% { transform: scaleY(1.15) rotate(-8deg); }
-                                                        70% { transform: scaleY(1.1) rotate(-5deg); }
-                                                    }
-                                                    @keyframes hand-analyze-motion {
-                                                        0%, 100% { transform: scaleY(1) rotate(0deg); }
-                                                        30% { transform: scaleY(1.05) rotate(8deg); }
-                                                        60% { transform: scaleY(1.1) rotate(12deg); }
-                                                    }
-                                                    @keyframes evidence-bag-collect {
-                                                        0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
-                                                        35% { transform: translateY(-8px) scale(1.05); opacity: 0.8; }
-                                                        50% { transform: translateY(-12px) scale(1.1); opacity: 0.9; }
-                                                    }
-                                                    @keyframes magnifying-glass-inspect {
-                                                        0%, 100% { transform: rotate(0deg) scale(1); }
-                                                        30% { transform: rotate(-15deg) scale(1.1); }
-                                                        60% { transform: rotate(15deg) scale(1.1); }
-                                                    }
-                                                    @keyframes legs-shift {
-                                                        0%, 100% { transform: translateY(0); }
-                                                        25% { transform: translateY(2px); }
-                                                        50% { transform: translateY(0); }
-                                                        75% { transform: translateY(-2px); }
-                                                    }
-                                                    @keyframes camera-documenting {
-                                                        0%, 100% { transform: rotate(-8deg) scale(1); }
-                                                        50% { transform: rotate(0deg) scale(1.05); }
-                                                    }
-                                                `}</style>
+                <div className="relative w-full h-full bg-gradient-to-b from-slate-900 via-gray-800 to-gray-900 overflow-hidden">
+                    {/* Animated police lights - more dramatic sweeping effect */}
+                    <div className="absolute top-0 left-0 w-full h-3 overflow-hidden">
+                        <div className="absolute top-0 left-0 w-1/3 h-full bg-gradient-to-r from-blue-600 via-blue-400 to-blue-600 animate-[policeSweepLeft_1.5s_ease-in-out_infinite]" />
+                        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-r from-red-600 via-red-400 to-red-600 animate-[policeSweepRight_1.5s_ease-in-out_infinite_0.75s]" />
                     </div>
-                    
-                    {/* (Prominent evidence markers handled above) */}
-                    
-                    {/* Text */}
-                    <div className="absolute top-8 left-1/2 -translate-x-1/2 text-center animate-[fadeIn_1s_ease-in_0.5s_forwards] opacity-0">
-                        <p className="text-white text-3xl font-bold drop-shadow-lg">EVIDENCE COLLECTION</p>
-                        <p className="text-blue-200 text-sm mt-2 font-semibold">Forensic team securing biological samples</p>
-                    </div>
-                    
-                    {/* Collection status - live updates */}
-                    <div className="absolute bottom-12 right-8 bg-black/80 p-4 rounded-lg border-2 border-blue-400 shadow-lg shadow-blue-400/50 animate-[fadeIn_1s_ease-in_1s_forwards] opacity-0">
-                        <p className="text-green-400 text-sm font-bold mb-2">◆ COLLECTING</p>
-                        <p className="text-green-400 text-sm">✓ Blood sample</p>
-                        <p className="text-green-400 text-sm">✓ Hair follicle</p>
-                        <p className="text-green-400 text-xs">◆ Tissue sample</p>
-                        <div className="mt-2 h-1 bg-green-900 rounded-full overflow-hidden">
-                            <div className="h-full w-2/3 bg-green-400 animate-[pulse_1.5s_ease-in-out_infinite]"></div>
+
+                    {/* Atmospheric fog layers */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                    <div className="absolute bottom-0 w-full h-48 bg-gradient-to-t from-blue-900/30 to-transparent animate-[fogDrift_8s_ease-in-out_infinite]" />
+
+                    {/* Crime scene floor with texture */}
+                    <div className="absolute bottom-0 w-full h-1/2 bg-gradient-to-br from-gray-700 via-gray-600 to-gray-700">
+                        {/* Floor grid lines */}
+                        <div className="absolute inset-0 opacity-10">
+                            {[...Array(10)].map((_, i) => (
+                                <div key={i} className="absolute h-px bg-white" style={{ top: `${i * 10}%`, width: '100%' }} />
+                            ))}
                         </div>
                     </div>
+
+                    {/* Dynamic spotlights on evidence */}
+                    <div className="absolute bottom-40 left-1/2 -translate-x-1/2 w-80 h-80 bg-gradient-radial from-yellow-400/20 via-yellow-300/5 to-transparent rounded-full blur-2xl animate-[spotlight_3s_ease-in-out_infinite]" />
+                    <div className="absolute bottom-32 right-1/4 w-48 h-48 bg-gradient-radial from-cyan-400/15 via-transparent to-transparent rounded-full blur-xl animate-[spotlight_4s_ease-in-out_infinite_1s]" />
+
+                    {/* Body outline with pulsing glow */}
+                    <div className="absolute bottom-28 left-1/2 -translate-x-1/2 w-56 h-36 opacity-0 animate-[fadeIn_1s_ease-in_0.5s_forwards]">
+                        <div className="absolute inset-0 border-4 border-white/60 rounded-lg">
+                            <div className="absolute inset-0 border-4 border-white/30 rounded-lg animate-[pulse_2s_ease-in-out_infinite]" />
+                        </div>
+                        <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 border-4 border-white/60 rounded-full">
+                            <div className="absolute inset-0 border-4 border-white/30 rounded-full animate-[pulse_2s_ease-in-out_infinite_0.5s]" />
+                        </div>
+                    </div>
+
+                    {/* Evidence markers with glow */}
+                    <div className="absolute bottom-40 left-1/3 opacity-0 animate-[fadeIn_0.5s_ease-in_1s_forwards]">
+                        <div className="relative">
+                            <div className="absolute -inset-2 bg-yellow-400/50 rounded-full blur-md animate-[pulse_1.5s_ease-in-out_infinite]" />
+                            <div className="relative w-10 h-14 bg-yellow-400 flex items-center justify-center text-black font-bold text-xl" style={{ clipPath: 'polygon(50% 0%, 100% 100%, 0% 100%)' }}>1</div>
+                        </div>
+                    </div>
+                    <div className="absolute bottom-36 right-1/3 opacity-0 animate-[fadeIn_0.5s_ease-in_1.2s_forwards]">
+                        <div className="relative">
+                            <div className="absolute -inset-2 bg-yellow-400/50 rounded-full blur-md animate-[pulse_1.5s_ease-in-out_infinite_0.3s]" />
+                            <div className="relative w-10 h-14 bg-yellow-400 flex items-center justify-center text-black font-bold text-xl" style={{ clipPath: 'polygon(50% 0%, 100% 100%, 0% 100%)' }}>2</div>
+                        </div>
+                    </div>
+
+                    {/* Blood evidence with dramatic glow */}
+                    <div className="absolute bottom-32 left-1/2 -translate-x-1/4">
+                        <div className="relative">
+                            <div className="absolute -inset-4 bg-red-600/60 rounded-full blur-xl animate-[pulse_2s_ease-in-out_infinite]" />
+                            <div className="w-12 h-12 bg-gradient-radial from-red-600 via-red-700 to-red-800 rounded-full shadow-lg shadow-red-600/50" />
+                            <div className="absolute top-2 left-2 w-4 h-4 bg-red-400/50 rounded-full" />
+                        </div>
+                    </div>
+                    <div className="absolute bottom-28 right-2/5 w-8 h-8 bg-gradient-radial from-red-500 via-red-600 to-red-700 rounded-full opacity-80 shadow-lg shadow-red-500/30" />
+
+                    {/* ====== FORENSIC DOCTOR CHARACTER - LEFT SIDE ====== */}
+                    <div className="absolute bottom-0 left-[8%] h-[75%] opacity-0 animate-[characterEnterLeft_1.5s_ease-out_0.3s_forwards]" style={{ perspective: '1000px' }}>
+                        {/* Character glow aura */}
+                        <div className="absolute -inset-8 bg-gradient-radial from-cyan-500/30 via-cyan-400/10 to-transparent rounded-full blur-2xl animate-[auraGlow_3s_ease-in-out_infinite]" />
+
+                        {/* Ground shadow */}
+                        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-32 h-8 bg-black/50 rounded-full blur-lg animate-[shadowPulse_3s_ease-in-out_infinite]" />
+
+                        {/* Floating animation wrapper */}
+                        <div className="relative h-full animate-[characterFloat_4s_ease-in-out_infinite]" style={{ transformStyle: 'preserve-3d' }}>
+                            {/* Scanning light effect from character */}
+                            <div className="absolute top-1/3 right-0 w-40 h-2 bg-gradient-to-r from-cyan-400 via-cyan-300 to-transparent opacity-60 blur-sm animate-[scanBeam_2s_ease-in-out_infinite]" style={{ transformOrigin: 'left center' }} />
+
+                            <img
+                                src="/assets/characters/forensic doctor.png"
+                                alt="Forensic Doctor"
+                                className="h-full w-auto object-contain drop-shadow-2xl animate-[characterSubtle_5s_ease-in-out_infinite]"
+                                style={{
+                                    filter: 'drop-shadow(0 0 15px rgba(34, 211, 238, 0.4)) drop-shadow(0 8px 16px rgba(0,0,0,0.6))',
+                                }}
+                            />
+
+                            {/* Particle effects around character */}
+                            <div className="absolute top-1/4 -right-4 w-2 h-2 bg-cyan-400 rounded-full animate-[particleFloat_3s_ease-in-out_infinite]" />
+                            <div className="absolute top-1/3 -left-2 w-1.5 h-1.5 bg-cyan-300 rounded-full animate-[particleFloat_4s_ease-in-out_infinite_0.5s]" />
+                            <div className="absolute top-1/2 right-2 w-1 h-1 bg-white rounded-full animate-[particleFloat_2.5s_ease-in-out_infinite_1s]" />
+                        </div>
+
+                        {/* Character label */}
+                        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gradient-to-r from-cyan-900/90 to-cyan-800/90 px-4 py-1.5 rounded-full border border-cyan-400/50 shadow-lg shadow-cyan-500/30 animate-[fadeIn_1s_ease-in_1s_forwards] opacity-0">
+                            <p className="text-cyan-200 text-xs font-bold tracking-wider whitespace-nowrap">DR. FORENSICS</p>
+                        </div>
+                    </div>
+
+                    {/* ====== POLICE DETECTIVE CHARACTER - RIGHT SIDE ====== */}
+                    <div className="absolute bottom-0 right-[8%] h-[75%] opacity-0 animate-[characterEnterRight_1.5s_ease-out_0.6s_forwards]" style={{ perspective: '1000px' }}>
+                        {/* Character glow aura */}
+                        <div className="absolute -inset-8 bg-gradient-radial from-amber-500/30 via-yellow-400/10 to-transparent rounded-full blur-2xl animate-[auraGlow_3s_ease-in-out_infinite_0.5s]" />
+
+                        {/* Ground shadow */}
+                        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-32 h-8 bg-black/50 rounded-full blur-lg animate-[shadowPulse_3s_ease-in-out_infinite_0.5s]" />
+
+                        {/* Floating animation wrapper */}
+                        <div className="relative h-full animate-[characterFloat_4s_ease-in-out_infinite_1s]" style={{ transformStyle: 'preserve-3d' }}>
+                            {/* Flashlight beam effect */}
+                            <div className="absolute top-1/3 left-0 w-48 h-24 opacity-0 animate-[flashlightBeam_4s_ease-in-out_infinite_2s]" style={{
+                                background: 'conic-gradient(from 180deg at 0% 50%, transparent 0deg, rgba(255,255,200,0.3) 15deg, rgba(255,255,200,0.1) 30deg, transparent 45deg)',
+                                transformOrigin: 'left center',
+                                filter: 'blur(4px)'
+                            }} />
+
+                            <img
+                                src="/assets/characters/police detective.png"
+                                alt="Police Detective"
+                                className="h-full w-auto object-contain drop-shadow-2xl animate-[characterSubtle_5s_ease-in-out_infinite_0.5s]"
+                                style={{
+                                    filter: 'drop-shadow(0 0 15px rgba(245, 158, 11, 0.4)) drop-shadow(0 8px 16px rgba(0,0,0,0.6))',
+                                }}
+                            />
+
+                            {/* Badge glint effect */}
+                            <div className="absolute top-1/3 left-1/4 w-3 h-3 bg-yellow-300 rounded-full opacity-0 animate-[badgeGlint_3s_ease-in-out_infinite_1s]" style={{ filter: 'blur(2px)' }} />
+
+                            {/* Particle effects */}
+                            <div className="absolute top-1/4 -left-4 w-2 h-2 bg-amber-400 rounded-full animate-[particleFloat_3.5s_ease-in-out_infinite_0.3s]" />
+                            <div className="absolute top-2/5 -right-2 w-1.5 h-1.5 bg-yellow-300 rounded-full animate-[particleFloat_3s_ease-in-out_infinite_0.8s]" />
+                        </div>
+
+                        {/* Character label */}
+                        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-900/90 to-yellow-800/90 px-4 py-1.5 rounded-full border border-amber-400/50 shadow-lg shadow-amber-500/30 animate-[fadeIn_1s_ease-in_1.3s_forwards] opacity-0">
+                            <p className="text-amber-200 text-xs font-bold tracking-wider whitespace-nowrap">DET. INSPECTOR</p>
+                        </div>
+                    </div>
+
+                    {/* Crime scene tape in foreground */}
+                    <div className="absolute bottom-16 left-0 w-full overflow-hidden opacity-0 animate-[fadeIn_0.5s_ease-in_1.5s_forwards]">
+                        <div className="w-[200%] h-8 bg-yellow-400 -rotate-2 -ml-12 flex items-center animate-[tapeScroll_20s_linear_infinite]">
+                            <div className="flex whitespace-nowrap">
+                                {[...Array(20)].map((_, i) => (
+                                    <span key={i} className="text-black font-bold text-sm mx-4">⚠️ CRIME SCENE - DO NOT CROSS ⚠️</span>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Title with cinematic reveal */}
+                    <div className="absolute top-8 left-1/2 -translate-x-1/2 text-center">
+                        <div className="overflow-hidden">
+                            <p className="text-white text-4xl font-bold drop-shadow-lg opacity-0 animate-[titleReveal_1s_ease-out_0.5s_forwards]" style={{ textShadow: '0 0 40px rgba(255,255,255,0.3)' }}>
+                                EVIDENCE COLLECTION
+                            </p>
+                        </div>
+                        <div className="h-1 w-0 bg-gradient-to-r from-transparent via-cyan-400 to-transparent mx-auto mt-3 animate-[lineExpand_1s_ease-out_1s_forwards]" />
+                        <p className="text-blue-200 text-sm mt-3 font-semibold opacity-0 animate-[fadeIn_1s_ease-in_1.5s_forwards]">
+                            Forensic team securing biological samples
+                        </p>
+                    </div>
+
+                    {/* Collection status panel - enhanced */}
+                    <div className="absolute bottom-24 right-6 bg-black/90 p-5 rounded-xl border-2 border-cyan-500/70 shadow-2xl shadow-cyan-500/20 opacity-0 animate-[panelSlideIn_0.8s_ease-out_2s_forwards] backdrop-blur-sm">
+                        <div className="flex items-center gap-2 mb-3">
+                            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+                            <p className="text-green-400 text-sm font-bold tracking-wider">EVIDENCE LOG</p>
+                        </div>
+                        <div className="space-y-2">
+                            <p className="text-green-400 text-sm flex items-center gap-2"><span className="text-green-500">✓</span> Blood sample collected</p>
+                            <p className="text-green-400 text-sm flex items-center gap-2"><span className="text-green-500">✓</span> Hair follicle secured</p>
+                            <p className="text-cyan-300 text-sm flex items-center gap-2"><span className="animate-pulse">◆</span> Tissue sample processing...</p>
+                        </div>
+                        <div className="mt-4 h-2 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
+                            <div className="h-full w-2/3 bg-gradient-to-r from-green-500 via-cyan-400 to-green-500 animate-[progressGlow_2s_ease-in-out_infinite]" />
+                        </div>
+                        <p className="text-gray-400 text-xs mt-2 text-right">67% Complete</p>
+                    </div>
+
+                    {/* Custom keyframes for this scene */}
+                    <style>{`
+                        @keyframes characterEnterLeft {
+                            0% { opacity: 0; transform: translateX(-100px) scale(0.8); }
+                            70% { opacity: 1; transform: translateX(20px) scale(1.02); }
+                            100% { opacity: 1; transform: translateX(0) scale(1); }
+                        }
+                        @keyframes characterEnterRight {
+                            0% { opacity: 0; transform: translateX(100px) scale(0.8); }
+                            70% { opacity: 1; transform: translateX(-20px) scale(1.02); }
+                            100% { opacity: 1; transform: translateX(0) scale(1); }
+                        }
+                        @keyframes characterFloat {
+                            0%, 100% { transform: translateY(0) rotateY(0deg); }
+                            25% { transform: translateY(-8px) rotateY(2deg); }
+                            50% { transform: translateY(-4px) rotateY(0deg); }
+                            75% { transform: translateY(-10px) rotateY(-2deg); }
+                        }
+                        @keyframes characterSubtle {
+                            0%, 100% { transform: scale(1) rotate(0deg); }
+                            50% { transform: scale(1.02) rotate(0.5deg); }
+                        }
+                        @keyframes auraGlow {
+                            0%, 100% { opacity: 0.3; transform: scale(1); }
+                            50% { opacity: 0.6; transform: scale(1.1); }
+                        }
+                        @keyframes shadowPulse {
+                            0%, 100% { transform: translateX(-50%) scaleX(1); opacity: 0.5; }
+                            50% { transform: translateX(-50%) scaleX(1.2); opacity: 0.3; }
+                        }
+                        @keyframes particleFloat {
+                            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.6; }
+                            25% { transform: translateY(-15px) translateX(5px); opacity: 1; }
+                            50% { transform: translateY(-20px) translateX(-3px); opacity: 0.8; }
+                            75% { transform: translateY(-10px) translateX(8px); opacity: 1; }
+                        }
+                        @keyframes scanBeam {
+                            0%, 100% { transform: scaleX(0) rotate(-5deg); opacity: 0; }
+                            50% { transform: scaleX(1) rotate(5deg); opacity: 0.6; }
+                        }
+                        @keyframes flashlightBeam {
+                            0%, 100% { opacity: 0; transform: scaleX(0.5) rotate(-10deg); }
+                            30%, 70% { opacity: 0.5; transform: scaleX(1) rotate(0deg); }
+                        }
+                        @keyframes badgeGlint {
+                            0%, 70%, 100% { opacity: 0; transform: scale(0.5); }
+                            75%, 80% { opacity: 1; transform: scale(1.5); }
+                        }
+                        @keyframes policeSweepLeft {
+                            0%, 100% { transform: translateX(-100%); }
+                            50% { transform: translateX(200%); }
+                        }
+                        @keyframes policeSweepRight {
+                            0%, 100% { transform: translateX(100%); }
+                            50% { transform: translateX(-200%); }
+                        }
+                        @keyframes fogDrift {
+                            0%, 100% { transform: translateX(0); opacity: 0.3; }
+                            50% { transform: translateX(-20px); opacity: 0.5; }
+                        }
+                        @keyframes spotlight {
+                            0%, 100% { opacity: 0.2; transform: scale(1); }
+                            50% { opacity: 0.4; transform: scale(1.1); }
+                        }
+                        @keyframes titleReveal {
+                            0% { opacity: 0; transform: translateY(30px); }
+                            100% { opacity: 1; transform: translateY(0); }
+                        }
+                        @keyframes lineExpand {
+                            0% { width: 0; }
+                            100% { width: 300px; }
+                        }
+                        @keyframes panelSlideIn {
+                            0% { opacity: 0; transform: translateX(50px); }
+                            100% { opacity: 1; transform: translateX(0); }
+                        }
+                        @keyframes progressGlow {
+                            0%, 100% { filter: brightness(1); }
+                            50% { filter: brightness(1.3); }
+                        }
+                        @keyframes tapeScroll {
+                            0% { transform: translateX(0) rotate(-2deg); }
+                            100% { transform: translateX(-50%) rotate(-2deg); }
+                        }
+                    `}</style>
                 </div>
             )
         },
@@ -758,7 +809,7 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                         {/* Lab equipment silhouettes */}
                         <div className="absolute bottom-0 left-1/4 w-16 h-32 bg-gray-800/50 rounded-t-lg" />
                         <div className="absolute bottom-0 right-1/4 w-20 h-40 bg-gray-800/50 rounded-t-lg" />
-                        
+
                         {/* DNA helix animation */}
                         <div className="relative animate-[spin_4s_linear_infinite]">
                             <div className="w-32 h-32">
@@ -776,7 +827,7 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                             </div>
                         </div>
                     </div>
-                    
+
                     {/* Title animation */}
                     <div className="absolute top-1/4 left-1/2 -translate-x-1/2 text-center w-full">
                         <h2 className="text-5xl font-bold text-white mb-4 animate-[fadeInUp_1s_ease-out_forwards]">
@@ -784,20 +835,20 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
                         </h2>
                         <div className="h-1 w-64 bg-gradient-to-r from-transparent via-cyan-400 to-transparent mx-auto mb-6 animate-[expand_1s_ease-out_0.5s_forwards] scale-x-0" />
                         <p className="text-xl text-cyan-300 opacity-0 animate-[fadeIn_1s_ease-in_1s_forwards]">
-                           RFLP Restriction Fragment Length Polymorphism
+                            RFLP Restriction Fragment Length Polymorphism
                         </p>
                         <p className="text-lg text-gray-300 mt-4 opacity-0 animate-[fadeIn_1s_ease-in_1.5s_forwards]">
                             Analyzing DNA evidence to identify the perpetrator
                         </p>
                     </div>
-                    
+
                     {/* Loading indicators */}
                     <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 flex space-x-3">
                         <div className="w-4 h-4 bg-cyan-400 rounded-full animate-bounce" />
                         <div className="w-4 h-4 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
                         <div className="w-4 h-4 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
                     </div>
-                    
+
                     {/* Lab process steps */}
                     <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex space-x-8 opacity-0 animate-[fadeIn_1s_ease-in_2s_forwards]">
                         <div className="text-center">
@@ -850,7 +901,7 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete, character }
             <div className={`w-full h-full transition-opacity duration-300 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}>
                 {scenes[currentScene].render()}
             </div>
-            
+
             {/* Skip button */}
             <button
                 onClick={() => onComplete()}

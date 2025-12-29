@@ -15,10 +15,10 @@ export const ROOM_CONFIG = {
 };
 
 export const PREDEFINED_CHARACTERS: Character[] = [
-    { name: ' Usama', labCoatColor: 'bg-white', skinColor: 'bg-orange-300', hairColor: 'bg-gray-800', shirtColor: 'bg-blue-500', accessory: 'glasses', headImage: '/assets/post-usama_hsnn-mar-02-2023__1_-removebg-preview.png' },
-    { name: ' Armeela', labCoatColor: 'bg-white', skinColor: 'bg-yellow-200', hairColor: 'bg-yellow-900', shirtColor: 'bg-green-500' },
-    { name: ' ZIA', labCoatColor: 'bg-white', skinColor: 'bg-amber-500', hairColor: 'bg-stone-700', shirtColor: 'bg-red-500' },
-    { name: ' Aliyyan', labCoatColor: 'bg-white', skinColor: 'bg-stone-400', hairColor: 'bg-gray-400', shirtColor: 'bg-gray-700' },
+    { name: 'Usama', labCoatColor: 'bg-white', skinColor: 'bg-orange-300', hairColor: 'bg-gray-800', shirtColor: 'bg-blue-500', characterImage: '/assets/characters/usama.png' },
+    { name: 'Armeela', labCoatColor: 'bg-white', skinColor: 'bg-yellow-200', hairColor: 'bg-yellow-900', shirtColor: 'bg-green-500', characterImage: '/assets/characters/armeela.png' },
+    { name: 'Zia', labCoatColor: 'bg-white', skinColor: 'bg-amber-500', hairColor: 'bg-stone-700', shirtColor: 'bg-red-500', characterImage: '/assets/characters/zia.png' },
+    { name: 'Aliyan', labCoatColor: 'bg-white', skinColor: 'bg-stone-400', hairColor: 'bg-gray-400', shirtColor: 'bg-gray-700', characterImage: '/assets/characters/aliyan.png' },
 ];
 
 const BASE_WALLS: Wall[] = [
@@ -47,8 +47,8 @@ export const ROOM_DATA: Record<RoomId, RoomData> = {
             { id: 'sample-collection', type: 'station', name: 'Sample Collection', position: { x: 360, y: 250 }, size: { w: 80, h: 50 }, color: 'bg-blue-500', step: { stationId: 'sample-collection', objective: 'Collect sample', description: 'Collect the patient sample to begin RFLP analysis.', miniGame: EvidenceCollection, requiredItems: [], resultingItems: ['Case File', 'DNA Sample'] } }
         ],
         displays: [
-            { id: 'poster-what-is-rflp', type: 'display', name: 'What is RFLP?', position: { x: 50, y: 150 }, size: {w: 100, h: 150}, step: { stationId: 'poster-what-is-rflp', objective: 'Learn about RFLP', description: 'Restriction Fragment Length Polymorphism (RFLP) is a technique that exploits variations in homologous DNA sequences, known as polymorphisms, to distinguish individuals, populations, or species.', requiredItems: [], resultingItems: [] } },
-            { id: 'poster-enzymes', type: 'display', name: 'Restriction Enzymes', position: { x: 650, y: 150 }, size: {w: 100, h: 150}, step: { stationId: 'poster-enzymes', objective: 'Learn about Enzymes', description: 'Restriction enzymes are proteins that cut DNA at specific recognition sites. The resulting fragments can be separated by size, creating a unique "fingerprint" for a given DNA sample.', requiredItems: [], resultingItems: [] } }
+            { id: 'poster-what-is-rflp', type: 'display', name: 'What is RFLP?', position: { x: 50, y: 150 }, size: { w: 100, h: 150 }, step: { stationId: 'poster-what-is-rflp', objective: 'Learn about RFLP', description: 'Restriction Fragment Length Polymorphism (RFLP) is a technique that exploits variations in homologous DNA sequences, known as polymorphisms, to distinguish individuals, populations, or species.', requiredItems: [], resultingItems: [] } },
+            { id: 'poster-enzymes', type: 'display', name: 'Restriction Enzymes', position: { x: 650, y: 150 }, size: { w: 100, h: 150 }, step: { stationId: 'poster-enzymes', objective: 'Learn about Enzymes', description: 'Restriction enzymes are proteins that cut DNA at specific recognition sites. The resulting fragments can be separated by size, creating a unique "fingerprint" for a given DNA sample.', requiredItems: [], resultingItems: [] } }
         ],
         doors: [
             { id: 'intro-methodology', type: 'door', name: 'To Methodology', position: { x: 380, y: 10 }, size: { w: 60, h: 15 }, to: 'METHODOLOGY', targetDoorId: 'methodology-intro' }
@@ -78,21 +78,21 @@ export const ROOM_DATA: Record<RoomId, RoomData> = {
             { id: 'detection', type: 'station', name: 'Autoradiography & Analysis', position: { x: 680, y: 450 }, size: { w: 80, h: 50 }, color: 'bg-pink-500', step: STEPS[5] },
         ],
         displays: [
-            { 
-                id: 'method-steps', 
-                type: 'display', 
-                name: 'Protocol Steps', 
-                position: { x: 420, y: 50 }, 
-                size: { w: 140, h: 100 }, 
-                step: { 
-                    stationId: 'protocol-overview', 
-                    objective: 'View Protocol Overview', 
-                    description: 'Click to view the complete RFLP protocol workflow diagram showing all steps from DNA extraction to final analysis.', 
-                    miniGame: StepsImageDisplay, 
-                    miniGameProps: { src: '/assets/steps.jpg' }, 
-                    requiredItems: [], 
-                    resultingItems: [] 
-                } 
+            {
+                id: 'method-steps',
+                type: 'display',
+                name: 'Protocol Steps',
+                position: { x: 420, y: 50 },
+                size: { w: 140, h: 100 },
+                step: {
+                    stationId: 'protocol-overview',
+                    objective: 'View Protocol Overview',
+                    description: 'Click to view the complete RFLP protocol workflow diagram showing all steps from DNA extraction to final analysis.',
+                    miniGame: StepsImageDisplay,
+                    miniGameProps: { src: '/assets/steps.jpg' },
+                    requiredItems: [],
+                    resultingItems: []
+                }
             },
         ],
         doors: [
@@ -119,27 +119,27 @@ export const ROOM_DATA: Record<RoomId, RoomData> = {
         ]
     },
     LIMITATIONS: {
-    id: 'LIMITATIONS',
-    name: 'Advantages, Limitations & References',
-    walls: [...BASE_WALLS],
-    displays: [
-         { id: 'adv-board', type: 'display', name: 'Advantages', position: { x: 50, y: 100 }, size: { w: 150, h: 100 }, step: { stationId: 'adv-board', objective: 'Learn Advantages', description: '', miniGame: AdvantagesDisplay, requiredItems: [], resultingItems: [] } },
-         { id: 'lim-board', type: 'display', name: 'Limitations', position: { x: 600, y: 140 }, size: { w: 150, h: 100 }, step: { stationId: 'lim-board', objective: 'Learn Limitations', description: '', miniGame: LimitationsDisplay, requiredItems: [], resultingItems: [] } },
-         { id: 'pcr-compare', type: 'display', name: 'RFLP vs PCR', position: { x: 280, y: 50 }, size: { w: 150, h: 100 }, step: { stationId: 'pcr-compare', objective: 'Compare with PCR', description: '', miniGame: ComparisonTable, requiredItems: [], resultingItems: [] } },
-         { id: 'references', type: 'display', name: 'References', position: { x: 50, y: 360 }, size: { w: 150, h: 100 }, step: { stationId: 'references', objective: 'View References', description: '', miniGame: ReferencesDisplay, requiredItems: [], resultingItems: [] } },
-         { id: 'completion', type: 'display', name: 'Complete Training', position: { x: 300, y: 430 }, size: { w: 200, h: 80 }, step: { stationId: 'completion', objective: 'Complete Training', description: '', miniGame: CompletionDisplay, requiredItems: [], resultingItems: [] } },
-    ],
-    doors: [
-        { id: 'limitations-apps', type: 'door', name: 'To Applications', position: { x: 380, y: 575 }, size: { w: 60, h: 15 }, to: 'APPLICATIONS', targetDoorId: 'apps-limitations' }
-    ]
-}
+        id: 'LIMITATIONS',
+        name: 'Advantages, Limitations & References',
+        walls: [...BASE_WALLS],
+        displays: [
+            { id: 'adv-board', type: 'display', name: 'Advantages', position: { x: 50, y: 100 }, size: { w: 150, h: 100 }, step: { stationId: 'adv-board', objective: 'Learn Advantages', description: '', miniGame: AdvantagesDisplay, requiredItems: [], resultingItems: [] } },
+            { id: 'lim-board', type: 'display', name: 'Limitations', position: { x: 600, y: 140 }, size: { w: 150, h: 100 }, step: { stationId: 'lim-board', objective: 'Learn Limitations', description: '', miniGame: LimitationsDisplay, requiredItems: [], resultingItems: [] } },
+            { id: 'pcr-compare', type: 'display', name: 'RFLP vs PCR', position: { x: 280, y: 50 }, size: { w: 150, h: 100 }, step: { stationId: 'pcr-compare', objective: 'Compare with PCR', description: '', miniGame: ComparisonTable, requiredItems: [], resultingItems: [] } },
+            { id: 'references', type: 'display', name: 'References', position: { x: 50, y: 360 }, size: { w: 150, h: 100 }, step: { stationId: 'references', objective: 'View References', description: '', miniGame: ReferencesDisplay, requiredItems: [], resultingItems: [] } },
+            { id: 'completion', type: 'display', name: 'Complete Training', position: { x: 300, y: 430 }, size: { w: 200, h: 80 }, step: { stationId: 'completion', objective: 'Complete Training', description: '', miniGame: CompletionDisplay, requiredItems: [], resultingItems: [] } },
+        ],
+        doors: [
+            { id: 'limitations-apps', type: 'door', name: 'To Applications', position: { x: 380, y: 575 }, size: { w: 60, h: 15 }, to: 'APPLICATIONS', targetDoorId: 'apps-limitations' }
+        ]
+    }
 };
 
 export const DOOR_POSITIONS = {
     INTRODUCTION: { 'intro-methodology': { x: 390, y: 40 } },
-    METHODOLOGY: { 'methodology-intro': { x: 390, y: 530 }, 'methodology-apps': {x: 40, y: 290} },
-    APPLICATIONS: { 'apps-methodology': {x: 730, y: 290}, 'apps-limitations': {x: 390, y: 40} },
-    LIMITATIONS: { 'limitations-apps': {x: 390, y: 530} }
+    METHODOLOGY: { 'methodology-intro': { x: 390, y: 530 }, 'methodology-apps': { x: 40, y: 290 } },
+    APPLICATIONS: { 'apps-methodology': { x: 730, y: 290 }, 'apps-limitations': { x: 390, y: 40 } },
+    LIMITATIONS: { 'limitations-apps': { x: 390, y: 530 } }
 };
 
 

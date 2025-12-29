@@ -26,6 +26,7 @@ export type Character = {
     shirtColor: string;
     accessory?: 'glasses' | 'clipboard';
     headImage?: string;
+    characterImage?: string;
 };
 
 export type Player = {
@@ -82,7 +83,7 @@ export interface Wall {
     size: Size;
 }
 
-export type InventoryItem = 
+export type InventoryItem =
     | 'Case File'
     | 'DNA Sample'
     | 'Extracted DNA'

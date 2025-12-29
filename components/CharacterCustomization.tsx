@@ -9,40 +9,26 @@ interface CharacterCustomizationProps {
 const CharacterPortrait: React.FC<{ character: Character; isSelected: boolean; onClick: () => void; }> = ({ character, isSelected, onClick }) => (
     <div
         onClick={onClick}
-        className={`p-2 rounded-lg cursor-pointer transition-all border-4 ${isSelected ? 'border-yellow-400 bg-blue-500/30' : 'border-transparent hover:bg-gray-700'}`}
+        className={`p-4 rounded-xl cursor-pointer transition-all border-4 ${isSelected ? 'border-yellow-400 bg-blue-500/30 scale-105' : 'border-transparent hover:bg-gray-700 hover:scale-102'}`}
         role="button"
         aria-pressed={isSelected}
         tabIndex={0}
         onKeyDown={(e) => e.key === 'Enter' && onClick()}
     >
-        <div className="relative w-24 h-24 mb-2 mx-auto">
-             {/* Shadow */}
-            <div className="absolute w-4/5 h-2/5 bg-black/20 rounded-full bottom-0 left-1/2 -translate-x-1/2"></div>
-            {/* Body (Lab Coat) */}
-            <div className={`absolute w-full h-4/5 ${character.labCoatColor} rounded-lg bottom-0 border-2 border-gray-600 overflow-hidden`}>
-                {/* Shirt */}
-                <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1/4 ${character.shirtColor} rounded-b-md`}></div>
-                <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-1 bg-black/10"></div>
-            </div>
-            {/* Head */}
-            {character.headImage ? (
+        <div className="relative w-32 h-32 mb-2 mx-auto">
+            {character.characterImage ? (
                 <img
-                    src={character.headImage}
+                    src={character.characterImage}
                     alt={character.name}
-                    className="absolute w-3/5 h-3/5 top-0 left-1/2 -translate-x-1/2 rounded-full border-2 border-gray-600 object-cover"
+                    className="w-full h-full object-contain"
                 />
             ) : (
-                <div className={`absolute w-3/5 h-3/5 ${character.skinColor} rounded-full top-0 left-1/2 -translate-x-1/2 border-2 border-gray-600 overflow-hidden`}>
-                    {/* Hair */}
-                    <div className={`absolute w-full h-1/2 ${character.hairColor} top-0`}></div>
-                    {/* Glasses */}
-                    {character.accessory === 'glasses' && (
-                        <div className="absolute w-full h-1 bg-black top-1/2 -translate-y-1/2"></div>
-                    )}
+                <div className="w-full h-full bg-gray-600 rounded-lg flex items-center justify-center">
+                    <span className="text-2xl">{character.name[0]}</span>
                 </div>
             )}
         </div>
-        <p className="text-center font-semibold">{character.name}</p>
+        <p className="text-center font-bold text-lg">{character.name}</p>
     </div>
 );
 
