@@ -398,12 +398,14 @@ const GameWorld: React.FC<GameWorldProps> = ({ player, roomData, npcs, nearbyInt
         <div className="w-full h-full bg-[#b0bec5] overflow-hidden relative">
             <style>{`
                 @keyframes spawnPlayer {
-                    0% { transform: scale(0) translateY(-20px); opacity: 0; filter: brightness(2); }
-                    60% { transform: scale(1.2) translateY(0); opacity: 1; filter: brightness(1.2); }
-                    100% { transform: scale(1) translateY(0); opacity: 1; filter: brightness(1); }
+                    0% { transform: translateY(-500px) scale(1.5); opacity: 0; }
+                    60% { transform: translateY(0) scale(0.9); opacity: 1; }
+                    80% { transform: translateY(-40px) scale(1.1); }
+                    100% { transform: translateY(0) scale(1); }
                 }
                 .animate-spawn {
-                    animation: spawnPlayer 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+                    animation: spawnPlayer 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+                    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
                 }
             `}</style>
 
