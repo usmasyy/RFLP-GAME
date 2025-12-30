@@ -852,7 +852,7 @@ export const InteractiveAutoradiography: React.FC<MiniGameProps> = ({ onComplete
                 <div className="flex-grow flex items-center justify-center">
                     <div className="w-72 h-96 bg-black rounded-lg border-4 border-pink-500 relative overflow-hidden flex flex-col items-center justify-center p-6">
                         <span className="text-pink-300 font-mono text-xs mb-4">Developed Film</span>
-                        
+
                         {/* DNA Band Pattern */}
                         <div className="space-y-6 w-full px-8">
                             {/* Crime Scene Lane */}
@@ -964,7 +964,7 @@ export const InteractiveAutoradiography: React.FC<MiniGameProps> = ({ onComplete
                 {hasFilm && exposureProgress < 100 && (
                     <p className="text-pink-300">Radioactive decay is creating latent images on the film...</p>
                 )}
-                {exposureProgress === 100 && !isDeveloping && (
+                {exposureProgress === 100 && !isDeveloping && !isFilmReady && (
                     <button
                         onClick={handleDevelop}
                         className="px-8 py-3 bg-gradient-to-r from-pink-500 to-red-600 hover:from-pink-600 hover:to-red-700 rounded-lg font-bold text-white shadow-lg transform transition-all hover:scale-105"
@@ -977,11 +977,178 @@ export const InteractiveAutoradiography: React.FC<MiniGameProps> = ({ onComplete
     );
 };
 
+// ============================================================================
+// INTERACTIVE DNA DIGESTION - Enzyme Selection & Incubation
+// ============================================================================
+
+export const InteractiveDnaDigestion: React.FC<MiniGameProps> = ({ onComplete, onClose }) => {
+    const [selectedEnzyme, setSelectedEnzyme] = useState<string | null>(null);
+    const [enzymeAdded, setEnzymeAdded] = useState(false);
+    const [temperature, setTemperature] = useState(25);
+    const [digestionTime, setDigestionTime] = useState(0);
+    const [isIncubating, setIsIncubating] = useState(false);
+    const [isDigested, setIsDigested] = useState(false);
+
+    const enzymes = [
+        { id: 'ecori', name: 'EcoRI', seq: 'G|AATTC', optimalTemp: 37, color: 'bg-red-500' },
+        { id: 'hindiii', name: 'HindIII', seq: 'A|AGCTT', optimalTemp: 37, color: 'bg-blue-500' },
+        { id: 'bamhi', name: 'BamHI', seq: 'G|GATCC', optimalTemp: 37, color: 'bg-green-500' },
+    ];
+
+    // Drag handlers
+    const handleDragStart = (e: React.DragEvent, enzymeId: string) => {
+        e.dataTransfer.setData('enzymeId', enzymeId);
+        e.dataTransfer.effectAllowed = 'copy';
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        if (enzymeAdded) return;
+
+        const enzymeId = e.dataTransfer.getData('enzymeId');
+        if (enzymeId) {
+            setSelectedEnzyme(enzymeId);
+            setEnzymeAdded(true);
+        }
+    };
+
+    // Incubation logic
+    useEffect(() => {
+        if (isIncubating && temperature >= 35 && temperature <= 40) {
+            const timer = setInterval(() => {
+                setDigestionTime(t => {
+                    if (t >= 100) {
+                        setIsIncubating(false);
+                        setIsDigested(true);
+                        return 100;
+                    }
+                    return t + 2;
+                });
+            }, 100);
+            return () => clearInterval(timer);
+        }
+    }, [isIncubating, temperature]);
+
+    if (isDigested) {
+        return (
+            <div className="text-center p-6">
+                <div className="text-6xl mb-4 animate-bounce">✂️</div>
+                <h3 className="text-2xl font-bold text-green-400 mb-2">Digestion Complete!</h3>
+                <p className="text-gray-300 mb-6">The restriction enzyme has cut the DNA at specific recognition sites, creating fragments.</p>
+                <button
+                    onClick={onComplete}
+                    className="px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 rounded-lg font-bold text-lg transition-all transform hover:scale-105"
+                >
+                    Proceed to Electrophoresis
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <div className="p-4 h-full flex flex-col">
+            <h3 className="text-xl font-bold text-red-300 mb-2">Restriction Digestion</h3>
+            <p className="text-gray-400 text-sm mb-4">
+                Select an enzyme, add it to the DNA sample, and incubate at 37°C.
+            </p>
+
+            <div className="grid grid-cols-2 gap-8 flex-grow">
+                {/* Enzyme Freezer */}
+                <div className="bg-gray-800 rounded-xl p-4 border-2 border-blue-300/30">
+                    <h4 className="font-bold text-blue-200 mb-3 flex items-center gap-2">
+                        ❄️ Enzyme Freezer
+                    </h4>
+                    <div className="space-y-3">
+                        {enzymes.map((enzyme) => (
+                            <div
+                                key={enzyme.id}
+                                draggable={!enzymeAdded}
+                                onDragStart={(e) => handleDragStart(e, enzyme.id)}
+                                className={`p-3 rounded-lg border flex justify-between items-center cursor-grab active:cursor-grabbing hover:scale-105 transition-all ${enzymeAdded && selectedEnzyme === enzyme.id ? 'opacity-50' : 'hover:shadow-lg'
+                                    } ${enzyme.color} bg-opacity-20 border-${enzyme.color.split('-')[1]}-400`}
+                            >
+                                <div>
+                                    <span className="font-bold text-white block">{enzyme.name}</span>
+                                    <span className="text-xs font-mono text-gray-300">{enzyme.seq}</span>
+                                </div>
+                                <div className={`w-8 h-8 rounded-full ${enzyme.color} flex items-center justify-center`}>
+                                    ✂️
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Workstation */}
+                <div className="flex flex-col items-center justify-center space-y-6">
+                    {/* Reaction Tube */}
+                    <div
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={handleDrop}
+                        className={`w-32 h-40 bg-gray-700 rounded-b-3xl rounded-t-lg border-4 relative overflow-hidden transition-all ${enzymeAdded ? 'border-green-400 shadow-[0_0_20px_rgba(74,222,128,0.3)]' : 'border-gray-500 border-dashed'
+                            }`}
+                    >
+                        {/* Liquid */}
+                        <div className="absolute inset-x-0 bottom-0 h-20 bg-blue-500/30 backdrop-blur-sm transition-all duration-500">
+                            {/* DNA Strands */}
+                            <div className="absolute inset-0 flex items-center justify-center opacity-50">
+                                🧬
+                            </div>
+                            {/* Added Enzyme */}
+                            {enzymeAdded && (
+                                <div className="absolute inset-x-0 bottom-0 h-full bg-green-500/20 animate-pulse" />
+                            )}
+                        </div>
+
+                        {!enzymeAdded && (
+                            <div className="absolute inset-0 flex items-center justify-center text-center p-2">
+                                <span className="text-gray-400 text-xs">Drop Enzyme Here</span>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Heat Block / Controls */}
+                    <div className="bg-gray-800 p-4 rounded-lg border border-gray-600 w-full">
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="text-gray-300 text-sm">Temperature</span>
+                            <span className={`font-mono font-bold ${temperature >= 36 && temperature <= 38 ? 'text-green-400' : 'text-red-400'
+                                }`}>{temperature}°C</span>
+                        </div>
+                        <input
+                            type="range"
+                            min="20"
+                            max="50"
+                            value={temperature}
+                            onChange={(e) => setTemperature(Number(e.target.value))}
+                            disabled={!enzymeAdded || isIncubating}
+                            className="w-full accent-red-500 mb-4"
+                        />
+
+                        <button
+                            onClick={() => setIsIncubating(true)}
+                            disabled={!enzymeAdded || isIncubating || isDigested}
+                            className={`w-full py-2 rounded font-bold transition-all ${isIncubating
+                                    ? 'bg-yellow-600 text-white animate-pulse'
+                                    : !enzymeAdded
+                                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                                        : 'bg-red-600 hover:bg-red-700 text-white'
+                                }`}
+                        >
+                            {isIncubating ? `Digesting... ${digestionTime}%` : 'Start Incubation'}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 export default {
     InteractiveDnaExtraction,
     InteractiveElectrophoresis,
     InteractiveSouthernBlotting,
     InteractiveProbeHybridization,
     InteractiveAutoradiography,
+    InteractiveDnaDigestion,
 };
 

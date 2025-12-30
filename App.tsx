@@ -9,6 +9,7 @@ import GameComplete from './components/GameComplete';
 import IntroAnimation from './components/IntroAnimation';
 // Accessibility and settings components
 import { SettingsProvider, SettingsModal, TouchControls, KeyboardHelp, useResponsiveLayout, SettingsButton, AccessibilityStyles } from './components/SettingsAndAccessibility';
+import RoomTransition from './components/RoomTransition';
 
 const App: React.FC = () => {
     const [gameState, setGameState] = useState<GameState>(GameState.CHARACTER_CREATION);
@@ -30,6 +31,14 @@ const App: React.FC = () => {
     const doorAudioRef = useRef<HTMLAudioElement | null>(null);
     const [isModalAnimating, setIsModalAnimating] = useState(false);
     const kickTimerRef = useRef<number | null>(null);
+    const [isSpawning, setIsSpawning] = useState(false);
+
+    // Handle room transition animation
+    useEffect(() => {
+        setIsSpawning(true);
+        const timer = setTimeout(() => setIsSpawning(false), 600);
+        return () => clearTimeout(timer);
+    }, [currentRoom]);
     // Settings and accessibility state
     const [showSettings, setShowSettings] = useState(false);
     const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
@@ -422,6 +431,7 @@ const App: React.FC = () => {
                                     setInteractingWith(display as InteractiveObject);
                                     setGameState(GameState.INTERACTING);
                                 }}
+                                isSpawning={isSpawning}
                             />
                             <Hud
                                 objective={getObjective()}
@@ -430,6 +440,7 @@ const App: React.FC = () => {
                                 currentRoom={currentRoom}
                                 unlockedRooms={unlockedRooms}
                             />
+                            <RoomTransition room={currentRoom} />
                             {/* Settings button in top-left */}
                             <div className="absolute top-20 left-2 z-[1000]">
                                 <SettingsButton onClick={() => setShowSettings(true)} />

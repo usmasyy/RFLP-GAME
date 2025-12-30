@@ -1,6 +1,6 @@
 import React from 'react';
 // Fix: Added 'Display' to the import list to resolve type error.
-import { Player, Station, Wall, Npc, RoomData, InteractiveObject, Display, Door, Decor } from '../types';
+import { Player, Station, Wall, Npc, RoomData, InteractiveObject, Display, Door, Decor, Character } from '../types';
 import { PLAYER_SIZE } from '../constants';
 
 
@@ -45,7 +45,7 @@ const SouthernBlottingStation = () => (
 );
 
 const ProbeHybridizationOven = () => (
-     <div className="w-full h-full bg-gray-700 border-2 border-gray-900 rounded-md p-1 box-border flex flex-col justify-between items-center shadow-lg">
+    <div className="w-full h-full bg-gray-700 border-2 border-gray-900 rounded-md p-1 box-border flex flex-col justify-between items-center shadow-lg">
         <div className="w-3/4 h-1/2 bg-black/50 rounded-sm border-2 border-gray-500 flex items-center justify-center shadow-inner"><div className="w-4 h-2 bg-orange-500 animate-pulse"></div></div>
         <div className="w-2 h-2 bg-red-500 rounded-full"></div>
     </div>
@@ -72,7 +72,7 @@ const PosterDisplay = ({ name }: { name: string }) => (
     </div>
 );
 
-const ApplicationDisplay = ({name}: {name: string}) => (
+const ApplicationDisplay = ({ name }: { name: string }) => (
     <div className="w-full h-full bg-gray-900 border-2 border-blue-400 rounded-lg p-1 text-white shadow-lg">
         <p className="text-center font-bold text-xs border-b border-blue-400">{name}</p>
         <div className="flex justify-around items-center h-full">
@@ -83,9 +83,9 @@ const ApplicationDisplay = ({name}: {name: string}) => (
     </div>
 );
 
-const InfoBoard = ({name}: {name: string}) => (
-     <div className="w-full h-full bg-green-800 border-2 border-green-400 rounded-lg p-1 text-white shadow-md">
-         <p className="text-center font-bold text-xs">{name}</p>
+const InfoBoard = ({ name }: { name: string }) => (
+    <div className="w-full h-full bg-green-800 border-2 border-green-400 rounded-lg p-1 text-white shadow-md">
+        <p className="text-center font-bold text-xs">{name}</p>
     </div>
 );
 
@@ -94,21 +94,21 @@ const AdvantagesButton = () => (
     <div className="w-full h-full bg-gradient-to-br from-emerald-500 via-green-500 to-teal-600 border-4 border-green-300 rounded-2xl p-3 shadow-2xl hover:shadow-green-500/50 transform hover:scale-105 transition-all duration-300 relative overflow-hidden group">
         {/* Animated background glow */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-        
+
         {/* Icon */}
         <div className="absolute top-2 right-2 w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
             </svg>
         </div>
-        
+
         {/* Content */}
         <div className="relative z-10 flex flex-col items-center justify-center h-full">
             <div className="text-4xl mb-2 animate-bounce-slow">✓</div>
             <p className="text-center font-bold text-sm text-white drop-shadow-lg">Advantages</p>
             <p className="text-center text-xs text-green-100 mt-1">Key Benefits</p>
         </div>
-        
+
         {/* Corner decoration */}
         <div className="absolute bottom-0 left-0 w-8 h-8 border-l-4 border-b-4 border-white/30 rounded-bl-2xl"></div>
     </div>
@@ -119,21 +119,21 @@ const LimitationsButton = () => (
     <div className="w-full h-full bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-500 border-4 border-orange-300 rounded-2xl p-3 shadow-2xl hover:shadow-orange-500/50 transform hover:scale-105 transition-all duration-300 relative overflow-hidden group">
         {/* Animated background glow */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-        
+
         {/* Icon */}
         <div className="absolute top-2 right-2 w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm animate-pulse">
             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
             </svg>
         </div>
-        
+
         {/* Content */}
         <div className="relative z-10 flex flex-col items-center justify-center h-full">
             <div className="text-4xl mb-2">⚠️</div>
             <p className="text-center font-bold text-sm text-white drop-shadow-lg">Limitations</p>
             <p className="text-center text-xs text-orange-100 mt-1">Constraints</p>
         </div>
-        
+
         {/* Corner decoration */}
         <div className="absolute bottom-0 left-0 w-8 h-8 border-l-4 border-b-4 border-white/30 rounded-bl-2xl"></div>
     </div>
@@ -144,21 +144,21 @@ const ComparisonButton = () => (
     <div className="w-full h-full bg-gradient-to-br from-cyan-500 via-blue-500 to-indigo-600 border-4 border-cyan-300 rounded-2xl p-3 shadow-2xl hover:shadow-cyan-500/50 transform hover:scale-105 transition-all duration-300 relative overflow-hidden group">
         {/* Animated background glow */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-        
+
         {/* Icon */}
         <div className="absolute top-2 right-2 w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
             </svg>
         </div>
-        
+
         {/* Content */}
         <div className="relative z-10 flex flex-col items-center justify-center h-full">
             <div className="text-3xl mb-2 font-bold text-white">VS</div>
             <p className="text-center font-bold text-sm text-white drop-shadow-lg">RFLP vs PCR</p>
             <p className="text-center text-xs text-cyan-100 mt-1">Comparison</p>
         </div>
-        
+
         {/* Corner decoration */}
         <div className="absolute bottom-0 left-0 w-8 h-8 border-l-4 border-b-4 border-white/30 rounded-bl-2xl"></div>
     </div>
@@ -169,21 +169,21 @@ const ReferencesButton = () => (
     <div className="w-full h-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-600 border-4 border-indigo-300 rounded-2xl p-3 shadow-2xl hover:shadow-indigo-500/50 transform hover:scale-105 transition-all duration-300 relative overflow-hidden group">
         {/* Animated background glow */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-        
+
         {/* Icon */}
         <div className="absolute top-2 right-2 w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
             </svg>
         </div>
-        
+
         {/* Content */}
         <div className="relative z-10 flex flex-col items-center justify-center h-full">
             <div className="text-4xl mb-2">📚</div>
             <p className="text-center font-bold text-sm text-white drop-shadow-lg">References</p>
             <p className="text-center text-xs text-indigo-100 mt-1">Citations</p>
         </div>
-        
+
         {/* Corner decoration */}
         <div className="absolute bottom-0 left-0 w-8 h-8 border-l-4 border-b-4 border-white/30 rounded-bl-2xl"></div>
     </div>
@@ -194,24 +194,24 @@ const CompletionButton = () => (
     <div className="w-full h-full bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 border-4 border-yellow-300 rounded-2xl p-2 shadow-2xl hover:shadow-yellow-500/50 transform hover:scale-110 transition-all duration-300 relative overflow-hidden group animate-pulse">
         {/* Animated background glow */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
-        
+
         {/* Sparkle effects */}
         <div className="absolute top-1 left-1 w-2 h-2 bg-white rounded-full animate-ping"></div>
-        <div className="absolute top-1 right-1 w-2 h-2 bg-white rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
-        
+        <div className="absolute top-1 right-1 w-2 h-2 bg-white rounded-full animate-ping" style={{ animationDelay: '0.5s' }}></div>
+
         {/* Icon */}
         <div className="absolute top-1 right-1 w-6 h-6 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm">
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
         </div>
-        
+
         {/* Content */}
         <div className="relative z-10 flex flex-col items-center justify-center h-full">
             <div className="text-3xl mb-1 animate-bounce-slow">🏆</div>
             <p className="text-center font-bold text-xs text-white drop-shadow-lg">Complete Training</p>
         </div>
-        
+
         {/* Bottom glow */}
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white to-transparent"></div>
     </div>
@@ -245,8 +245,8 @@ const Shelf = () => (
 
 // --- New Universal Components ---
 
-const DecorComponent: React.FC<{decor: Decor}> = ({decor}) => {
-    switch(decor.type) {
+const DecorComponent: React.FC<{ decor: Decor }> = ({ decor }) => {
+    switch (decor.type) {
         case 'desk': return <Desk />;
         case 'plant': return <Plant />;
         case 'computer': return <Computer />;
@@ -282,12 +282,12 @@ const StationComponent: React.FC<{ station: Station }> = ({ station }) => {
     );
 };
 
-const DisplayComponent: React.FC<{display: Display}> = ({display}) => {
+const DisplayComponent: React.FC<{ display: Display }> = ({ display }) => {
     let content;
     switch (display.id) {
         case 'poster-what-is-rflp':
         case 'poster-enzymes':
-             content = <PosterDisplay name={display.name} />; break;
+            content = <PosterDisplay name={display.name} />; break;
         case 'app-forensics':
         case 'app-paternity':
         case 'app-diseases':
@@ -304,9 +304,9 @@ const DisplayComponent: React.FC<{display: Display}> = ({display}) => {
         case 'completion':
             content = <CompletionButton />; break;
         default:
-             content = <InfoBoard name={display.name} />;
+            content = <InfoBoard name={display.name} />;
     }
-     return (
+    return (
         <div className="group w-full h-full relative">
             {content}
             <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-max bg-black text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
@@ -316,13 +316,13 @@ const DisplayComponent: React.FC<{display: Display}> = ({display}) => {
     );
 }
 
-const DoorComponent: React.FC<{door: Door, isNearby: boolean}> = ({ door, isNearby }) => {
+const DoorComponent: React.FC<{ door: Door, isNearby: boolean }> = ({ door, isNearby }) => {
     const isVertical = door.size.h > door.size.w;
     return (
         <div className={`w-full h-full bg-gray-600 border-2 border-gray-800 flex items-center justify-center relative overflow-hidden transition-all duration-300 ${isNearby ? 'door-interactive-glow' : 'shadow-inner'}`}>
-             <div className={`absolute bg-gray-900 ${isVertical ? 'w-full h-1/2' : 'h-full w-1/2'} transition-transform duration-300 ${isNearby ? (isVertical ? '-translate-y-1/4' : '-translate-x-1/4') : ''}`} style={{[isVertical ? 'top' : 'left']: 0}}></div>
-             <div className={`absolute bg-gray-900 ${isVertical ? 'w-full h-1/2' : 'h-full w-1/2'} transition-transform duration-300 ${isNearby ? (isVertical ? 'translate-y-1/4' : 'translate-x-1/4') : ''}`} style={{[isVertical ? 'bottom' : 'right']: 0}}></div>
-             <div className={`absolute w-4 h-4 rounded-full ${isNearby ? 'bg-green-400 animate-pulse' : 'bg-red-500'}`}></div>
+            <div className={`absolute bg-gray-900 ${isVertical ? 'w-full h-1/2' : 'h-full w-1/2'} transition-transform duration-300 ${isNearby ? (isVertical ? '-translate-y-1/4' : '-translate-x-1/4') : ''}`} style={{ [isVertical ? 'top' : 'left']: 0 }}></div>
+            <div className={`absolute bg-gray-900 ${isVertical ? 'w-full h-1/2' : 'h-full w-1/2'} transition-transform duration-300 ${isNearby ? (isVertical ? 'translate-y-1/4' : 'translate-x-1/4') : ''}`} style={{ [isVertical ? 'bottom' : 'right']: 0 }}></div>
+            <div className={`absolute w-4 h-4 rounded-full ${isNearby ? 'bg-green-400 animate-pulse' : 'bg-red-500'}`}></div>
         </div>
     );
 };
@@ -339,7 +339,7 @@ const CharacterHead: React.FC<{ character: Character }> = ({ character }) => {
             />
         );
     }
-    
+
     return (
         <div className={`absolute w-3/5 h-3/5 ${character.skinColor} rounded-full top-0 left-1/2 -translate-x-1/2 border-2 border-gray-600 overflow-hidden`}>
             {/* Hair */}
@@ -359,10 +359,11 @@ interface GameWorldProps {
     roomData: RoomData;
     npcs: Npc[];
     nearbyInteractiveId: string | null | undefined;
-    onOpenDisplay?: (display: Display) => void;
+    isSpawning?: boolean;
 }
 
-const GameWorld: React.FC<GameWorldProps> = ({ player, roomData, npcs, nearbyInteractiveId, onOpenDisplay }) => {
+const GameWorld: React.FC<GameWorldProps> = ({ player, roomData, npcs, nearbyInteractiveId, onOpenDisplay, isSpawning = false }) => {
+    // ... existing renderObject ...
     const renderObject = (obj: InteractiveObject) => {
         let component;
         if (obj.type === 'station') component = <StationComponent station={obj} />;
@@ -385,25 +386,37 @@ const GameWorld: React.FC<GameWorldProps> = ({ player, roomData, npcs, nearbyInt
             </div>
         );
     }
-    
+
+    // ... existing renderDecor ...
     const renderDecor = (decor: Decor) => (
-         <div key={decor.id} className="absolute" style={{ left: decor.position.x, top: decor.position.y, width: decor.size.w, height: decor.size.h, zIndex: Math.round(decor.position.y) }}>
+        <div key={decor.id} className="absolute" style={{ left: decor.position.x, top: decor.position.y, width: decor.size.w, height: decor.size.h, zIndex: Math.round(decor.position.y) }}>
             <DecorComponent decor={decor} />
         </div>
     );
 
     return (
         <div className="w-full h-full bg-[#b0bec5] overflow-hidden relative">
+            <style>{`
+                @keyframes spawnPlayer {
+                    0% { transform: scale(0) translateY(-20px); opacity: 0; filter: brightness(2); }
+                    60% { transform: scale(1.2) translateY(0); opacity: 1; filter: brightness(1.2); }
+                    100% { transform: scale(1) translateY(0); opacity: 1; filter: brightness(1); }
+                }
+                .animate-spawn {
+                    animation: spawnPlayer 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+                }
+            `}</style>
+
             {/* Floor Tiles */}
             <div className="absolute inset-0 w-full h-full bg-[linear-gradient(to_right,#90a4ae_1px,transparent_1px),linear-gradient(to_bottom,#90a4ae_1px,transparent_1px)] bg-[size:40px_40px]"></div>
-            
+
             <div className="absolute top-4 left-4 bg-black/70 text-white px-3 py-1 text-lg rounded-md font-bold z-20 border border-gray-500">{roomData.name}</div>
 
             {/* Walls */}
             {roomData.walls.map((wall, index) => (
                 <div key={`wall-${index}`} className="absolute bg-blue-200 border border-blue-400" style={{ left: wall.position.x, top: wall.position.y, width: wall.size.w, height: wall.size.h, zIndex: wall.position.y + wall.size.h }} />
             ))}
-            
+
             {/* Decor */}
             {(roomData.decor || []).map(renderDecor)}
 
@@ -411,39 +424,39 @@ const GameWorld: React.FC<GameWorldProps> = ({ player, roomData, npcs, nearbyInt
             {[...(roomData.stations || []), ...(roomData.doors || []), ...(roomData.displays || [])].map(renderObject)}
 
 
-             {/* NPCs */}
+            {/* NPCs */}
             {npcs.map(npc => (
                 <div key={`npc-${npc.id}`} className="absolute animate-breathing" style={{ left: npc.position.x, top: npc.position.y, width: PLAYER_SIZE, height: PLAYER_SIZE, transition: 'left 0.05s linear, top 0.05s linear', zIndex: Math.round(npc.position.y) }}>
                     <div className="absolute w-4/5 h-2/5 bg-black/20 rounded-full bottom-0 left-1/2 -translate-x-1/2"></div>
                     <div className={`absolute w-full h-4/5 ${npc.character.labCoatColor} rounded-lg bottom-0 border-2 border-gray-600 overflow-hidden`}>
                         <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1/4 ${npc.character.shirtColor} rounded-b-md`}></div>
                         <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-1 bg-black/10"></div>
-                         {npc.character.accessory === 'clipboard' && <div className="absolute w-1/2 h-1/2 bg-amber-200 border border-black top-1/4 left-0"></div>}
+                        {npc.character.accessory === 'clipboard' && <div className="absolute w-1/2 h-1/2 bg-amber-200 border border-black top-1/4 left-0"></div>}
                     </div>
                     <CharacterHead character={npc.character} />
                 </div>
             ))}
-            
-             {/* Player */}
-            <div className="absolute transition-all duration-100 ease-linear animate-breathing" style={{ left: player.position.x, top: player.position.y, width: PLAYER_SIZE, height: PLAYER_SIZE, zIndex: Math.round(player.position.y) + 1 }}>
+
+            {/* Player */}
+            <div className={`absolute transition-all duration-100 ease-linear ${isSpawning ? 'animate-spawn' : 'animate-breathing'}`} style={{ left: player.position.x, top: player.position.y, width: PLAYER_SIZE, height: PLAYER_SIZE, zIndex: Math.round(player.position.y) + 1 }}>
                 <div className="absolute w-4/5 h-2/5 bg-black/20 rounded-full bottom-0 left-1/2 -translate-x-1/2"></div>
                 <div className={`absolute w-full h-4/5 ${player.character.labCoatColor} rounded-lg bottom-0 border-2 border-gray-600 overflow-hidden`}>
                     <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1/4 ${player.character.shirtColor} rounded-b-md`}></div>
                     <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-1 bg-black/10"></div>
                 </div>
                 <CharacterHead character={player.character} />
-                
+
                 {/* Kick Animation Leg */}
                 {player.isKicking && (
-                    <div 
+                    <div
                         className={`absolute w-2 h-4 bg-gray-700 rounded-sm transition-all duration-300 animate-kick-leg`}
                         style={{
                             bottom: player.kickDirection === 'down' ? '-8px' : player.kickDirection === 'up' ? '20px' : '8px',
                             left: player.kickDirection === 'left' ? '-8px' : player.kickDirection === 'right' ? '28px' : '15px',
-                            transform: player.kickDirection === 'down' ? 'rotate(20deg)' : 
-                                      player.kickDirection === 'up' ? 'rotate(-20deg)' : 
-                                      player.kickDirection === 'left' ? 'rotate(-70deg)' : 
-                                      'rotate(70deg)',
+                            transform: player.kickDirection === 'down' ? 'rotate(20deg)' :
+                                player.kickDirection === 'up' ? 'rotate(-20deg)' :
+                                    player.kickDirection === 'left' ? 'rotate(-70deg)' :
+                                        'rotate(70deg)',
                             transformOrigin: 'top center'
                         }}
                     >
@@ -453,10 +466,10 @@ const GameWorld: React.FC<GameWorldProps> = ({ player, roomData, npcs, nearbyInt
                         }}></div>
                     </div>
                 )}
-                
+
                 {/* Kick Impact Effect */}
                 {player.isKicking && (
-                    <div 
+                    <div
                         className="absolute animate-ping"
                         style={{
                             width: '12px',

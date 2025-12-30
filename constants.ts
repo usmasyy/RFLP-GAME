@@ -3,7 +3,7 @@ import { Station, Wall, Step, InventoryItem, Npc, Character, RoomId, RoomData, D
 import { EvidenceCollection, DnaExtraction, EnzymeSelection, DnaDigestion, GelPrep, GelLoading, Electrophoresis, UvImaging, Analysis, SouthernBlotting, ProbeHybridization, AutoradiographyAnalysis, ApplicationMinigame, InfoDisplay, StepsImageDisplay, ComparisonTable, AdvantagesDisplay, LimitationsDisplay, ReferencesDisplay, CompletionDisplay, GenomeMappingDisplay } from './components/minigames';
 // Import new interactive mini-games for enhanced gameplay
 // Import new interactive mini-games for enhanced gameplay
-import { InteractiveDnaExtraction, InteractiveElectrophoresis, InteractiveSouthernBlotting, InteractiveProbeHybridization, InteractiveAutoradiography } from './components/InteractiveMiniGames';
+import { InteractiveDnaExtraction, InteractiveElectrophoresis, InteractiveSouthernBlotting, InteractiveProbeHybridization, InteractiveAutoradiography, InteractiveDnaDigestion } from './components/InteractiveMiniGames';
 import { FileText, TestTube, Dna, Beaker, FlaskConical, Gavel, Scan, Layers, Sigma, Film, BookOpen } from 'lucide-react';
 
 export const PLAYER_SIZE = 32;
@@ -35,7 +35,7 @@ const BASE_WALLS: Wall[] = [
 export const STEPS: Step[] = [
     // Using new interactive mini-games with drag-and-drop and physics simulations
     { stationId: 'extraction', objective: 'Extract DNA from the sample.', description: 'Drag reagents in the correct order to lyse cells and purify DNA.', miniGame: InteractiveDnaExtraction, requiredItems: ['DNA Sample'], resultingItems: ['Extracted DNA'] },
-    { stationId: 'digestion', objective: 'Digest DNA with a restriction enzyme.', description: 'Choose the correct enzyme and incubate it with the DNA to cut it into fragments.', miniGame: DnaDigestion, requiredItems: ['Extracted DNA'], resultingItems: ['Restriction Enzyme', 'Digested DNA'] },
+    { stationId: 'digestion', objective: 'Digest DNA with a restriction enzyme.', description: 'Choose the correct enzyme and incubate it with the DNA to cut it into fragments.', miniGame: InteractiveDnaDigestion, requiredItems: ['Extracted DNA'], resultingItems: ['Restriction Enzyme', 'Digested DNA'] },
     { stationId: 'electrophoresis', objective: 'Run gel electrophoresis.', description: 'Load samples, control voltage, and watch DNA fragments separate by size.', miniGame: InteractiveElectrophoresis, requiredItems: ['Digested DNA'], resultingItems: ['Agarose Gel', 'Loaded Gel'] },
     { stationId: 'blotting', objective: 'Perform a Southern Blot.', description: 'Set up the blotting apparatus and transfer DNA from gel to membrane.', miniGame: InteractiveSouthernBlotting, requiredItems: ['Loaded Gel'], resultingItems: ['Blotting Membrane'] },
     { stationId: 'hybridization', objective: 'Perform Probe Hybridization.', description: 'Add a radioactive probe to bind to specific DNA sequences.', miniGame: InteractiveProbeHybridization, requiredItems: ['Blotting Membrane'], resultingItems: ['Probed Membrane'] },
