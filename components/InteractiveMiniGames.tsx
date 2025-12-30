@@ -35,6 +35,7 @@ export const InteractiveDnaExtraction: React.FC<MiniGameProps> = ({ onComplete, 
     const [tubeGlow, setTubeGlow] = useState<string>('');
     const [isShaking, setIsShaking] = useState(false);
     const [isComplete, setIsComplete] = useState(false);
+    const [readyForNextStep, setReadyForNextStep] = useState(false);
 
     const showFeedback = (message: string, type: 'success' | 'error' | 'info') => {
         setFeedback({ message, type });
@@ -53,7 +54,7 @@ export const InteractiveDnaExtraction: React.FC<MiniGameProps> = ({ onComplete, 
 
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
-        if (!draggedId) return;
+        if (!draggedId || isComplete) return;
 
         const reagent = EXTRACTION_REAGENTS.find(r => r.id === draggedId);
         if (!reagent) return;
@@ -63,12 +64,13 @@ export const InteractiveDnaExtraction: React.FC<MiniGameProps> = ({ onComplete, 
         if (addedReagents.includes(draggedId)) {
             showFeedback('You already added this reagent!', 'info');
         } else if (draggedId === expectedNext) {
-            setAddedReagents([...addedReagents, draggedId]);
+            const newAddedReagents = [...addedReagents, draggedId];
+            setAddedReagents(newAddedReagents);
             setTubeGlow('shadow-green-500/50');
             showFeedback(`✓ ${reagent.name} added! ${reagent.hint}`, 'success');
             setTimeout(() => setTubeGlow(''), 500);
 
-            if (addedReagents.length + 1 === CORRECT_ORDER.length) {
+            if (newAddedReagents.length === CORRECT_ORDER.length) {
                 setIsShaking(true);
                 setTimeout(() => {
                     setIsShaking(false);
@@ -810,11 +812,13 @@ export const InteractiveAutoradiography: React.FC<MiniGameProps> = ({ onComplete
     const [hasFilm, setHasFilm] = useState(false);
     const [exposureProgress, setExposureProgress] = useState(0);
     const [isDeveloping, setIsDeveloping] = useState(false);
+    const [isFilmReady, setIsFilmReady] = useState(false);
 
     // 0: Place Film
     // 1: Exposing (timer)
     // 2: Develop
-    // 3: Result
+    // 3: Film Ready
+    // 4: Result Complete
 
     useEffect(() => {
         if (hasFilm && exposureProgress < 100) {
@@ -833,9 +837,84 @@ export const InteractiveAutoradiography: React.FC<MiniGameProps> = ({ onComplete
     const handleDevelop = () => {
         setIsDeveloping(true);
         setTimeout(() => {
-            onComplete();
+            setIsDeveloping(false);
+            setIsFilmReady(true);
         }, 3000);
     };
+
+    // Show the developed film
+    if (isFilmReady) {
+        return (
+            <div className="p-4 h-full flex flex-col">
+                <h3 className="text-xl font-bold text-pink-300 mb-2">Autoradiography Complete</h3>
+                <p className="text-gray-400 text-sm mb-4">Here is your developed film showing the DNA pattern:</p>
+
+                <div className="flex-grow flex items-center justify-center">
+                    <div className="w-72 h-96 bg-black rounded-lg border-4 border-pink-500 relative overflow-hidden flex flex-col items-center justify-center p-6">
+                        <span className="text-pink-300 font-mono text-xs mb-4">Developed Film</span>
+                        
+                        {/* DNA Band Pattern */}
+                        <div className="space-y-6 w-full px-8">
+                            {/* Crime Scene Lane */}
+                            <div className="flex items-center gap-4">
+                                <span className="text-pink-300 text-xs w-16">Crime</span>
+                                <div className="flex-grow space-y-1">
+                                    <div className="h-1.5 bg-pink-300 rounded-full shadow-lg shadow-pink-500/50" style={{ width: '60%' }}></div>
+                                    <div className="h-1.5 bg-pink-300 rounded-full shadow-lg shadow-pink-500/50" style={{ width: '50%' }}></div>
+                                    <div className="h-1.5 bg-pink-300 rounded-full shadow-lg shadow-pink-500/50" style={{ width: '40%' }}></div>
+                                    <div className="h-1.5 bg-pink-300 rounded-full shadow-lg shadow-pink-500/50" style={{ width: '30%' }}></div>
+                                </div>
+                            </div>
+
+                            {/* Suspect 1 Lane */}
+                            <div className="flex items-center gap-4">
+                                <span className="text-pink-300 text-xs w-16">Susp. 1</span>
+                                <div className="flex-grow space-y-1">
+                                    <div className="h-1.5 bg-pink-300 rounded-full shadow-lg shadow-pink-500/50" style={{ width: '70%' }}></div>
+                                    <div className="h-1.5 bg-pink-300 rounded-full shadow-lg shadow-pink-500/50" style={{ width: '55%' }}></div>
+                                    <div className="h-1.5 bg-pink-300 rounded-full shadow-lg shadow-pink-500/50" style={{ width: '45%' }}></div>
+                                    <div className="h-1.5 bg-pink-300 rounded-full shadow-lg shadow-pink-500/50" style={{ width: '35%' }}></div>
+                                </div>
+                            </div>
+
+                            {/* Suspect 2 Lane (Match!) */}
+                            <div className="flex items-center gap-4 p-2 bg-green-900/40 rounded border border-green-500/50">
+                                <span className="text-green-400 text-xs w-16 font-bold">Susp. 2</span>
+                                <div className="flex-grow space-y-1">
+                                    <div className="h-1.5 bg-green-400 rounded-full shadow-lg shadow-green-500/50" style={{ width: '60%' }}></div>
+                                    <div className="h-1.5 bg-green-400 rounded-full shadow-lg shadow-green-500/50" style={{ width: '50%' }}></div>
+                                    <div className="h-1.5 bg-green-400 rounded-full shadow-lg shadow-green-500/50" style={{ width: '40%' }}></div>
+                                    <div className="h-1.5 bg-green-400 rounded-full shadow-lg shadow-green-500/50" style={{ width: '30%' }}></div>
+                                </div>
+                            </div>
+
+                            {/* Suspect 3 Lane */}
+                            <div className="flex items-center gap-4">
+                                <span className="text-pink-300 text-xs w-16">Susp. 3</span>
+                                <div className="flex-grow space-y-1">
+                                    <div className="h-1.5 bg-pink-300 rounded-full shadow-lg shadow-pink-500/50" style={{ width: '65%' }}></div>
+                                    <div className="h-1.5 bg-pink-300 rounded-full shadow-lg shadow-pink-500/50" style={{ width: '48%' }}></div>
+                                    <div className="h-1.5 bg-pink-300 rounded-full shadow-lg shadow-pink-500/50" style={{ width: '42%' }}></div>
+                                    <div className="h-1.5 bg-pink-300 rounded-full shadow-lg shadow-pink-500/50" style={{ width: '32%' }}></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-6 text-center">
+                    <p className="text-green-400 font-bold mb-4">✓ DNA Pattern Analysis Complete!</p>
+                    <p className="text-gray-400 mb-6">Suspect 2's DNA matches the crime scene DNA pattern.</p>
+                    <button
+                        onClick={onComplete}
+                        className="px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 rounded-lg font-bold text-white shadow-lg transform transition-all hover:scale-105"
+                    >
+                        Complete Analysis
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="p-4 h-full flex flex-col">

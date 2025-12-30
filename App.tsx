@@ -431,7 +431,7 @@ const App: React.FC = () => {
                                 unlockedRooms={unlockedRooms}
                             />
                             {/* Settings button in top-left */}
-                            <div className="absolute top-4 left-4 z-[1000]">
+                            <div className="absolute top-20 left-2 z-[1000]">
                                 <SettingsButton onClick={() => setShowSettings(true)} />
                             </div>
                             {notification && (
