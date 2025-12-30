@@ -3,7 +3,7 @@ import { Station, Wall, Step, InventoryItem, Npc, Character, RoomId, RoomData, D
 import { EvidenceCollection, DnaExtraction, EnzymeSelection, DnaDigestion, GelPrep, GelLoading, Electrophoresis, UvImaging, Analysis, SouthernBlotting, ProbeHybridization, AutoradiographyAnalysis, ApplicationMinigame, InfoDisplay, StepsImageDisplay, ComparisonTable, AdvantagesDisplay, LimitationsDisplay, ReferencesDisplay, CompletionDisplay, GenomeMappingDisplay } from './components/minigames';
 // Import new interactive mini-games for enhanced gameplay
 // Import new interactive mini-games for enhanced gameplay
-import { InteractiveDnaExtraction, InteractiveElectrophoresis, InteractiveSouthernBlotting, InteractiveProbeHybridization, InteractiveAutoradiography, InteractiveDnaDigestion } from './components/InteractiveMiniGames';
+import { InteractiveDnaExtraction, InteractiveElectrophoresis, InteractiveSouthernBlotting, InteractiveProbeHybridization, InteractiveAutoradiography, InteractiveDnaDigestion, InteractiveEvidenceCollection } from './components/InteractiveMiniGames';
 import { FileText, TestTube, Dna, Beaker, FlaskConical, Gavel, Scan, Layers, Sigma, Film, BookOpen } from 'lucide-react';
 
 export const PLAYER_SIZE = 32;
@@ -48,7 +48,7 @@ export const ROOM_DATA: Record<RoomId, RoomData> = {
         name: "Introduction & Principle",
         walls: [...BASE_WALLS],
         stations: [
-            { id: 'sample-collection', type: 'station', name: 'Sample Collection', position: { x: 360, y: 250 }, size: { w: 80, h: 50 }, color: 'bg-blue-500', step: { stationId: 'sample-collection', objective: 'Collect sample', description: 'Collect the patient sample to begin RFLP analysis.', miniGame: EvidenceCollection, requiredItems: [], resultingItems: ['Case File', 'DNA Sample'] } }
+            { id: 'sample-collection', type: 'station', name: 'Sample Collection', position: { x: 360, y: 250 }, size: { w: 80, h: 50 }, color: 'bg-blue-500', step: { stationId: 'sample-collection', objective: 'Collect sample', description: 'Collect the patient sample to begin RFLP analysis.', miniGame: InteractiveEvidenceCollection, requiredItems: [], resultingItems: ['Case File', 'DNA Sample'] } }
         ],
         displays: [
             { id: 'poster-what-is-rflp', type: 'display', name: 'What is RFLP?', position: { x: 50, y: 150 }, size: { w: 100, h: 150 }, step: { stationId: 'poster-what-is-rflp', objective: 'Learn about RFLP', description: 'Restriction Fragment Length Polymorphism (RFLP) is a technique that exploits variations in homologous DNA sequences, known as polymorphisms, to distinguish individuals, populations, or species.', requiredItems: [], resultingItems: [] } },

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Beaker, Droplet, Zap, ThermometerSun, FlaskConical, Pipette } from 'lucide-react';
+import { Beaker, Droplet, Zap, ThermometerSun, FlaskConical, Pipette, Search, FileText } from 'lucide-react';
+import { EvidenceCollection } from './minigames';
 
 interface MiniGameProps {
     onComplete: () => void;
@@ -978,6 +979,212 @@ export const InteractiveAutoradiography: React.FC<MiniGameProps> = ({ onComplete
 };
 
 // ============================================================================
+// INTERACTIVE EVIDENCE COLLECTION - Drag and Drop
+// ============================================================================
+
+export const InteractiveEvidenceCollection: React.FC<MiniGameProps> = ({ onComplete, onClose }) => {
+    const [phase, setPhase] = useState<'slides' | 'interactive'>('slides');
+    const [collectedItems, setCollectedItems] = useState<string[]>([]);
+    const [draggedTool, setDraggedTool] = useState<string | null>(null);
+    const [selectedTool, setSelectedTool] = useState<string | null>(null);
+    const [message, setMessage] = useState("Select a tool to collect evidence.");
+
+    // Tools
+    const tools = [
+        { id: 'swab', name: 'Sterile Swab', icon: '🧬', target: 'blood' },
+        { id: 'forceps', name: 'Forceps', icon: '🧹', target: 'hair' },
+        { id: 'bag', name: 'Evidence Bag', icon: '🛍️', target: 'collected' },
+    ];
+
+    // Scene Items
+    const [bloodStainState, setBloodStainState] = useState<'fresh' | 'swabbed'>('fresh');
+    const [hairState, setHairState] = useState<'found' | 'collected'>('found');
+
+    // Tools State
+    const [swabState, setSwabState] = useState<'clean' | 'bloody' | 'secured'>('clean');
+    const [forcepsState, setForcepsState] = useState<'clean' | 'holding' | 'secured'>('clean');
+
+    const handleToolSelect = (toolId: string) => {
+        setSelectedTool(toolId);
+        setDraggedTool(toolId);
+        if (toolId === 'swab' && swabState === 'clean') setMessage("Selected Swab. Drag to blood stain to collect.");
+        if (toolId === 'forceps' && forcepsState === 'clean') setMessage("Selected Forceps. Drag to hair sample to collect.");
+        if (toolId === 'bag') setMessage("Selected Evidence Bag. Drag filled tools here to secure.");
+    };
+
+    const handleDragStart = (e: React.DragEvent, toolId: string) => {
+        setDraggedTool(toolId);
+        setSelectedTool(toolId);
+        e.dataTransfer.setData('toolId', toolId);
+    };
+
+    const handleInteraction = (target: 'blood' | 'hair' | 'bag') => {
+        // Handle Blood
+        if (target === 'blood') {
+            if ((draggedTool === 'swab' || selectedTool === 'swab') && bloodStainState === 'fresh') {
+                setBloodStainState('swabbed');
+                setSwabState('bloody');
+                setMessage("Blood sample collected! Now secure it in the evidence bag.");
+                setSelectedTool(null);
+            } else if (selectedTool === 'forceps') {
+                setMessage("Forceps are not for liquids! Use the swab.");
+            }
+        }
+
+        // Handle Hair
+        if (target === 'hair') {
+            if ((draggedTool === 'forceps' || selectedTool === 'forceps') && hairState === 'found') {
+                setHairState('collected');
+                setForcepsState('holding');
+                setMessage("Hair sample collected! Now secure it in the evidence bag.");
+                setSelectedTool(null);
+            } else if (selectedTool === 'swab') {
+                setMessage("Swab is for liquids! Use forceps.");
+            }
+        }
+
+        // Handle Bag
+        if (target === 'bag') {
+            let newlySecured = false;
+            if ((draggedTool === 'swab' || selectedTool === 'swab') && swabState === 'bloody') {
+                setSwabState('secured');
+                setCollectedItems(prev => [...prev, 'Blood Sample']);
+                newlySecured = true;
+            }
+            if ((draggedTool === 'forceps' || selectedTool === 'forceps') && forcepsState === 'holding') {
+                setForcepsState('secured');
+                setCollectedItems(prev => [...prev, 'Hair Sample']);
+                newlySecured = true;
+            }
+
+            if (newlySecured) {
+                setMessage("Evidence secured in bag!");
+                setSelectedTool(null);
+
+                if (swabState === 'secured' && forcepsState === 'secured') {
+                    // All done
+                }
+            } else if (selectedTool) {
+                setMessage("Collect a sample first before bagging it.");
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (swabState === 'secured' && forcepsState === 'secured') {
+            setMessage("All evidence secured! Excellent work.");
+            setTimeout(() => onComplete(), 2000);
+        }
+    }, [swabState, forcepsState]);
+
+
+    if (phase === 'slides') {
+        return <EvidenceCollection onComplete={() => setPhase('interactive')} onClose={onClose} />;
+    }
+
+    return (
+        <div className="p-4 h-full min-h-[500px] flex flex-col bg-gray-900 text-white">
+            <h3 className="text-xl font-bold text-blue-300 mb-2">Crime Scene Investigation</h3>
+            <p className="text-gray-400 text-sm mb-4 h-5">{message}</p>
+
+            <div className="flex-grow relative bg-gray-800 rounded-xl overflow-hidden border-2 border-gray-700 shadow-inner group">
+                {/* Background */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-700 to-gray-900 opacity-50"></div>
+
+                {/* Blood Stain */}
+                <div
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => { e.preventDefault(); handleInteraction('blood'); }}
+                    onClick={() => handleInteraction('blood')}
+                    className={`absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 transition-all duration-500 z-20 ${bloodStainState === 'fresh' ? 'cursor-pointer hover:scale-110' : 'opacity-30 grayscale'}`}
+                >
+                    <div className={`w-24 h-24 bg-red-700 rounded-full blur-md ${bloodStainState === 'fresh' ? 'animate-pulse' : ''} transform scale-x-150`}></div>
+                    {bloodStainState === 'fresh' && (
+                        <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-red-900/80 px-2 py-1 rounded text-red-200 text-xs font-bold whitespace-nowrap animate-bounce pointer-events-none">
+                            Blood Stain
+                        </div>
+                    )}
+                </div>
+
+                {/* Hair Sample */}
+                <div
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => { e.preventDefault(); handleInteraction('hair'); }}
+                    onClick={() => handleInteraction('hair')}
+                    className={`absolute top-2/3 right-1/3 transition-all duration-500 z-20 ${hairState === 'found' ? 'cursor-pointer hover:scale-110' : 'opacity-0'}`}
+                >
+                    <div className="w-16 h-16 flex items-center justify-center bg-black/40 rounded-full backdrop-blur-md border border-yellow-500/30">
+                        <span className="text-5xl drop-shadow-lg filter brightness-150">➰</span>
+                    </div>
+                    {hairState === 'found' && (
+                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-yellow-900/80 px-2 py-1 rounded text-yellow-200 text-xs font-bold whitespace-nowrap animate-bounce pointer-events-none" style={{ animationDelay: '0.5s' }}>
+                            Hair Sample
+                        </div>
+                    )}
+                </div>
+
+                {/* Evidence Bag Drop Zone */}
+                <div
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => { e.preventDefault(); handleInteraction('bag'); }}
+                    onClick={() => handleInteraction('bag')}
+                    className={`absolute bottom-4 right-4 w-32 h-40 border-4 border-dashed rounded-lg flex items-center justify-center transition-all cursor-pointer ${(swabState === 'bloody' || forcepsState === 'holding') ? 'border-yellow-400 bg-yellow-900/20 scale-105 shadow-[0_0_15px_rgba(234,179,8,0.3)]' : 'border-gray-600 opacity-50'
+                        } ${selectedTool === 'bag' ? 'ring-2 ring-blue-400' : ''}`}
+                >
+                    <span className="text-5xl">🛍️</span>
+                    <span className="absolute bottom-2 text-xs text-gray-400 font-bold bg-black/50 px-2 rounded">evidence bag</span>
+                    {collectedItems.length > 0 && (
+                        <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                            {collectedItems.length}
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Toolbox */}
+            <div className="mt-4 bg-gray-800 rounded-lg p-3 border-t-4 border-gray-600">
+                <p className="text-xs text-gray-400 mb-2 font-bold uppercase tracking-wider">Investigative Toolbox</p>
+                <div className="flex items-center justify-center gap-8">
+                    {/* Swab Tool */}
+                    {swabState !== 'secured' && (
+                        <div
+                            draggable={true}
+                            onDragStart={(e) => handleDragStart(e, 'swab')}
+                            onClick={() => handleToolSelect('swab')}
+                            className={`flex flex-col items-center cursor-pointer transition-all p-2 rounded-lg ${selectedTool === 'swab' ? 'bg-blue-900/50 ring-2 ring-blue-500 scale-110' : 'hover:bg-gray-700'}`}
+                        >
+                            <div className={`w-16 h-16 rounded-full flex items-center justify-center border-2 ${swabState === 'bloody' ? 'bg-red-900/50 border-red-500' : 'bg-gray-700 border-gray-500'}`}>
+                                <span className="text-3xl">{swabState === 'bloody' ? '🧬' : '🥢'}</span>
+                            </div>
+                            <span className={`text-sm mt-1 font-bold ${swabState === 'bloody' ? 'text-red-300' : 'text-gray-300'}`}>
+                                {swabState === 'bloody' ? 'Sample Collected' : 'Sterile Swab'}
+                            </span>
+                        </div>
+                    )}
+
+                    {/* Forceps Tool */}
+                    {forcepsState !== 'secured' && (
+                        <div
+                            draggable={true}
+                            onDragStart={(e) => handleDragStart(e, 'forceps')}
+                            onClick={() => handleToolSelect('forceps')}
+                            className={`flex flex-col items-center cursor-pointer transition-all p-2 rounded-lg ${selectedTool === 'forceps' ? 'bg-blue-900/50 ring-2 ring-blue-500 scale-110' : 'hover:bg-gray-700'}`}
+                        >
+                            <div className={`w-16 h-16 rounded-full flex items-center justify-center border-2 ${forcepsState === 'holding' ? 'bg-yellow-900/50 border-yellow-500' : 'bg-gray-700 border-gray-500'}`}>
+                                <span className="text-3xl">{forcepsState === 'holding' ? '➰' : '✂️'}</span>
+                            </div>
+                            <span className={`text-sm mt-1 font-bold ${forcepsState === 'holding' ? 'text-yellow-300' : 'text-gray-300'}`}>
+                                {forcepsState === 'holding' ? 'Hair Held' : 'Forceps'}
+                            </span>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// ============================================================================
 // INTERACTIVE DNA DIGESTION - Enzyme Selection & Incubation
 // ============================================================================
 
@@ -1031,16 +1238,50 @@ export const InteractiveDnaDigestion: React.FC<MiniGameProps> = ({ onComplete, o
 
     if (isDigested) {
         return (
-            <div className="text-center p-6">
-                <div className="text-6xl mb-4 animate-bounce">✂️</div>
-                <h3 className="text-2xl font-bold text-green-400 mb-2">Digestion Complete!</h3>
-                <p className="text-gray-300 mb-6">The restriction enzyme has cut the DNA at specific recognition sites, creating fragments.</p>
+            <div className="text-center p-6 bg-gray-900 rounded-xl border-4 border-green-500 overflow-hidden relative">
+                {/* Scissors Animation Overlay */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
+                    <div className="animate-scissor-cut text-9xl">✂️</div>
+                </div>
+
+                <h3 className="text-2xl font-bold text-green-400 mb-2 relative z-10">Digestion Complete!</h3>
+                <div className="my-8 relative h-20 flex items-center justify-center">
+                    <div className="w-full h-4 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 rounded-full opacity-50 absolute"></div>
+                    <div className="flex gap-2 relative z-10">
+                        {[...Array(5)].map((_, i) => (
+                            <div key={i} className="w-16 h-4 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full animate-pulse" style={{ animationDelay: `${i * 0.1}s` }}></div>
+                        ))}
+                    </div>
+                    {/* Animated Scissors moving across */}
+                    <div className="absolute top-1/2 left-0 -translate-y-1/2 text-4xl animate-move-scissors">✂️</div>
+                </div>
+
+                <p className="text-gray-300 mb-6 relative z-10">The restriction enzyme has cut the DNA at specific recognition sites, creating fragments.</p>
                 <button
                     onClick={onComplete}
-                    className="px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 rounded-lg font-bold text-lg transition-all transform hover:scale-105"
+                    className="px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 rounded-lg font-bold text-lg transition-all transform hover:scale-105 relative z-10 shadow-lg"
                 >
                     Proceed to Electrophoresis
                 </button>
+
+                <style>{`
+                    @keyframes scissorCut {
+                        0%, 100% { transform: scale(1) rotate(0deg); }
+                        50% { transform: scale(1.2) rotate(-20deg); }
+                    }
+                    .animate-scissor-cut {
+                        animation: scissorCut 1s ease-in-out infinite;
+                    }
+                    @keyframes moveScissors {
+                        0% { left: 0%; opacity: 0; }
+                        10% { opacity: 1; }
+                        90% { opacity: 1; }
+                        100% { left: 100%; opacity: 0; }
+                    }
+                    .animate-move-scissors {
+                        animation: moveScissors 3s linear infinite;
+                    }
+                `}</style>
             </div>
         );
     }
@@ -1128,10 +1369,10 @@ export const InteractiveDnaDigestion: React.FC<MiniGameProps> = ({ onComplete, o
                             onClick={() => setIsIncubating(true)}
                             disabled={!enzymeAdded || isIncubating || isDigested}
                             className={`w-full py-2 rounded font-bold transition-all ${isIncubating
-                                    ? 'bg-yellow-600 text-white animate-pulse'
-                                    : !enzymeAdded
-                                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                                        : 'bg-red-600 hover:bg-red-700 text-white'
+                                ? 'bg-yellow-600 text-white animate-pulse'
+                                : !enzymeAdded
+                                    ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                                    : 'bg-red-600 hover:bg-red-700 text-white'
                                 }`}
                         >
                             {isIncubating ? `Digesting... ${digestionTime}%` : 'Start Incubation'}
@@ -1150,5 +1391,6 @@ export default {
     InteractiveProbeHybridization,
     InteractiveAutoradiography,
     InteractiveDnaDigestion,
+    InteractiveEvidenceCollection,
 };
 
