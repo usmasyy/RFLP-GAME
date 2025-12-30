@@ -1,6 +1,9 @@
 import React from 'react';
 import { Station, Wall, Step, InventoryItem, Npc, Character, RoomId, RoomData, Door, Display, Decor } from './types';
 import { EvidenceCollection, DnaExtraction, EnzymeSelection, DnaDigestion, GelPrep, GelLoading, Electrophoresis, UvImaging, Analysis, SouthernBlotting, ProbeHybridization, AutoradiographyAnalysis, ApplicationMinigame, InfoDisplay, StepsImageDisplay, ComparisonTable, AdvantagesDisplay, LimitationsDisplay, ReferencesDisplay, CompletionDisplay, GenomeMappingDisplay } from './components/minigames';
+// Import new interactive mini-games for enhanced gameplay
+// Import new interactive mini-games for enhanced gameplay
+import { InteractiveDnaExtraction, InteractiveElectrophoresis, InteractiveSouthernBlotting, InteractiveProbeHybridization, InteractiveAutoradiography } from './components/InteractiveMiniGames';
 import { FileText, TestTube, Dna, Beaker, FlaskConical, Gavel, Scan, Layers, Sigma, Film, BookOpen } from 'lucide-react';
 
 export const PLAYER_SIZE = 32;
@@ -30,12 +33,13 @@ const BASE_WALLS: Wall[] = [
 
 // STEPS for Methodology Room
 export const STEPS: Step[] = [
-    { stationId: 'extraction', objective: 'Extract DNA from the sample.', description: 'Follow the protocol to lyse the cells and purify the DNA.', miniGame: DnaExtraction, requiredItems: ['DNA Sample'], resultingItems: ['Extracted DNA'] },
+    // Using new interactive mini-games with drag-and-drop and physics simulations
+    { stationId: 'extraction', objective: 'Extract DNA from the sample.', description: 'Drag reagents in the correct order to lyse cells and purify DNA.', miniGame: InteractiveDnaExtraction, requiredItems: ['DNA Sample'], resultingItems: ['Extracted DNA'] },
     { stationId: 'digestion', objective: 'Digest DNA with a restriction enzyme.', description: 'Choose the correct enzyme and incubate it with the DNA to cut it into fragments.', miniGame: DnaDigestion, requiredItems: ['Extracted DNA'], resultingItems: ['Restriction Enzyme', 'Digested DNA'] },
-    { stationId: 'electrophoresis', objective: 'Run gel electrophoresis.', description: 'Prepare a gel, load the DNA, and apply voltage to separate the fragments by size.', miniGame: Electrophoresis, requiredItems: ['Digested DNA'], resultingItems: ['Agarose Gel', 'Loaded Gel'] },
-    { stationId: 'blotting', objective: 'Perform a Southern Blot.', description: 'Transfer the DNA fragments from the gel to a nylon membrane for probe analysis.', miniGame: SouthernBlotting, requiredItems: ['Loaded Gel'], resultingItems: ['Blotting Membrane'] },
-    { stationId: 'hybridization', objective: 'Perform Probe Hybridization.', description: 'Add a radioactive probe that binds to a specific DNA sequence among the fragments.', miniGame: ProbeHybridization, requiredItems: ['Blotting Membrane'], resultingItems: ['Probed Membrane'] },
-    { stationId: 'detection', objective: 'Detect the DNA bands.', description: 'Use autoradiography to visualize the radioactive probe and analyze the resulting DNA fingerprint.', miniGame: AutoradiographyAnalysis, requiredItems: ['Probed Membrane'], resultingItems: ['Autoradiograph Film', 'Final Report'] },
+    { stationId: 'electrophoresis', objective: 'Run gel electrophoresis.', description: 'Load samples, control voltage, and watch DNA fragments separate by size.', miniGame: InteractiveElectrophoresis, requiredItems: ['Digested DNA'], resultingItems: ['Agarose Gel', 'Loaded Gel'] },
+    { stationId: 'blotting', objective: 'Perform a Southern Blot.', description: 'Set up the blotting apparatus and transfer DNA from gel to membrane.', miniGame: InteractiveSouthernBlotting, requiredItems: ['Loaded Gel'], resultingItems: ['Blotting Membrane'] },
+    { stationId: 'hybridization', objective: 'Perform Probe Hybridization.', description: 'Add a radioactive probe to bind to specific DNA sequences.', miniGame: InteractiveProbeHybridization, requiredItems: ['Blotting Membrane'], resultingItems: ['Probed Membrane'] },
+    { stationId: 'detection', objective: 'Detect the DNA bands.', description: 'Use X-ray film to visualize the radioactive probe and reveal the DNA fingerprint.', miniGame: InteractiveAutoradiography, requiredItems: ['Probed Membrane'], resultingItems: ['Autoradiograph Film', 'Final Report'] },
 ];
 
 export const ROOM_DATA: Record<RoomId, RoomData> = {

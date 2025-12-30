@@ -7,6 +7,8 @@ import InteractionModal from './components/InteractionModal';
 import CharacterCustomization from './components/CharacterCustomization';
 import GameComplete from './components/GameComplete';
 import IntroAnimation from './components/IntroAnimation';
+// Accessibility and settings components
+import { SettingsProvider, SettingsModal, TouchControls, KeyboardHelp, useResponsiveLayout, SettingsButton, AccessibilityStyles } from './components/SettingsAndAccessibility';
 
 const App: React.FC = () => {
     const [gameState, setGameState] = useState<GameState>(GameState.CHARACTER_CREATION);
@@ -28,6 +30,10 @@ const App: React.FC = () => {
     const doorAudioRef = useRef<HTMLAudioElement | null>(null);
     const [isModalAnimating, setIsModalAnimating] = useState(false);
     const kickTimerRef = useRef<number | null>(null);
+    // Settings and accessibility state
+    const [showSettings, setShowSettings] = useState(false);
+    const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
+    const responsiveConfig = useResponsiveLayout(ROOM_CONFIG.width, ROOM_CONFIG.height);
 
     useEffect(() => {
         if (!audioRef.current) {
@@ -68,7 +74,7 @@ const App: React.FC = () => {
             // Find the step that matches this station's ID
             const matchingStep = STEPS.find(step => step.stationId === interactingWith.id);
             if (!matchingStep) return null;
-            
+
             // Only allow interaction if this is the current step in the sequence
             if (STEPS.indexOf(matchingStep) === currentStepIndex) {
                 return matchingStep;
@@ -97,7 +103,7 @@ const App: React.FC = () => {
         setPlayer(prev => ({ ...prev, character }));
         setGameState(GameState.INTRO_ANIMATION);
     };
-    
+
     const handleIntroComplete = () => {
         setGameState(GameState.PLAYING);
     };
@@ -215,17 +221,17 @@ const App: React.FC = () => {
 
     const handleInteraction = useCallback(() => {
         if (gameState !== GameState.PLAYING || !nearbyInteractiveObject) return;
-        
+
         // Check if we should use kick animation (Rooms 3 and 4)
-        const shouldKick = (currentRoom === 'APPLICATIONS' || currentRoom === 'LIMITATIONS') && 
-                          (nearbyInteractiveObject.type === 'display' || nearbyInteractiveObject.type === 'station');
-        
+        const shouldKick = (currentRoom === 'APPLICATIONS' || currentRoom === 'LIMITATIONS') &&
+            (nearbyInteractiveObject.type === 'display' || nearbyInteractiveObject.type === 'station');
+
         if (nearbyInteractiveObject.type === 'door') {
             if (unlockedRooms.includes(nearbyInteractiveObject.to)) {
                 const targetDoorPosition = DOOR_POSITIONS[nearbyInteractiveObject.to][nearbyInteractiveObject.targetDoorId];
                 if (targetDoorPosition) {
                     // play door opening sound
-                    try { if (doorAudioRef.current) { doorAudioRef.current.currentTime = 0; doorAudioRef.current.play().catch(() => {}); } } catch {}
+                    try { if (doorAudioRef.current) { doorAudioRef.current.currentTime = 0; doorAudioRef.current.play().catch(() => { }); } } catch { }
                     setPlayer(p => ({ ...p, position: { x: targetDoorPosition.x, y: targetDoorPosition.y } }));
                     setCurrentRoom(nearbyInteractiveObject.to);
                 } else {
@@ -239,11 +245,11 @@ const App: React.FC = () => {
         }
 
         if (nearbyInteractiveObject.type === 'station' || nearbyInteractiveObject.type === 'display') {
-             const step = nearbyInteractiveObject.step;
-             if (!step) return;
+            const step = nearbyInteractiveObject.step;
+            if (!step) return;
 
-             // Special logic for methodology room stations
-             if(currentRoom === 'METHODOLOGY' && nearbyInteractiveObject.type === 'station') {
+            // Special logic for methodology room stations
+            if (currentRoom === 'METHODOLOGY' && nearbyInteractiveObject.type === 'station') {
                 const stationIndex = STEPS.findIndex(s => s.stationId === nearbyInteractiveObject.id);
                 if (stationIndex === -1) return;
 
@@ -257,7 +263,7 @@ const App: React.FC = () => {
                     }
                     return;
                 }
-             }
+            }
 
             const hasRequiredItems = step.requiredItems.every(reqItem => inventory.includes(reqItem));
             if (hasRequiredItems) {
@@ -266,28 +272,28 @@ const App: React.FC = () => {
                     const dx = nearbyInteractiveObject.position.x - player.position.x;
                     const dy = nearbyInteractiveObject.position.y - player.position.y;
                     let kickDir: 'up' | 'down' | 'left' | 'right' = 'down';
-                    
+
                     if (Math.abs(dx) > Math.abs(dy)) {
                         kickDir = dx > 0 ? 'right' : 'left';
                     } else {
                         kickDir = dy > 0 ? 'down' : 'up';
                     }
-                    
+
                     // Start kick animation
                     setPlayer(prev => ({ ...prev, isKicking: true, kickDirection: kickDir }));
-                    
+
                     // Clear any existing timer
                     if (kickTimerRef.current) {
                         clearTimeout(kickTimerRef.current);
                     }
-                    
+
                     // After kick animation completes (400ms), open modal with animation
                     kickTimerRef.current = window.setTimeout(() => {
                         setPlayer(prev => ({ ...prev, isKicking: false }));
                         setInteractingWith(nearbyInteractiveObject);
                         setIsModalAnimating(true);
                         setGameState(GameState.INTERACTING);
-                        
+
                         // Reset modal animation flag after animation completes
                         setTimeout(() => setIsModalAnimating(false), 500);
                     }, 400);
@@ -305,6 +311,22 @@ const App: React.FC = () => {
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
+            // ESC for settings
+            if (e.key === 'Escape') {
+                if (showSettings) {
+                    setShowSettings(false);
+                } else if (gameState === GameState.PLAYING) {
+                    setShowSettings(true);
+                }
+                return;
+            }
+            // H for help
+            if (e.key === 'h' || e.key === 'H') {
+                if (gameState === GameState.PLAYING) {
+                    setShowKeyboardHelp(prev => !prev);
+                }
+                return;
+            }
             if (gameState !== GameState.PLAYING) return;
             switch (e.key) {
                 case 'w': case 'ArrowUp': movePlayer(0, -PLAYER_SPEED); break;
@@ -316,7 +338,7 @@ const App: React.FC = () => {
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [movePlayer, handleInteraction, gameState]);
+    }, [movePlayer, handleInteraction, gameState, showSettings]);
 
     const handleTaskComplete = () => {
         if (!currentStep) return;
@@ -338,26 +360,26 @@ const App: React.FC = () => {
                 showNotification("Methodology complete! 'Applications' room unlocked.", 5000);
             }
         } else if (currentRoom === 'INTRODUCTION') {
-             setUnlockedRooms(prev => [...new Set([...prev, 'METHODOLOGY'])]);
-             showNotification("Sample collected! 'Methodology' room unlocked.", 5000);
+            setUnlockedRooms(prev => [...new Set([...prev, 'METHODOLOGY'])]);
+            showNotification("Sample collected! 'Methodology' room unlocked.", 5000);
         } else if (currentRoom === 'APPLICATIONS') {
-             // Logic to check if all applications are viewed
-             // For now, just unlock next room after one interaction
-             setUnlockedRooms(prev => [...new Set([...prev, 'LIMITATIONS'])]);
-             showNotification("'Limitations & References' room unlocked.", 5000);
+            // Logic to check if all applications are viewed
+            // For now, just unlock next room after one interaction
+            setUnlockedRooms(prev => [...new Set([...prev, 'LIMITATIONS'])]);
+            showNotification("'Limitations & References' room unlocked.", 5000);
         } else if (currentRoom === 'LIMITATIONS' && interactingWith?.id === 'completion') {
             setGameState(GameState.GAME_COMPLETE);
         }
 
         setGameState(GameState.PLAYING);
     };
-    
+
     const getObjective = () => {
         if (currentRoom === 'INTRODUCTION') return "Collect a patient sample from the collection station.";
         if (currentRoom === 'METHODOLOGY') {
             if (currentStepIndex < STEPS.length) {
                 return STEPS[currentStepIndex].objective;
-            } 
+            }
             return "Methodology complete! Proceed to the next room.";
         }
         if (currentRoom === 'APPLICATIONS') return "Explore the real-world applications of RFLP.";
@@ -370,7 +392,7 @@ const App: React.FC = () => {
         if (kickTimerRef.current) clearTimeout(kickTimerRef.current);
         setNotification(null);
         setGameState(GameState.CHARACTER_CREATION);
-        setPlayer(p => ({...p, character: PREDEFINED_CHARACTERS[0], position: { x: 400, y: 540 }, isKicking: false, kickDirection: 'down'}));
+        setPlayer(p => ({ ...p, character: PREDEFINED_CHARACTERS[0], position: { x: 400, y: 540 }, isKicking: false, kickDirection: 'down' }));
         setNpcs(INITIAL_NPCS);
         setInventory([]);
         setCurrentStepIndex(0);
@@ -381,55 +403,82 @@ const App: React.FC = () => {
     }
 
     return (
-        <div className="w-screen h-screen flex justify-center items-center font-mono select-none overflow-hidden bg-gray-900" onClick={() => {if(audioRef.current && audioRef.current.paused) audioRef.current.play().catch(e => console.error(e))}}>
-            {gameState === GameState.CHARACTER_CREATION && <CharacterCustomization onStart={handleStartGame} />}
-            
-            {gameState === GameState.INTRO_ANIMATION && <IntroAnimation onComplete={handleIntroComplete} character={player.character} />}
+        <SettingsProvider>
+            <AccessibilityStyles />
+            <div className="w-screen h-screen flex justify-center items-center font-mono select-none overflow-hidden bg-gray-900" onClick={() => { if (audioRef.current && audioRef.current.paused) audioRef.current.play().catch(e => console.error(e)) }}>
+                {gameState === GameState.CHARACTER_CREATION && <CharacterCustomization onStart={handleStartGame} />}
 
-            {(gameState === GameState.PLAYING || gameState === GameState.INTERACTING) && (
-                 <div className="relative" style={{width: ROOM_CONFIG.width, height: ROOM_CONFIG.height}}>
-                  <div className="absolute inset-0 bg-gray-700 border-4 border-blue-400 shadow-lg shadow-blue-500/50 rounded-lg overflow-hidden" style={{boxShadow: 'inset 0 0 100px rgba(0,0,0,0.3)'}}>
-                    <GameWorld 
-                        player={player} 
-                        roomData={roomData}
-                        npcs={currentRoom === 'METHODOLOGY' ? npcs : []}
-                        nearbyInteractiveId={nearbyInteractiveObject?.id} 
-                        onOpenDisplay={(display) => {
-                            // Open display modal when clicked
-                            setInteractingWith(display as InteractiveObject);
-                            setGameState(GameState.INTERACTING);
-                        }}
-                    />
-                    <Hud 
-                        objective={getObjective()}
-                        inventory={inventory} 
-                        inventoryIcons={INVENTORY_ICONS}
-                        currentRoom={currentRoom}
-                        unlockedRooms={unlockedRooms}
-                    />
-                     {notification && (
-                        <div className="absolute top-24 left-1/2 -translate-x-1/2 bg-red-800 bg-opacity-90 text-white px-4 py-2 rounded-lg text-base border-2 border-red-400 shadow-lg animate-fade-in-up z-[2000] pointer-events-none">
-                            {notification}
+                {gameState === GameState.INTRO_ANIMATION && <IntroAnimation onComplete={handleIntroComplete} character={player.character} />}
+
+                {(gameState === GameState.PLAYING || gameState === GameState.INTERACTING) && (
+                    <div className="relative transition-all duration-300" style={{ width: responsiveConfig.width, height: responsiveConfig.height }}>
+                        <div className="absolute inset-0 bg-gray-700 border-4 border-blue-400 shadow-lg shadow-blue-500/50 rounded-lg overflow-hidden" style={{ boxShadow: 'inset 0 0 100px rgba(0,0,0,0.3)', transform: `scale(${responsiveConfig.scale})`, transformOrigin: 'center center' }}>
+                            <GameWorld
+                                player={player}
+                                roomData={roomData}
+                                npcs={currentRoom === 'METHODOLOGY' ? npcs : []}
+                                nearbyInteractiveId={nearbyInteractiveObject?.id}
+                                onOpenDisplay={(display) => {
+                                    setInteractingWith(display as InteractiveObject);
+                                    setGameState(GameState.INTERACTING);
+                                }}
+                            />
+                            <Hud
+                                objective={getObjective()}
+                                inventory={inventory}
+                                inventoryIcons={INVENTORY_ICONS}
+                                currentRoom={currentRoom}
+                                unlockedRooms={unlockedRooms}
+                            />
+                            {/* Settings button in top-left */}
+                            <div className="absolute top-4 left-4 z-[1000]">
+                                <SettingsButton onClick={() => setShowSettings(true)} />
+                            </div>
+                            {notification && (
+                                <div className="absolute top-24 left-1/2 -translate-x-1/2 bg-red-800 bg-opacity-90 text-white px-4 py-2 rounded-lg text-base border-2 border-red-400 shadow-lg animate-fade-in-up z-[2000] pointer-events-none">
+                                    {notification}
+                                </div>
+                            )}
                         </div>
-                    )}
-                  </div>
-                   {interactingWith && currentStep && (
-                        <InteractionModal
-                            interactiveObject={interactingWith}
-                            step={currentStep}
-                            onClose={() => {
-                                setInteractingWith(null);
-                                setGameState(GameState.PLAYING);
-                            }}
-                            onComplete={handleTaskComplete}
-                            isAnimating={isModalAnimating}
-                        />
-                    )}
-                </div>
-            )}
-            
-            {gameState === GameState.GAME_COMPLETE && <GameComplete onRestart={handleRestart}/>}
-        </div>
+                        {interactingWith && currentStep && (
+                            <InteractionModal
+                                interactiveObject={interactingWith}
+                                step={currentStep}
+                                onClose={() => {
+                                    setInteractingWith(null);
+                                    setGameState(GameState.PLAYING);
+                                }}
+                                onComplete={handleTaskComplete}
+                                isAnimating={isModalAnimating}
+                            />
+                        )}
+                        {/* Touch controls for mobile */}
+                        {responsiveConfig.isMobile && gameState === GameState.PLAYING && (
+                            <TouchControls
+                                onMove={(dx, dy) => movePlayer(dx, dy)}
+                                onInteract={handleInteraction}
+                                speed={PLAYER_SPEED}
+                            />
+                        )}
+                    </div>
+                )}
+
+                {gameState === GameState.GAME_COMPLETE && <GameComplete onRestart={handleRestart} />}
+
+                {/* Settings Modal */}
+                {showSettings && (
+                    <SettingsModal
+                        onClose={() => setShowSettings(false)}
+                        audioRef={audioRef}
+                    />
+                )}
+
+                {/* Keyboard Help */}
+                {showKeyboardHelp && (
+                    <KeyboardHelp onClose={() => setShowKeyboardHelp(false)} />
+                )}
+            </div>
+        </SettingsProvider>
     );
 };
 
