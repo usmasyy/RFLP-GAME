@@ -6,7 +6,7 @@ import { EvidenceCollection, DnaExtraction, EnzymeSelection, DnaDigestion, GelPr
 import { InteractiveDnaExtraction, InteractiveElectrophoresis, InteractiveSouthernBlotting, InteractiveProbeHybridization, InteractiveAutoradiography, InteractiveDnaDigestion, InteractiveEvidenceCollection } from './components/InteractiveMiniGames';
 import { FileText, TestTube, Dna, Beaker, FlaskConical, Gavel, Scan, Layers, Sigma, Film, BookOpen } from 'lucide-react';
 
-export const PLAYER_SIZE = 32;
+export const PLAYER_SIZE = 52;
 export const PLAYER_SPEED = 5;
 export const NPC_SPEED = 1;
 export const INTERACTION_RADIUS = 30;

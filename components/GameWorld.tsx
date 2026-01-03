@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 // Fix: Added 'Display' to the import list to resolve type error.
-import { Player, Station, Wall, Npc, RoomData, InteractiveObject, Display, Door, Decor, Character } from '../types';
+import { Player, Station, Wall, Npc, RoomData, InteractiveObject, Display, Door, Decor } from '../types';
 import { PLAYER_SIZE } from '../constants';
+import ScientistCharacter from './ScientistCharacter';
 
 
 // --- Pixel Art Station Components ---
@@ -327,31 +328,6 @@ const DoorComponent: React.FC<{ door: Door, isNearby: boolean }> = ({ door, isNe
     );
 };
 
-
-// --- Character Head Component ---
-const CharacterHead: React.FC<{ character: Character }> = ({ character }) => {
-    if (character.headImage) {
-        return (
-            <img
-                src={character.headImage}
-                alt={character.name}
-                className="absolute w-3/5 h-3/5 top-0 left-1/2 -translate-x-1/2 rounded-full border-2 border-gray-600 object-cover"
-            />
-        );
-    }
-
-    return (
-        <div className={`absolute w-3/5 h-3/5 ${character.skinColor} rounded-full top-0 left-1/2 -translate-x-1/2 border-2 border-gray-600 overflow-hidden`}>
-            {/* Hair */}
-            <div className={`absolute w-full h-1/2 ${character.hairColor} top-0`}></div>
-            {/* Glasses */}
-            {character.accessory === 'glasses' && (
-                <div className="absolute w-full h-1 bg-black top-1/2 -translate-y-1/2"></div>
-            )}
-        </div>
-    );
-};
-
 // --- Main GameWorld Component ---
 
 interface GameWorldProps {
@@ -363,6 +339,45 @@ interface GameWorldProps {
 }
 
 const GameWorld: React.FC<GameWorldProps> = ({ player, roomData, npcs, nearbyInteractiveId, onOpenDisplay, isSpawning = false }) => {
+    const [animationFrame, setAnimationFrame] = useState(0);
+    const [playerVelocity, setPlayerVelocity] = useState({ x: 0, y: 0 });
+    const [lastPosition, setLastPosition] = useState(player.position);
+
+    // Track animation frame for smooth walking animation
+    useEffect(() => {
+        const animationInterval = setInterval(() => {
+            setAnimationFrame(prev => (prev + 1) % 60);
+        }, 50);
+        return () => clearInterval(animationInterval);
+    }, []);
+
+    // Detect movement direction
+    const [playerMovementDir, setPlayerMovementDir] = useState<'up' | 'down' | 'left' | 'right' | 'idle'>('idle');
+    const [facingDirection, setFacingDirection] = useState<'up' | 'down' | 'left' | 'right'>('down');
+
+    useEffect(() => {
+        const dx = player.position.x - lastPosition.x;
+        const dy = player.position.y - lastPosition.y;
+
+        if (dx !== 0 || dy !== 0) {
+            setPlayerVelocity({ x: dx, y: dy });
+
+            // Determine movement direction based on velocity
+            let newDir: 'up' | 'down' | 'left' | 'right' = 'down';
+            if (Math.abs(dx) > Math.abs(dy)) {
+                newDir = dx > 0 ? 'right' : 'left';
+            } else {
+                newDir = dy > 0 ? 'down' : 'up';
+            }
+            setPlayerMovementDir(newDir);
+            setFacingDirection(newDir);
+        } else {
+            setPlayerVelocity({ x: 0, y: 0 });
+            setPlayerMovementDir('idle');
+        }
+
+        setLastPosition(player.position);
+    }, [player.position, lastPosition]);
     // ... existing renderObject ...
     const renderObject = (obj: InteractiveObject) => {
         let component;
@@ -427,62 +442,58 @@ const GameWorld: React.FC<GameWorldProps> = ({ player, roomData, npcs, nearbyInt
 
 
             {/* NPCs */}
-            {npcs.map(npc => (
-                <div key={`npc-${npc.id}`} className="absolute animate-breathing" style={{ left: npc.position.x, top: npc.position.y, width: PLAYER_SIZE, height: PLAYER_SIZE, transition: 'left 0.05s linear, top 0.05s linear', zIndex: Math.round(npc.position.y) }}>
-                    <div className="absolute w-4/5 h-2/5 bg-black/20 rounded-full bottom-0 left-1/2 -translate-x-1/2"></div>
-                    <div className={`absolute w-full h-4/5 ${npc.character.labCoatColor} rounded-lg bottom-0 border-2 border-gray-600 overflow-hidden`}>
-                        <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1/4 ${npc.character.shirtColor} rounded-b-md`}></div>
-                        <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-1 bg-black/10"></div>
-                        {npc.character.accessory === 'clipboard' && <div className="absolute w-1/2 h-1/2 bg-amber-200 border border-black top-1/4 left-0"></div>}
+            {npcs.map(npc => {
+                // Determine NPC direction based on target position if walking
+                let npcDir: 'up' | 'down' | 'left' | 'right' | 'idle' = 'idle';
+                let npcState: 'idle' | 'walking' | 'running' = 'idle';
+                let facing: 'up' | 'down' | 'left' | 'right' = 'down';
+
+                if (npc.state === 'walking') {
+                    npcState = 'walking';
+                    const dx = npc.targetPosition.x - npc.position.x;
+                    const dy = npc.targetPosition.y - npc.position.y;
+
+                    if (Math.abs(dx) > Math.abs(dy)) {
+                        npcDir = dx > 0 ? 'right' : 'left';
+                    } else {
+                        npcDir = dy > 0 ? 'down' : 'up';
+                    }
+                    facing = npcDir;
+                } else if (npc.state === 'working') {
+                    // Make working NPCs face "up" (towards station) usually, or just idle font
+                    npcState = 'idle';
+                    facing = 'up'; // Assuming stations are usually above
+                    npcDir = 'up';
+                }
+
+                return (
+                    <div key={`npc-${npc.id}`} className="absolute" style={{ left: npc.position.x, top: npc.position.y, width: PLAYER_SIZE, height: PLAYER_SIZE, transition: 'left 0.05s linear, top 0.05s linear', zIndex: Math.round(npc.position.y) }}>
+                        <ScientistCharacter
+                            x={PLAYER_SIZE / 2}
+                            y={PLAYER_SIZE / 2}
+                            direction={npcState}
+                            movementDirection={facing}
+                            animationFrame={animationFrame} // Sync with global frame or offset randomly ideally, but global is fine for now
+                        />
                     </div>
-                    <CharacterHead character={npc.character} />
-                </div>
-            ))}
+                );
+            })}
 
             {/* Player */}
             <div className={`absolute transition-all duration-100 ease-linear ${isSpawning ? 'animate-spawn' : 'animate-breathing'}`} style={{ left: player.position.x, top: player.position.y, width: PLAYER_SIZE, height: PLAYER_SIZE, zIndex: Math.round(player.position.y) + 1 }}>
-                <div className="absolute w-4/5 h-2/5 bg-black/20 rounded-full bottom-0 left-1/2 -translate-x-1/2"></div>
-                <div className={`absolute w-full h-4/5 ${player.character.labCoatColor} rounded-lg bottom-0 border-2 border-gray-600 overflow-hidden`}>
-                    <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1/4 ${player.character.shirtColor} rounded-b-md`}></div>
-                    <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-1 bg-black/10"></div>
-                </div>
-                <CharacterHead character={player.character} />
-
-                {/* Kick Animation Leg */}
-                {player.isKicking && (
-                    <div
-                        className={`absolute w-2 h-4 bg-gray-700 rounded-sm transition-all duration-300 animate-kick-leg`}
-                        style={{
-                            bottom: player.kickDirection === 'down' ? '-8px' : player.kickDirection === 'up' ? '20px' : '8px',
-                            left: player.kickDirection === 'left' ? '-8px' : player.kickDirection === 'right' ? '28px' : '15px',
-                            transform: player.kickDirection === 'down' ? 'rotate(20deg)' :
-                                player.kickDirection === 'up' ? 'rotate(-20deg)' :
-                                    player.kickDirection === 'left' ? 'rotate(-70deg)' :
-                                        'rotate(70deg)',
-                            transformOrigin: 'top center'
-                        }}
-                    >
-                        {/* Foot */}
-                        <div className="absolute bottom-0 w-3 h-2 bg-gray-900 rounded-sm" style={{
-                            left: player.kickDirection === 'left' || player.kickDirection === 'right' ? '-0.5px' : '-2px'
-                        }}></div>
-                    </div>
-                )}
-
-                {/* Kick Impact Effect */}
-                {player.isKicking && (
-                    <div
-                        className="absolute animate-ping"
-                        style={{
-                            width: '12px',
-                            height: '12px',
-                            borderRadius: '50%',
-                            backgroundColor: 'rgba(255, 255, 255, 0.6)',
-                            top: player.kickDirection === 'down' ? '32px' : player.kickDirection === 'up' ? '-8px' : '16px',
-                            left: player.kickDirection === 'left' ? '-8px' : player.kickDirection === 'right' ? '32px' : '16px',
-                        }}
-                    ></div>
-                )}
+                <ScientistCharacter
+                    x={PLAYER_SIZE / 2}
+                    y={PLAYER_SIZE / 2}
+                    direction={
+                        Math.abs(playerVelocity.x) > 2 || Math.abs(playerVelocity.y) > 2 ? 'running' :
+                            Math.abs(playerVelocity.x) > 0 || Math.abs(playerVelocity.y) > 0 ? 'walking' :
+                                'idle'
+                    }
+                    movementDirection={facingDirection}
+                    kickDirection={player.kickDirection}
+                    isKicking={player.isKicking}
+                    animationFrame={animationFrame}
+                />
             </div>
 
             {nearbyInteractiveId && (
