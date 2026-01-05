@@ -38,6 +38,20 @@ export const InteractiveDnaExtraction: React.FC<MiniGameProps> = ({ onComplete, 
     const [isComplete, setIsComplete] = useState(false);
     const [readyForNextStep, setReadyForNextStep] = useState(false);
 
+    // Manual shaking state
+    const [showShakingPhase, setShowShakingPhase] = useState(false);
+    const [shakeProgress, setShakeProgress] = useState(0);
+    const [isHoldingTube, setIsHoldingTube] = useState(false);
+    const [tubePosition, setTubePosition] = useState({ x: 0, y: 0 });
+    const [lastPosition, setLastPosition] = useState({ x: 0, y: 0 });
+    const [shakeIntensity, setShakeIntensity] = useState(0);
+    const tubeRef = useRef<HTMLDivElement>(null);
+    const shakeStartTimeRef = useRef<number>(0);
+    const animationFrameRef = useRef<number>(0);
+    const accumulatedMovementRef = useRef<number>(0);
+
+    const SHAKE_THRESHOLD = 100; // Total required shake amount
+
     const showFeedback = (message: string, type: 'success' | 'error' | 'info') => {
         setFeedback({ message, type });
         setTimeout(() => setFeedback(null), 3000);
@@ -53,9 +67,114 @@ export const InteractiveDnaExtraction: React.FC<MiniGameProps> = ({ onComplete, 
         e.dataTransfer.dropEffect = 'move';
     };
 
+    // Manual shaking handlers
+    const handleTubeMouseDown = (e: React.MouseEvent) => {
+        if (!showShakingPhase) return;
+        e.preventDefault();
+        setIsHoldingTube(true);
+        setLastPosition({ x: e.clientX, y: e.clientY });
+        shakeStartTimeRef.current = Date.now();
+    };
+
+    const handleTubeMouseMove = useCallback((e: MouseEvent) => {
+        if (!isHoldingTube || !showShakingPhase) return;
+
+        const deltaX = e.clientX - lastPosition.x;
+        const deltaY = e.clientY - lastPosition.y;
+        const movement = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+        // Update tube visual position (constrained)
+        const newX = Math.max(-30, Math.min(30, tubePosition.x + deltaX * 0.5));
+        const newY = Math.max(-20, Math.min(20, tubePosition.y + deltaY * 0.5));
+        setTubePosition({ x: newX, y: newY });
+
+        // Accumulate movement for progress
+        accumulatedMovementRef.current += movement * 0.3;
+
+        // Calculate shake intensity for visual feedback
+        const intensity = Math.min(movement * 2, 100);
+        setShakeIntensity(intensity);
+
+        // Update progress based on accumulated movement
+        const newProgress = Math.min((accumulatedMovementRef.current / SHAKE_THRESHOLD) * 100, 100);
+        setShakeProgress(newProgress);
+
+        setLastPosition({ x: e.clientX, y: e.clientY });
+    }, [isHoldingTube, showShakingPhase, lastPosition, tubePosition]);
+
+    const handleTubeMouseUp = useCallback(() => {
+        if (!isHoldingTube) return;
+        setIsHoldingTube(false);
+        setShakeIntensity(0);
+
+        // Animate tube back to center
+        setTubePosition({ x: 0, y: 0 });
+
+        // Check if shaking is complete
+        if (shakeProgress >= 100) {
+            setShowShakingPhase(false);
+            setIsComplete(true);
+            showFeedback('🎉 Excellent shaking! DNA extraction complete!', 'success');
+        }
+    }, [isHoldingTube, shakeProgress]);
+
+    // Touch handlers for mobile support
+    const handleTouchStart = (e: React.TouchEvent) => {
+        if (!showShakingPhase) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        setIsHoldingTube(true);
+        setLastPosition({ x: touch.clientX, y: touch.clientY });
+    };
+
+    const handleTouchMove = useCallback((e: TouchEvent) => {
+        if (!isHoldingTube || !showShakingPhase) return;
+        e.preventDefault();
+
+        const touch = e.touches[0];
+        const deltaX = touch.clientX - lastPosition.x;
+        const deltaY = touch.clientY - lastPosition.y;
+        const movement = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+        const newX = Math.max(-30, Math.min(30, tubePosition.x + deltaX * 0.5));
+        const newY = Math.max(-20, Math.min(20, tubePosition.y + deltaY * 0.5));
+        setTubePosition({ x: newX, y: newY });
+
+        accumulatedMovementRef.current += movement * 0.3;
+
+        const intensity = Math.min(movement * 2, 100);
+        setShakeIntensity(intensity);
+
+        const newProgress = Math.min((accumulatedMovementRef.current / SHAKE_THRESHOLD) * 100, 100);
+        setShakeProgress(newProgress);
+
+        setLastPosition({ x: touch.clientX, y: touch.clientY });
+    }, [isHoldingTube, showShakingPhase, lastPosition, tubePosition]);
+
+    const handleTouchEnd = useCallback(() => {
+        handleTubeMouseUp();
+    }, [handleTubeMouseUp]);
+
+    // Add global event listeners for mouse/touch move and up
+    useEffect(() => {
+        if (showShakingPhase) {
+            window.addEventListener('mousemove', handleTubeMouseMove);
+            window.addEventListener('mouseup', handleTubeMouseUp);
+            window.addEventListener('touchmove', handleTouchMove, { passive: false });
+            window.addEventListener('touchend', handleTouchEnd);
+
+            return () => {
+                window.removeEventListener('mousemove', handleTubeMouseMove);
+                window.removeEventListener('mouseup', handleTubeMouseUp);
+                window.removeEventListener('touchmove', handleTouchMove);
+                window.removeEventListener('touchend', handleTouchEnd);
+            };
+        }
+    }, [showShakingPhase, handleTubeMouseMove, handleTubeMouseUp, handleTouchMove, handleTouchEnd]);
+
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
-        if (!draggedId || isComplete) return;
+        if (!draggedId || isComplete || showShakingPhase) return;
 
         const reagent = EXTRACTION_REAGENTS.find(r => r.id === draggedId);
         if (!reagent) return;
@@ -72,11 +191,13 @@ export const InteractiveDnaExtraction: React.FC<MiniGameProps> = ({ onComplete, 
             setTimeout(() => setTubeGlow(''), 500);
 
             if (newAddedReagents.length === CORRECT_ORDER.length) {
-                setIsShaking(true);
+                // Trigger manual shaking phase instead of auto-shake
                 setTimeout(() => {
-                    setIsShaking(false);
-                    setIsComplete(true);
-                }, 2000);
+                    setShowShakingPhase(true);
+                    setShakeProgress(0);
+                    accumulatedMovementRef.current = 0;
+                    showFeedback('🧪 Now shake the tube to mix the reagents!', 'info');
+                }, 500);
             }
         } else if (draggedId === 'water') {
             setTubeGlow('shadow-red-500/50');
@@ -120,7 +241,11 @@ export const InteractiveDnaExtraction: React.FC<MiniGameProps> = ({ onComplete, 
     return (
         <div className="p-4">
             <h3 className="text-xl font-bold text-blue-300 mb-2">Interactive DNA Extraction</h3>
-            <p className="text-gray-400 text-sm mb-4">Drag reagents to the test tube in the correct order to extract DNA.</p>
+            <p className="text-gray-400 text-sm mb-4">
+                {showShakingPhase
+                    ? '🧪 Grab the tube and shake it vigorously to mix the reagents!'
+                    : 'Drag reagents to the test tube in the correct order to extract DNA.'}
+            </p>
 
             {/* Feedback message */}
             {feedback && (
@@ -163,12 +288,28 @@ export const InteractiveDnaExtraction: React.FC<MiniGameProps> = ({ onComplete, 
 
                 {/* Test tube drop zone */}
                 <div className="flex flex-col items-center">
-                    <h4 className="font-bold text-gray-300 mb-2">Test Tube</h4>
+                    <h4 className="font-bold text-gray-300 mb-2">
+                        {showShakingPhase ? '🧪 Shake the Tube!' : 'Test Tube'}
+                    </h4>
                     <div
-                        onDragOver={handleDragOver}
-                        onDrop={handleDrop}
-                        className={`relative w-32 h-64 rounded-b-full rounded-t-lg border-4 border-gray-500 bg-gray-800/50 flex flex-col-reverse items-center overflow-hidden transition-all ${tubeGlow} ${isShaking ? 'animate-shake' : ''
-                            }`}
+                        ref={tubeRef}
+                        onDragOver={!showShakingPhase ? handleDragOver : undefined}
+                        onDrop={!showShakingPhase ? handleDrop : undefined}
+                        onMouseDown={handleTubeMouseDown}
+                        onTouchStart={handleTouchStart}
+                        className={`relative w-32 h-64 rounded-b-full rounded-t-lg border-4 bg-gray-800/50 flex flex-col-reverse items-center overflow-hidden transition-all select-none ${tubeGlow} ${showShakingPhase
+                                ? `cursor-grab border-yellow-500 ${isHoldingTube ? 'cursor-grabbing' : ''}`
+                                : 'border-gray-500'
+                            } ${isShaking ? 'animate-shake' : ''}`}
+                        style={{
+                            transform: showShakingPhase
+                                ? `translate(${tubePosition.x}px, ${tubePosition.y}px) rotate(${tubePosition.x * 0.3}deg)`
+                                : undefined,
+                            boxShadow: showShakingPhase && shakeIntensity > 0
+                                ? `0 0 ${10 + shakeIntensity / 3}px rgba(234, 179, 8, ${0.3 + shakeIntensity / 200})`
+                                : undefined,
+                            transition: isHoldingTube ? 'none' : 'transform 0.3s ease-out, box-shadow 0.2s ease-out',
+                        }}
                     >
                         {/* Tube contents */}
                         {addedReagents.map((reagentId, index) => {
@@ -177,36 +318,106 @@ export const InteractiveDnaExtraction: React.FC<MiniGameProps> = ({ onComplete, 
                             return (
                                 <div
                                     key={reagentId}
-                                    className={`w-full h-12 bg-gradient-to-r ${reagent.color} flex items-center justify-center text-xs font-bold text-white opacity-90`}
-                                    style={{ animation: 'fadeInUp 0.3s ease-out' }}
+                                    className={`w-full h-12 bg-gradient-to-r ${reagent.color} flex items-center justify-center text-xs font-bold text-white ${showShakingPhase && shakeIntensity > 30 ? 'animate-reagent-mix' : 'opacity-90'
+                                        }`}
+                                    style={{
+                                        animation: !showShakingPhase ? 'fadeInUp 0.3s ease-out' : undefined,
+                                    }}
                                 >
                                     {reagent.name.split(' ')[0]}
                                 </div>
                             );
                         })}
 
-                        {/* Drop hint */}
-                        {addedReagents.length < CORRECT_ORDER.length && (
+                        {/* Drop hint (only when not in shaking phase) */}
+                        {!showShakingPhase && addedReagents.length < CORRECT_ORDER.length && (
                             <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm text-center p-4 pointer-events-none">
                                 {draggedId ? '⬇️ Drop here!' : 'Drag reagents here'}
                             </div>
                         )}
 
+                        {/* Shaking instructions overlay */}
+                        {showShakingPhase && !isHoldingTube && (
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <div className="text-center animate-pulse">
+                                    <span className="text-4xl">👆</span>
+                                    <p className="text-yellow-300 font-bold text-xs mt-2">Click & Drag!</p>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Tube cap */}
                         <div className="absolute -top-3 w-20 h-6 bg-gray-600 rounded-t-lg border-2 border-gray-500" />
+
+                        {/* Bubble effects during shaking */}
+                        {showShakingPhase && shakeIntensity > 20 && (
+                            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                                {[...Array(Math.min(Math.floor(shakeIntensity / 10), 8))].map((_, i) => (
+                                    <div
+                                        key={i}
+                                        className="absolute w-2 h-2 bg-white/40 rounded-full"
+                                        style={{
+                                            left: `${20 + Math.random() * 60}%`,
+                                            bottom: `${10 + Math.random() * 50}%`,
+                                            animation: `bubble-rise ${0.5 + Math.random() * 0.5}s ease-out infinite`,
+                                            animationDelay: `${Math.random() * 0.3}s`,
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                        )}
                     </div>
 
-                    {/* Progress indicator */}
-                    <div className="mt-4 flex gap-1">
-                        {CORRECT_ORDER.map((_, idx) => (
-                            <div
-                                key={idx}
-                                className={`w-3 h-3 rounded-full transition-all ${idx < addedReagents.length ? 'bg-green-500' : 'bg-gray-600'
-                                    }`}
-                            />
-                        ))}
-                    </div>
-                    <p className="text-gray-400 text-sm mt-2">Step {addedReagents.length + 1} of {CORRECT_ORDER.length}</p>
+                    {/* Shaking progress bar */}
+                    {showShakingPhase && (
+                        <div className="mt-4 w-full max-w-[140px]">
+                            <div className="flex justify-between text-xs text-gray-400 mb-1">
+                                <span>Shake Progress</span>
+                                <span className={shakeProgress >= 100 ? 'text-green-400 font-bold' : ''}>
+                                    {Math.floor(shakeProgress)}%
+                                </span>
+                            </div>
+                            <div className="w-full h-3 bg-gray-700 rounded-full overflow-hidden border border-gray-600">
+                                <div
+                                    className={`h-full transition-all duration-150 rounded-full ${shakeProgress >= 100
+                                            ? 'bg-gradient-to-r from-green-500 to-emerald-400'
+                                            : shakeProgress >= 50
+                                                ? 'bg-gradient-to-r from-yellow-500 to-amber-400'
+                                                : 'bg-gradient-to-r from-orange-500 to-red-400'
+                                        }`}
+                                    style={{ width: `${shakeProgress}%` }}
+                                />
+                            </div>
+                            <p className={`text-center text-xs mt-2 ${isHoldingTube
+                                    ? 'text-yellow-300 animate-pulse'
+                                    : shakeProgress >= 100
+                                        ? 'text-green-400'
+                                        : 'text-gray-500'
+                                }`}>
+                                {shakeProgress >= 100
+                                    ? '✓ Release to complete!'
+                                    : isHoldingTube
+                                        ? 'Keep shaking!'
+                                        : 'Hold and shake the tube'}
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Progress indicator (reagents) */}
+                    {!showShakingPhase && (
+                        <>
+                            <div className="mt-4 flex gap-1">
+                                {CORRECT_ORDER.map((_, idx) => (
+                                    <div
+                                        key={idx}
+                                        className={`w-3 h-3 rounded-full transition-all ${idx < addedReagents.length ? 'bg-green-500' : 'bg-gray-600'
+                                            }`}
+                                    />
+                                ))}
+                            </div>
+                            <p className="text-gray-400 text-sm mt-2">Step {addedReagents.length + 1} of {CORRECT_ORDER.length}</p>
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -223,6 +434,15 @@ export const InteractiveDnaExtraction: React.FC<MiniGameProps> = ({ onComplete, 
                     from { opacity: 0; transform: translateY(10px); }
                     to { opacity: 1; transform: translateY(0); }
                 }
+                @keyframes bubble-rise {
+                    0% { opacity: 0.8; transform: translateY(0) scale(1); }
+                    100% { opacity: 0; transform: translateY(-30px) scale(0.5); }
+                }
+                @keyframes reagent-mix {
+                    0%, 100% { opacity: 0.9; }
+                    50% { opacity: 0.7; }
+                }
+                .animate-reagent-mix { animation: reagent-mix 0.2s ease-in-out infinite; }
             `}</style>
         </div>
     );

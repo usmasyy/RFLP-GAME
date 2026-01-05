@@ -335,10 +335,11 @@ interface GameWorldProps {
     roomData: RoomData;
     npcs: Npc[];
     nearbyInteractiveId: string | null | undefined;
+    nearbyNpcId?: number | null;
     isSpawning?: boolean;
 }
 
-const GameWorld: React.FC<GameWorldProps> = ({ player, roomData, npcs, nearbyInteractiveId, onOpenDisplay, isSpawning = false }) => {
+const GameWorld: React.FC<GameWorldProps> = ({ player, roomData, npcs, nearbyInteractiveId, nearbyNpcId, onOpenDisplay, isSpawning = false }) => {
     const [animationFrame, setAnimationFrame] = useState(0);
     const [playerVelocity, setPlayerVelocity] = useState({ x: 0, y: 0 });
     const [lastPosition, setLastPosition] = useState(player.position);
@@ -447,6 +448,8 @@ const GameWorld: React.FC<GameWorldProps> = ({ player, roomData, npcs, nearbyInt
                 let npcDir: 'up' | 'down' | 'left' | 'right' | 'idle' = 'idle';
                 let npcState: 'idle' | 'walking' | 'running' = 'idle';
                 let facing: 'up' | 'down' | 'left' | 'right' = 'down';
+                const isNearby = nearbyNpcId === npc.id;
+                const isInteractable = npc.isInteractable;
 
                 if (npc.state === 'walking') {
                     npcState = 'walking';
@@ -464,17 +467,41 @@ const GameWorld: React.FC<GameWorldProps> = ({ player, roomData, npcs, nearbyInt
                     npcState = 'idle';
                     facing = 'up'; // Assuming stations are usually above
                     npcDir = 'up';
+                } else if (npc.state === 'idle') {
+                    npcState = 'idle';
+                    facing = 'down';
                 }
 
                 return (
-                    <div key={`npc-${npc.id}`} className="absolute" style={{ left: npc.position.x, top: npc.position.y, width: PLAYER_SIZE, height: PLAYER_SIZE, transition: 'left 0.05s linear, top 0.05s linear', zIndex: Math.round(npc.position.y) }}>
+                    <div
+                        key={`npc-${npc.id}`}
+                        className={`absolute transition-all duration-200 ${isNearby && isInteractable ? 'npc-glow' : ''}`}
+                        style={{
+                            left: npc.position.x,
+                            top: npc.position.y,
+                            width: PLAYER_SIZE,
+                            height: PLAYER_SIZE,
+                            transition: 'left 0.05s linear, top 0.05s linear',
+                            zIndex: Math.round(npc.position.y),
+                            filter: isNearby && isInteractable ? 'drop-shadow(0 0 8px rgba(255, 215, 0, 0.8))' : 'none',
+                        }}
+                    >
                         <ScientistCharacter
                             x={PLAYER_SIZE / 2}
                             y={PLAYER_SIZE / 2}
                             direction={npcState}
                             movementDirection={facing}
-                            animationFrame={animationFrame} // Sync with global frame or offset randomly ideally, but global is fine for now
+                            animationFrame={animationFrame}
+                            isFemale={npc.isFemale}
+                            customHairColor={npc.character.hairColor?.includes('#') ? npc.character.hairColor : undefined}
+                            customShirtColor={npc.character.shirtColor?.includes('#') ? npc.character.shirtColor : undefined}
                         />
+                        {/* NPC Name Tag for interactable NPCs */}
+                        {isInteractable && (
+                            <div className={`absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-bold px-2 py-0.5 rounded transition-all ${isNearby ? 'bg-yellow-500 text-black' : 'bg-black/70 text-white'}`}>
+                                {npc.character.name}
+                            </div>
+                        )}
                     </div>
                 );
             })}
@@ -496,9 +523,9 @@ const GameWorld: React.FC<GameWorldProps> = ({ player, roomData, npcs, nearbyInt
                 />
             </div>
 
-            {nearbyInteractiveId && (
+            {(nearbyInteractiveId || nearbyNpcId) && (
                 <div className="absolute bottom-1/3 left-1/2 -translate-x-1/2 bg-black bg-opacity-70 text-white px-4 py-2 rounded-lg text-lg animate-pulse z-20">
-                    Press [E] to interact
+                    Press [E] to {nearbyNpcId ? 'talk' : 'interact'}
                 </div>
             )}
         </div>

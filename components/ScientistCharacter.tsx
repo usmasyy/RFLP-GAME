@@ -9,6 +9,11 @@ interface ScientistCharacterProps {
     kickDirection?: 'up' | 'down' | 'left' | 'right';
     isKicking?: boolean;
     animationFrame?: number;
+    // Customization props
+    isFemale?: boolean;
+    customSkinColor?: string;
+    customHairColor?: string;
+    customShirtColor?: string;
 }
 
 const ScientistCharacter: React.FC<ScientistCharacterProps> = ({
@@ -19,6 +24,10 @@ const ScientistCharacter: React.FC<ScientistCharacterProps> = ({
     kickDirection = 'down',
     isKicking = false,
     animationFrame = 0,
+    isFemale = false,
+    customSkinColor,
+    customHairColor,
+    customShirtColor,
 }) => {
     // -------------------------------------------------------------------------
     // Animation Logic
@@ -76,14 +85,23 @@ const ScientistCharacter: React.FC<ScientistCharacterProps> = ({
     // Drawing Constants
     // -------------------------------------------------------------------------
 
-    const skinColor = "#E0AC69";
-    const skinShadow = "#C08C49";
-    const hairColor = "#3D2B1F";
+    const skinColor = customSkinColor || "#E0AC69";
+    const skinShadow = customSkinColor ? adjustColor(customSkinColor, -20) : "#C08C49";
+    const hairColor = customHairColor || "#3D2B1F";
     const coatColor = "#F5F5F5";
     const coatShadow = "#D0D0D0";
     const pantColor = "#2E3B4E"; // Dark blue-ish pants for contrast
     const shoeColor = "#4A3B2A";
-    const shirtColor = "#4A90E2"; // Blue shirt under coat
+    const shirtColor = customShirtColor || "#4A90E2"; // Blue shirt under coat
+
+    // Helper to adjust color brightness
+    function adjustColor(color: string, amount: number): string {
+        const hex = color.replace('#', '');
+        const r = Math.max(0, Math.min(255, parseInt(hex.substr(0, 2), 16) + amount));
+        const g = Math.max(0, Math.min(255, parseInt(hex.substr(2, 2), 16) + amount));
+        const b = Math.max(0, Math.min(255, parseInt(hex.substr(4, 2), 16) + amount));
+        return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    }
 
     // -------------------------------------------------------------------------
     // Render Functions
@@ -266,17 +284,41 @@ const ScientistCharacter: React.FC<ScientistCharacterProps> = ({
                 <g transform={`translate(0, ${headBobY})`}>
                     {/* Head Shape */}
                     <rect x="10" y="5" width="12" height="10" rx="3" fill={skinColor} />
-                    {/* Hair Top */}
-                    <path d="M9,8 Q9,4 16,4 Q23,4 23,8 V9 H9 Z" fill={hairColor} />
-                    {/* Glasses */}
-                    <g transform="translate(0, 0.5)">
-                        <rect x="11" y="8" width="4" height="3" rx="1" fill="rgba(255,255,255,0.3)" stroke="#333" strokeWidth="0.8" />
-                        <rect x="17" y="8" width="4" height="3" rx="1" fill="rgba(255,255,255,0.3)" stroke="#333" strokeWidth="0.8" />
-                        <line x1="15" y1="9.5" x2="17" y2="9.5" stroke="#333" strokeWidth="0.8" />
-                    </g>
-                    {/* Eyes */}
-                    <circle cx="13" cy="9.5" r="1" fill="#000" />
-                    <circle cx="19" cy="9.5" r="1" fill="#000" />
+
+                    {isFemale ? (
+                        <>
+                            {/* Female Hair - Longer with side bangs */}
+                            <path d="M8,8 Q8,3 16,3 Q24,3 24,8 V10 H23 V9 Q23,5 16,5 Q9,5 9,9 V10 H8 Z" fill={hairColor} />
+                            {/* Side hair flowing down */}
+                            <path d="M8,8 Q7,12 8,15 L10,15 L10,9 Z" fill={hairColor} />
+                            <path d="M24,8 Q25,12 24,15 L22,15 L22,9 Z" fill={hairColor} />
+                            {/* Bangs */}
+                            <path d="M10,7 Q12,9 15,7 L15,6 Q12,5 10,6 Z" fill={hairColor} />
+                            {/* Eyes with eyelashes */}
+                            <ellipse cx="13" cy="9.5" rx="1.2" ry="1" fill="#000" />
+                            <ellipse cx="19" cy="9.5" rx="1.2" ry="1" fill="#000" />
+                            <path d="M11.5,8.5 L13,9 L14.5,8.5" stroke="#000" strokeWidth="0.5" fill="none" />
+                            <path d="M17.5,8.5 L19,9 L20.5,8.5" stroke="#000" strokeWidth="0.5" fill="none" />
+                            {/* Blush */}
+                            <ellipse cx="11" cy="11" rx="1.5" ry="0.8" fill="#FFCCCC" opacity="0.5" />
+                            <ellipse cx="21" cy="11" rx="1.5" ry="0.8" fill="#FFCCCC" opacity="0.5" />
+                        </>
+                    ) : (
+                        <>
+                            {/* Male Hair Top */}
+                            <path d="M9,8 Q9,4 16,4 Q23,4 23,8 V9 H9 Z" fill={hairColor} />
+                            {/* Glasses */}
+                            <g transform="translate(0, 0.5)">
+                                <rect x="11" y="8" width="4" height="3" rx="1" fill="rgba(255,255,255,0.3)" stroke="#333" strokeWidth="0.8" />
+                                <rect x="17" y="8" width="4" height="3" rx="1" fill="rgba(255,255,255,0.3)" stroke="#333" strokeWidth="0.8" />
+                                <line x1="15" y1="9.5" x2="17" y2="9.5" stroke="#333" strokeWidth="0.8" />
+                            </g>
+                            {/* Eyes */}
+                            <circle cx="13" cy="9.5" r="1" fill="#000" />
+                            <circle cx="19" cy="9.5" r="1" fill="#000" />
+                        </>
+                    )}
+
                     {/* Mouth */}
                     <path d="M14.5,12 Q16,13 17.5,12" fill="none" stroke="#A67B5B" strokeWidth="1" strokeLinecap="round" />
                 </g>

@@ -148,8 +148,63 @@ export const DOOR_POSITIONS = {
 
 
 export const INITIAL_NPCS: Npc[] = [
-    { id: 1, position: { x: 300, y: 300 }, character: PREDEFINED_CHARACTERS[1], state: 'working', targetPosition: { x: 150, y: 150 }, workTimer: 100 },
-    { id: 2, position: { x: 500, y: 100 }, character: PREDEFINED_CHARACTERS[2], state: 'walking', targetPosition: { x: 650, y: 450 }, workTimer: 0 },
+    // Methodology room NPCs (existing behavior) - with distinct shirt colors
+    { id: 1, position: { x: 300, y: 300 }, character: { ...PREDEFINED_CHARACTERS[1], shirtColor: 'bg-purple-500' }, state: 'working', targetPosition: { x: 150, y: 150 }, workTimer: 100, roomId: 'METHODOLOGY' },
+    { id: 2, position: { x: 500, y: 100 }, character: { ...PREDEFINED_CHARACTERS[2], shirtColor: 'bg-orange-500' }, state: 'walking', targetPosition: { x: 650, y: 450 }, workTimer: 0, roomId: 'METHODOLOGY' },
+
+    // Evidence Collection Room NPCs (Interactive with dialogue)
+    {
+        id: 10,
+        position: { x: 520, y: 280 },
+        character: {
+            name: 'Dr. Sarah Chen',
+            labCoatColor: 'bg-white',
+            skinColor: 'bg-amber-200',
+            hairColor: 'bg-gray-900', // Dark black hair
+            shirtColor: 'bg-teal-500', // Teal shirt
+            characterImage: '/assets/characters/scientist.png'
+        },
+        state: 'idle',
+        targetPosition: { x: 520, y: 280 },
+        workTimer: 0,
+        roomId: 'INTRODUCTION',
+        isInteractable: true,
+        isFemale: true, // Female character
+        role: 'Forensic Scientist',
+        dialogue: [
+            "Welcome to the forensic lab. I'm Dr. Chen, the lead forensic scientist.",
+            "We've received blood and hair samples from a crime scene. These could be crucial evidence.",
+            "Using RFLP analysis, we can create a DNA fingerprint to identify the perpetrator.",
+            "The technique cuts DNA at specific points using restriction enzymes, creating unique patterns.",
+            "Collect the samples from the evidence table, and I'll guide you through the RFLP process."
+        ]
+    },
+    {
+        id: 11,
+        position: { x: 150, y: 350 },
+        character: {
+            name: 'Det. Williams',
+            labCoatColor: 'bg-gray-800',
+            skinColor: 'bg-orange-300',
+            hairColor: 'bg-gray-600', // Gray hair
+            shirtColor: 'bg-red-700', // Red shirt/tie for detective
+            characterImage: '/assets/characters/aliyan.png'
+        },
+        state: 'idle',
+        targetPosition: { x: 150, y: 350 },
+        workTimer: 0,
+        roomId: 'INTRODUCTION',
+        isInteractable: true,
+        isFemale: false, // Male character
+        role: 'Homicide Detective',
+        dialogue: [
+            "Detective Williams, Homicide Division. Thanks for coming in on short notice.",
+            "Last night, there was a murder at the islamabad zoo. A security guard is dead.",
+            "We found blood traces and hair at the scene. The perpetrator was careless.",
+            "We have three suspects in custody, but we need scientific proof to make an arrest.",
+            "The DNA evidence you analyze could put a dangerous criminal behind bars. The city is counting on you."
+        ]
+    }
 ];
 
 export const INVENTORY_ICONS: Record<InventoryItem, React.ElementType> = {

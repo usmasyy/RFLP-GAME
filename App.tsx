@@ -10,6 +10,7 @@ import IntroAnimation from './components/IntroAnimation';
 // Accessibility and settings components
 import { SettingsProvider, SettingsModal, TouchControls, KeyboardHelp, useResponsiveLayout, SettingsButton, AccessibilityStyles } from './components/SettingsAndAccessibility';
 import RoomTransition from './components/RoomTransition';
+import NpcDialogue from './components/NpcDialogue';
 
 const App: React.FC = () => {
     const [gameState, setGameState] = useState<GameState>(GameState.CHARACTER_CREATION);
@@ -32,6 +33,7 @@ const App: React.FC = () => {
     const [isModalAnimating, setIsModalAnimating] = useState(false);
     const kickTimerRef = useRef<number | null>(null);
     const [isSpawning, setIsSpawning] = useState(false);
+    const [interactingWithNpc, setInteractingWithNpc] = useState<Npc | null>(null);
 
     // Handle room transition animation
     useEffect(() => {
@@ -228,8 +230,49 @@ const App: React.FC = () => {
         return null;
     }, [player.position, roomData]);
 
+    // Detect nearby interactable NPCs
+    const nearbyNpc = useMemo((): Npc | null => {
+        const playerInteractionZone = {
+            left: player.position.x - INTERACTION_RADIUS,
+            top: player.position.y - INTERACTION_RADIUS,
+            right: player.position.x + PLAYER_SIZE + INTERACTION_RADIUS,
+            bottom: player.position.y + PLAYER_SIZE + INTERACTION_RADIUS,
+        };
+
+        // Filter NPCs for current room and interactable
+        const roomNpcs = npcs.filter(n => n.roomId === currentRoom && n.isInteractable);
+
+        for (const npc of roomNpcs) {
+            const npcRect = {
+                left: npc.position.x,
+                top: npc.position.y,
+                right: npc.position.x + PLAYER_SIZE,
+                bottom: npc.position.y + PLAYER_SIZE,
+            };
+
+            if (
+                playerInteractionZone.right > npcRect.left &&
+                playerInteractionZone.left < npcRect.right &&
+                playerInteractionZone.bottom > npcRect.top &&
+                playerInteractionZone.top < npcRect.bottom
+            ) {
+                return npc;
+            }
+        }
+        return null;
+    }, [player.position, npcs, currentRoom]);
+
     const handleInteraction = useCallback(() => {
-        if (gameState !== GameState.PLAYING || !nearbyInteractiveObject) return;
+        if (gameState !== GameState.PLAYING) return;
+
+        // Check for NPC interaction first
+        if (nearbyNpc && nearbyNpc.dialogue && nearbyNpc.dialogue.length > 0) {
+            setInteractingWithNpc(nearbyNpc);
+            return;
+        }
+
+        // Then check for object interaction
+        if (!nearbyInteractiveObject) return;
 
         // Check if we should use kick animation (Rooms 3 and 4)
         const shouldKick = (currentRoom === 'APPLICATIONS' || currentRoom === 'LIMITATIONS') &&
@@ -316,7 +359,7 @@ const App: React.FC = () => {
                 showNotification(`Missing required items: ${missingItems.join(', ')}`);
             }
         }
-    }, [gameState, nearbyInteractiveObject, currentStep, inventory, showNotification, unlockedRooms, currentRoom, roomData, player.position]);
+    }, [gameState, nearbyInteractiveObject, nearbyNpc, currentStep, inventory, showNotification, unlockedRooms, currentRoom, roomData, player.position]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -425,8 +468,9 @@ const App: React.FC = () => {
                             <GameWorld
                                 player={player}
                                 roomData={roomData}
-                                npcs={currentRoom === 'METHODOLOGY' ? npcs : []}
+                                npcs={npcs.filter(n => n.roomId === currentRoom || (currentRoom === 'METHODOLOGY' && !n.roomId))}
                                 nearbyInteractiveId={nearbyInteractiveObject?.id}
+                                nearbyNpcId={nearbyNpc?.id}
                                 onOpenDisplay={(display) => {
                                     setInteractingWith(display as InteractiveObject);
                                     setGameState(GameState.INTERACTING);
@@ -461,6 +505,13 @@ const App: React.FC = () => {
                                 }}
                                 onComplete={handleTaskComplete}
                                 isAnimating={isModalAnimating}
+                            />
+                        )}
+                        {/* NPC Dialogue Modal */}
+                        {interactingWithNpc && (
+                            <NpcDialogue
+                                npc={interactingWithNpc}
+                                onClose={() => setInteractingWithNpc(null)}
                             />
                         )}
                         {/* Touch controls for mobile */}

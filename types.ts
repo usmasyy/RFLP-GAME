@@ -40,9 +40,15 @@ export type Npc = {
     id: number;
     position: Position;
     character: Character;
-    state: 'walking' | 'working';
+    state: 'walking' | 'working' | 'idle';
     targetPosition: Position;
     workTimer: number; // Ticks until next action
+    // New fields for interactive dialogue
+    dialogue?: string[];
+    role?: string;
+    roomId?: RoomId;
+    isInteractable?: boolean;
+    isFemale?: boolean;
 };
 
 export interface BaseInteractive {
