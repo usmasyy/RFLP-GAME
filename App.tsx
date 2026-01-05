@@ -29,6 +29,7 @@ const App: React.FC = () => {
     const [currentRoom, setCurrentRoom] = useState<RoomId>('INTRODUCTION');
     const [unlockedRooms, setUnlockedRooms] = useState<RoomId[]>(['INTRODUCTION']);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const playerRef = useRef<Player>(player); // Ref for accessing player in intervals
     const doorAudioRef = useRef<HTMLAudioElement | null>(null);
     const [isModalAnimating, setIsModalAnimating] = useState(false);
     const kickTimerRef = useRef<number | null>(null);
@@ -41,6 +42,11 @@ const App: React.FC = () => {
         const timer = setTimeout(() => setIsSpawning(false), 600);
         return () => clearTimeout(timer);
     }, [currentRoom]);
+
+    // Keep playerRef in sync
+    useEffect(() => {
+        playerRef.current = player;
+    }, [player]);
     // Settings and accessibility state
     const [showSettings, setShowSettings] = useState(false);
     const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
@@ -188,8 +194,49 @@ const App: React.FC = () => {
                         newNpc.state = 'working';
                         newNpc.workTimer = Math.random() * 200 + 150; // Pause for a bit longer
                     } else {
-                        newNpc.position.x += (dx / distance) * NPC_SPEED;
-                        newNpc.position.y += (dy / distance) * NPC_SPEED;
+                        // Calculate next position
+                        const nextX = newNpc.position.x + (dx / distance) * NPC_SPEED;
+                        const nextY = newNpc.position.y + (dy / distance) * NPC_SPEED;
+
+                        // Check collision with player
+                        const playerRect = {
+                            left: playerRef.current.position.x,
+                            top: playerRef.current.position.y,
+                            right: playerRef.current.position.x + PLAYER_SIZE,
+                            bottom: playerRef.current.position.y + PLAYER_SIZE
+                        };
+
+                        const npcRect = {
+                            left: nextX,
+                            top: nextY,
+                            right: nextX + PLAYER_SIZE,
+                            bottom: nextY + PLAYER_SIZE
+                        };
+
+                        const isCollidingWithPlayer = !(
+                            playerRect.right < npcRect.left ||
+                            playerRect.left > npcRect.right ||
+                            playerRect.bottom < npcRect.top ||
+                            playerRect.top > npcRect.bottom
+                        );
+
+                        if (isCollidingWithPlayer) {
+                            // Block movement
+                            // Scout Shout logic
+                            const now = Date.now();
+                            if (!newNpc.lastShoutTime || now - newNpc.lastShoutTime > 3000) {
+                                showNotification("NPC: \"Watch where you going doofus!\"");
+                                if (npcAudioRef.current) {
+                                    npcAudioRef.current.currentTime = 0;
+                                    npcAudioRef.current.play().catch(e => console.error("Audio play failed", e));
+                                }
+                                newNpc.lastShoutTime = now;
+                            }
+                        } else {
+                            // Move normally
+                            newNpc.position.x = nextX;
+                            newNpc.position.y = nextY;
+                        }
                     }
                 }
 
@@ -261,6 +308,14 @@ const App: React.FC = () => {
         }
         return null;
     }, [player.position, npcs, currentRoom]);
+
+    const npcAudioRef = useRef<HTMLAudioElement | null>(null);
+
+    // Initialize NPC audio
+    useEffect(() => {
+        npcAudioRef.current = new Audio('/assets/characters/npc%20sound.mp3');
+        npcAudioRef.current.volume = 0.8;
+    }, []);
 
     const handleInteraction = useCallback(() => {
         if (gameState !== GameState.PLAYING) return;

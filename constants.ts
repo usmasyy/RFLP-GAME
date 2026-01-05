@@ -149,8 +149,8 @@ export const DOOR_POSITIONS = {
 
 export const INITIAL_NPCS: Npc[] = [
     // Methodology room NPCs (existing behavior) - with distinct shirt colors
-    { id: 1, position: { x: 300, y: 300 }, character: { ...PREDEFINED_CHARACTERS[1], shirtColor: 'bg-purple-500' }, state: 'working', targetPosition: { x: 150, y: 150 }, workTimer: 100, roomId: 'METHODOLOGY' },
-    { id: 2, position: { x: 500, y: 100 }, character: { ...PREDEFINED_CHARACTERS[2], shirtColor: 'bg-orange-500' }, state: 'walking', targetPosition: { x: 650, y: 450 }, workTimer: 0, roomId: 'METHODOLOGY' },
+    { id: 1, position: { x: 300, y: 300 }, character: { ...PREDEFINED_CHARACTERS[1], shirtColor: '#8B5CF6' }, state: 'working', targetPosition: { x: 150, y: 150 }, workTimer: 100, roomId: 'METHODOLOGY' }, // Purple
+    { id: 2, position: { x: 500, y: 100 }, character: { ...PREDEFINED_CHARACTERS[2], shirtColor: '#F97316' }, state: 'walking', targetPosition: { x: 650, y: 450 }, workTimer: 0, roomId: 'METHODOLOGY' }, // Orange
 
     // Evidence Collection Room NPCs (Interactive with dialogue)
     {
@@ -160,8 +160,8 @@ export const INITIAL_NPCS: Npc[] = [
             name: 'Dr. Sarah Chen',
             labCoatColor: 'bg-white',
             skinColor: 'bg-amber-200',
-            hairColor: 'bg-gray-900', // Dark black hair
-            shirtColor: 'bg-teal-500', // Teal shirt
+            hairColor: '#1a1a1a', // Dark black hair (Hex)
+            shirtColor: '#0D9488', // Teal-600 (Hex)
             characterImage: '/assets/characters/scientist.png'
         },
         state: 'idle',
@@ -186,8 +186,8 @@ export const INITIAL_NPCS: Npc[] = [
             name: 'Det. Williams',
             labCoatColor: 'bg-gray-800',
             skinColor: 'bg-orange-300',
-            hairColor: 'bg-gray-600', // Gray hair
-            shirtColor: 'bg-red-700', // Red shirt/tie for detective
+            hairColor: '#4B5563', // Gray-600 (Hex)
+            shirtColor: '#B91C1C', // Red-700 (Hex)
             characterImage: '/assets/characters/aliyan.png'
         },
         state: 'idle',

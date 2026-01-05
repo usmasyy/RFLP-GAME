@@ -49,6 +49,7 @@ export type Npc = {
     roomId?: RoomId;
     isInteractable?: boolean;
     isFemale?: boolean;
+    lastShoutTime?: number; // Timestamp of last shout
 };
 
 export interface BaseInteractive {
