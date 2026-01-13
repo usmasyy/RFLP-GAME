@@ -587,7 +587,8 @@ const App: React.FC = () => {
 
                                 {/* Notifications */}
                                 {notification && (
-                                    <div className="absolute top-20 left-1/2 -translate-x-1/2 bg-red-800 bg-opacity-90 text-white px-4 py-2 rounded-lg text-base border-2 border-red-400 shadow-lg animate-fade-in-up z-[2000] pointer-events-none whitespace-nowrap">
+                                    <div className="fixed top-24 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto md:max-w-lg bg-red-800/95 text-white px-6 py-4 rounded-xl text-center border-2 border-red-400/50 shadow-2xl animate-fade-in-up z-[9000] pointer-events-none break-words whitespace-normal leading-relaxed backdrop-blur-sm">
+                                        <span className="inline-block mr-2">⚠️</span>
                                         {notification}
                                     </div>
                                 )}
@@ -617,7 +618,7 @@ const App: React.FC = () => {
                         )}
 
                         {/* Virtual Joystick for mobile */}
-                        {responsiveConfig.isMobile && gameState === GameState.PLAYING && (
+                        {responsiveConfig.isMobile && gameState === GameState.PLAYING && !interactingWithNpc && (
                             <VirtualJoystick
                                 onMove={(vec) => {
                                     movementVectorRef.current = vec;

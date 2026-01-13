@@ -131,6 +131,61 @@ const VirtualJoystick: React.FC<VirtualJoystickProps> = ({
         };
     }, [active, handleEnd]);
 
+    const [isHolding, setIsHolding] = useState(false);
+    const [holdProgress, setHoldProgress] = useState(0);
+    const [showHoldHint, setShowHoldHint] = useState(false);
+    const holdTimerRef = useRef<number | null>(null);
+    const progressIntervalRef = useRef<number | null>(null);
+    const hasTriggeredRef = useRef(false);
+
+    const handleInteractStart = () => {
+        setIsHolding(true);
+        setHoldProgress(0);
+        hasTriggeredRef.current = false;
+        setShowHoldHint(false);
+
+        const startTime = Date.now();
+        const duration = 1000; // 1 second to hold
+
+        progressIntervalRef.current = window.setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min((elapsed / duration) * 100, 100);
+            setHoldProgress(progress);
+
+            if (progress >= 100) {
+                if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+                if (!hasTriggeredRef.current) {
+                    onInteract();
+                    hasTriggeredRef.current = true;
+                    // Reset after success
+                    setIsHolding(false);
+                }
+            }
+        }, 16);
+    };
+
+    const handleInteractEnd = () => {
+        setIsHolding(false);
+        setHoldProgress(0);
+
+        if (progressIntervalRef.current) {
+            clearInterval(progressIntervalRef.current);
+            progressIntervalRef.current = null;
+        }
+
+        if (!hasTriggeredRef.current) {
+            setShowHoldHint(true);
+            setTimeout(() => setShowHoldHint(false), 2000);
+        }
+    };
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+        };
+    }, []);
+
     return (
         <div className="fixed bottom-8 left-8 z-[2000] flex items-end gap-8 pointer-events-auto select-none touch-none">
             {/* Joystick Area */}
@@ -160,19 +215,55 @@ const VirtualJoystick: React.FC<VirtualJoystickProps> = ({
             </div>
 
             {/* Interact Button (Separate) */}
-            <button
-                className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-700 rounded-full border-4 border-green-400/50 shadow-lg flex items-center justify-center active:scale-95 transition-transform"
-                onTouchStart={(e) => {
-                    e.preventDefault();
-                    onInteract();
-                }}
-                onMouseDown={onInteract}
-            >
-                <div className="text-white font-bold text-sm text-center leading-tight">
-                    <span className="text-2xl block mb-0">🎯</span>
-                    Interact
-                </div>
-            </button>
+            <div className="relative">
+                {/* Hold Hint Message */}
+                {showHoldHint && (
+                    <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-black/80 text-white text-xs px-3 py-1 rounded whitespace-nowrap animate-bounce pointer-events-none">
+                        Tap and hold to interact
+                    </div>
+                )}
+
+                <button
+                    className={`w-24 h-24 bg-gradient-to-br from-green-500 to-emerald-700 rounded-full border-4 border-green-400/50 shadow-lg flex items-center justify-center transition-all touch-none select-none relative overflow-hidden ${isHolding ? 'scale-95' : 'active:scale-95'}`}
+                    onPointerDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // Only left click or touch
+                        if (e.pointerType === 'mouse' && e.button !== 0) return;
+                        handleInteractStart();
+                    }}
+                    onPointerUp={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleInteractEnd();
+                    }}
+                    onPointerLeave={(e) => {
+                        if (isHolding) handleInteractEnd();
+                    }}
+                    onContextMenu={(e) => e.preventDefault()}
+                >
+                    {/* Progress Ring Overlay */}
+                    {isHolding && (
+                        <svg className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none">
+                            <circle
+                                cx="50%" cy="50%" r="46%" // Just inside border
+                                fill="none"
+                                stroke="white"
+                                strokeWidth="4"
+                                strokeOpacity="0.5"
+                                strokeDasharray="289" // 2 * pi * r approx 46% of 96px width... r approx 44px? 2*3.14*44 = 276. Let's approximate.
+                                strokeDashoffset={289 - (289 * holdProgress) / 100}
+                                strokeLinecap="round"
+                            />
+                        </svg>
+                    )}
+
+                    <div className="text-white font-bold text-sm text-center leading-tight relative z-10 pointer-events-none">
+                        <span className="text-3xl block mb-1">🎯</span>
+                        Interact
+                    </div>
+                </button>
+            </div>
         </div>
     );
 };
