@@ -172,8 +172,7 @@ export const InteractiveDnaExtraction: React.FC<MiniGameProps> = ({ onComplete, 
         }
     }, [showShakingPhase, handleTubeMouseMove, handleTubeMouseUp, handleTouchMove, handleTouchEnd]);
 
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault();
+    const performDrop = () => {
         if (!draggedId || isComplete || showShakingPhase) return;
 
         const reagent = EXTRACTION_REAGENTS.find(r => r.id === draggedId);
@@ -211,6 +210,16 @@ export const InteractiveDnaExtraction: React.FC<MiniGameProps> = ({ onComplete, 
         }
 
         setDraggedId(null);
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        performDrop();
+    };
+
+    const handleReagentClick = (id: string) => {
+        if (addedReagents.includes(id)) return;
+        setDraggedId(draggedId === id ? null : id);
     };
 
     if (isComplete) {
@@ -272,9 +281,10 @@ export const InteractiveDnaExtraction: React.FC<MiniGameProps> = ({ onComplete, 
                                     key={reagent.id}
                                     draggable={!isUsed}
                                     onDragStart={(e) => handleDragStart(e, reagent.id)}
+                                    onClick={() => handleReagentClick(reagent.id)}
                                     className={`p-3 rounded-lg border-2 flex items-center gap-3 transition-all ${isUsed
                                         ? 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'
-                                        : `bg-gradient-to-r ${reagent.color} border-white/20 cursor-grab hover:scale-105 hover:shadow-lg active:cursor-grabbing`
+                                        : `bg-gradient-to-r ${reagent.color} border-white/20 cursor-grab hover:scale-105 hover:shadow-lg ${draggedId === reagent.id ? 'ring-2 ring-white scale-105 shadow-xl' : ''}`
                                         }`}
                                 >
                                     <Icon className="w-6 h-6 text-white" />
@@ -297,10 +307,11 @@ export const InteractiveDnaExtraction: React.FC<MiniGameProps> = ({ onComplete, 
                         onDrop={!showShakingPhase ? handleDrop : undefined}
                         onMouseDown={handleTubeMouseDown}
                         onTouchStart={handleTouchStart}
+                        onClick={performDrop}
                         className={`relative w-32 h-64 rounded-b-full rounded-t-lg border-4 bg-gray-800/50 flex flex-col-reverse items-center overflow-hidden transition-all select-none ${tubeGlow} ${showShakingPhase
-                                ? `cursor-grab border-yellow-500 ${isHoldingTube ? 'cursor-grabbing' : ''}`
-                                : 'border-gray-500'
-                            } ${isShaking ? 'animate-shake' : ''}`}
+                            ? `cursor-grab border-yellow-500 ${isHoldingTube ? 'cursor-grabbing' : ''}`
+                            : 'border-gray-500'
+                            } ${isShaking ? 'animate-shake' : ''} ${draggedId && !showShakingPhase ? 'ring-4 ring-yellow-400/50 cursor-pointer animate-pulse' : ''}`}
                         style={{
                             transform: showShakingPhase
                                 ? `translate(${tubePosition.x}px, ${tubePosition.y}px) rotate(${tubePosition.x * 0.3}deg)`
@@ -380,19 +391,19 @@ export const InteractiveDnaExtraction: React.FC<MiniGameProps> = ({ onComplete, 
                             <div className="w-full h-3 bg-gray-700 rounded-full overflow-hidden border border-gray-600">
                                 <div
                                     className={`h-full transition-all duration-150 rounded-full ${shakeProgress >= 100
-                                            ? 'bg-gradient-to-r from-green-500 to-emerald-400'
-                                            : shakeProgress >= 50
-                                                ? 'bg-gradient-to-r from-yellow-500 to-amber-400'
-                                                : 'bg-gradient-to-r from-orange-500 to-red-400'
+                                        ? 'bg-gradient-to-r from-green-500 to-emerald-400'
+                                        : shakeProgress >= 50
+                                            ? 'bg-gradient-to-r from-yellow-500 to-amber-400'
+                                            : 'bg-gradient-to-r from-orange-500 to-red-400'
                                         }`}
                                     style={{ width: `${shakeProgress}%` }}
                                 />
                             </div>
                             <p className={`text-center text-xs mt-2 ${isHoldingTube
-                                    ? 'text-yellow-300 animate-pulse'
-                                    : shakeProgress >= 100
-                                        ? 'text-green-400'
-                                        : 'text-gray-500'
+                                ? 'text-yellow-300 animate-pulse'
+                                : shakeProgress >= 100
+                                    ? 'text-green-400'
+                                    : 'text-gray-500'
                                 }`}>
                                 {shakeProgress >= 100
                                     ? '✓ Release to complete!'
@@ -492,6 +503,11 @@ export const InteractiveElectrophoresis: React.FC<MiniGameProps> = ({ onComplete
         setDraggedSample(null);
     };
 
+    const handleSampleClick = (index: number) => {
+        if (loadedWells[index]) return;
+        setDraggedSample(draggedSample === index ? null : index);
+    };
+
     const allWellsLoaded = loadedWells.every(Boolean);
 
     // Migration simulation
@@ -579,9 +595,10 @@ export const InteractiveElectrophoresis: React.FC<MiniGameProps> = ({ onComplete
                             key={i}
                             draggable={!loadedWells[i]}
                             onDragStart={() => setDraggedSample(i)}
+                            onClick={() => handleSampleClick(i)}
                             className={`p-2 rounded-lg border-2 text-sm transition-all ${loadedWells[i]
                                 ? 'bg-gray-800 border-gray-700 opacity-50'
-                                : 'bg-gradient-to-r from-pink-500 to-purple-600 border-white/20 cursor-grab hover:scale-105'
+                                : `bg-gradient-to-r from-pink-500 to-purple-600 border-white/20 cursor-grab hover:scale-105 ${draggedSample === i ? 'ring-2 ring-white scale-105 shadow-xl' : ''}`
                                 }`}
                         >
                             {label} {loadedWells[i] && '✓'}
@@ -607,10 +624,11 @@ export const InteractiveElectrophoresis: React.FC<MiniGameProps> = ({ onComplete
                                         key={i}
                                         onDragOver={(e) => e.preventDefault()}
                                         onDrop={() => handleLoadWell(i)}
+                                        onClick={() => handleLoadWell(i)}
                                         className={`w-10 h-4 rounded-sm border-2 transition-all ${loaded
                                             ? 'bg-pink-500 border-pink-400'
                                             : draggedSample !== null
-                                                ? 'bg-blue-600 border-blue-400 animate-pulse'
+                                                ? 'bg-blue-600 border-blue-400 animate-pulse cursor-pointer'
                                                 : 'bg-gray-700 border-gray-600'
                                             }`}
                                     />
@@ -896,9 +914,7 @@ export const InteractiveProbeHybridization: React.FC<MiniGameProps> = ({ onCompl
         e.dataTransfer.effectAllowed = 'move';
     };
 
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault();
-
+    const performDrop = () => {
         if (draggedItem === 'probe' && step === 0) {
             setProbeAdded(true);
             setStep(1);
@@ -912,6 +928,16 @@ export const InteractiveProbeHybridization: React.FC<MiniGameProps> = ({ onCompl
         }
 
         setDraggedItem(null);
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        performDrop();
+    };
+
+    const handleItemClick = (item: 'probe' | 'wash') => {
+        if ((item === 'probe' && step !== 0) || (item === 'wash' && step !== 2)) return;
+        setDraggedItem(draggedItem === item ? null : item);
     };
 
     if (step === 3) {
@@ -945,10 +971,11 @@ export const InteractiveProbeHybridization: React.FC<MiniGameProps> = ({ onCompl
                     <div
                         draggable={step === 0}
                         onDragStart={(e) => handleDragStart(e, 'probe')}
+                        onClick={() => handleItemClick('probe')}
                         className={`p-4 rounded-lg border-2 flex flex-col items-center gap-2 transition-all ${step === 0
                             ? 'bg-purple-900/50 border-purple-500 cursor-grab hover:scale-105'
                             : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'
-                            }`}
+                            } ${draggedItem === 'probe' ? 'ring-2 ring-white scale-105 shadow-xl' : ''}`}
                     >
                         <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center animate-pulse">☢️</div>
                         <span className="font-bold text-purple-200">Radioactive Probe</span>
@@ -957,10 +984,11 @@ export const InteractiveProbeHybridization: React.FC<MiniGameProps> = ({ onCompl
                     <div
                         draggable={step === 2}
                         onDragStart={(e) => handleDragStart(e, 'wash')}
+                        onClick={() => handleItemClick('wash')}
                         className={`p-4 rounded-lg border-2 flex flex-col items-center gap-2 transition-all ${step === 2
                             ? 'bg-blue-900/50 border-blue-500 cursor-grab hover:scale-105'
                             : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'
-                            }`}
+                            } ${draggedItem === 'wash' ? 'ring-2 ring-white scale-105 shadow-xl' : ''}`}
                     >
                         <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">💧</div>
                         <span className="font-bold text-blue-200">Wash Buffer</span>
@@ -972,8 +1000,9 @@ export const InteractiveProbeHybridization: React.FC<MiniGameProps> = ({ onCompl
                     <div
                         onDragOver={(e) => e.preventDefault()}
                         onDrop={handleDrop}
-                        className={`w-64 h-80 bg-white/90 rounded-lg border-4 transition-all relative overflow-hidden flex items-center justify-center ${step === 0 && draggedItem === 'probe' ? 'border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.5)]' :
-                            step === 2 && draggedItem === 'wash' ? 'border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.5)]' :
+                        onClick={performDrop}
+                        className={`w-64 h-80 bg-white/90 rounded-lg border-4 transition-all relative overflow-hidden flex items-center justify-center ${step === 0 && draggedItem === 'probe' ? 'border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.5)] cursor-pointer' :
+                            step === 2 && draggedItem === 'wash' ? 'border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.5)] cursor-pointer' :
                                 'border-gray-300'
                             }`}
                     >
@@ -1416,6 +1445,9 @@ export const InteractiveDnaDigestion: React.FC<MiniGameProps> = ({ onComplete, o
     const [isIncubating, setIsIncubating] = useState(false);
     const [isDigested, setIsDigested] = useState(false);
 
+    // Mobile/Click support
+    const [draggedEnzyme, setDraggedEnzyme] = useState<string | null>(null);
+
     const enzymes = [
         { id: 'ecori', name: 'EcoRI', seq: 'G|AATTC', optimalTemp: 37, color: 'bg-red-500' },
         { id: 'hindiii', name: 'HindIII', seq: 'A|AGCTT', optimalTemp: 37, color: 'bg-blue-500' },
@@ -1426,17 +1458,26 @@ export const InteractiveDnaDigestion: React.FC<MiniGameProps> = ({ onComplete, o
     const handleDragStart = (e: React.DragEvent, enzymeId: string) => {
         e.dataTransfer.setData('enzymeId', enzymeId);
         e.dataTransfer.effectAllowed = 'copy';
+        setDraggedEnzyme(enzymeId);
+    };
+
+    const performDrop = (enzymeId: string) => {
+        if (enzymeAdded) return;
+        if (enzymeId) {
+            setSelectedEnzyme(enzymeId);
+            setEnzymeAdded(true);
+            setDraggedEnzyme(null);
+        }
     };
 
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
-        if (enzymeAdded) return;
+        const enzymeId = e.dataTransfer.getData('enzymeId') || draggedEnzyme;
+        if (enzymeId) performDrop(enzymeId);
+    };
 
-        const enzymeId = e.dataTransfer.getData('enzymeId');
-        if (enzymeId) {
-            setSelectedEnzyme(enzymeId);
-            setEnzymeAdded(true);
-        }
+    const handleZoneClick = () => {
+        if (draggedEnzyme) performDrop(draggedEnzyme);
     };
 
     // Incubation logic
@@ -1525,8 +1566,9 @@ export const InteractiveDnaDigestion: React.FC<MiniGameProps> = ({ onComplete, o
                                 key={enzyme.id}
                                 draggable={!enzymeAdded}
                                 onDragStart={(e) => handleDragStart(e, enzyme.id)}
-                                className={`p-3 rounded-lg border flex justify-between items-center cursor-grab active:cursor-grabbing hover:scale-105 transition-all ${enzymeAdded && selectedEnzyme === enzyme.id ? 'opacity-50' : 'hover:shadow-lg'
-                                    } ${enzyme.color} bg-opacity-20 border-${enzyme.color.split('-')[1]}-400`}
+                                onClick={() => !enzymeAdded && setDraggedEnzyme(draggedEnzyme === enzyme.id ? null : enzyme.id)}
+                                className={`p-3 rounded-lg border flex justify-between items-center cursor-pointer hover:scale-105 transition-all ${enzymeAdded && selectedEnzyme === enzyme.id ? 'opacity-50' : 'hover:shadow-lg'
+                                    } ${enzyme.color} bg-opacity-20 border-${enzyme.color.split('-')[1]}-400 ${draggedEnzyme === enzyme.id ? 'ring-2 ring-white scale-105 shadow-xl' : ''}`}
                             >
                                 <div>
                                     <span className="font-bold text-white block">{enzyme.name}</span>
@@ -1546,8 +1588,9 @@ export const InteractiveDnaDigestion: React.FC<MiniGameProps> = ({ onComplete, o
                     <div
                         onDragOver={(e) => e.preventDefault()}
                         onDrop={handleDrop}
+                        onClick={handleZoneClick}
                         className={`w-32 h-40 bg-gray-700 rounded-b-3xl rounded-t-lg border-4 relative overflow-hidden transition-all ${enzymeAdded ? 'border-green-400 shadow-[0_0_20px_rgba(74,222,128,0.3)]' : 'border-gray-500 border-dashed'
-                            }`}
+                            } ${draggedEnzyme && !enzymeAdded ? 'ring-4 ring-yellow-400/50 cursor-pointer animate-pulse' : ''}`}
                     >
                         {/* Liquid */}
                         <div className="absolute inset-x-0 bottom-0 h-20 bg-blue-500/30 backdrop-blur-sm transition-all duration-500">
@@ -1563,7 +1606,7 @@ export const InteractiveDnaDigestion: React.FC<MiniGameProps> = ({ onComplete, o
 
                         {!enzymeAdded && (
                             <div className="absolute inset-0 flex items-center justify-center text-center p-2">
-                                <span className="text-gray-400 text-xs">Drop Enzyme Here</span>
+                                <span className="text-gray-400 text-xs">{draggedEnzyme ? 'Tap to Add Enzyme' : 'Drop Enzyme Here'}</span>
                             </div>
                         )}
                     </div>
