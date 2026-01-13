@@ -1,0 +1,19 @@
+/* Tailwind directives removed (handled by CDN) */
+
+:root {
+    --sat: env(safe-area-inset-top);
+    --sar: env(safe-area-inset-right);
+    --sab: env(safe-area-inset-bottom);
+    --sal: env(safe-area-inset-left);
+}
+
+.safe-area-inset {
+    padding-top: var(--sat);
+    padding-right: var(--sar);
+    padding-bottom: var(--sab);
+    padding-left: var(--sal);
+}
+
+.touch-none {
+    touch-action: none;
+}

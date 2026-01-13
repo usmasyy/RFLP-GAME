@@ -8,9 +8,10 @@ import CharacterCustomization from './components/CharacterCustomization';
 import GameComplete from './components/GameComplete';
 import IntroAnimation from './components/IntroAnimation';
 // Accessibility and settings components
-import { SettingsProvider, SettingsModal, TouchControls, KeyboardHelp, useResponsiveLayout, SettingsButton, AccessibilityStyles } from './components/SettingsAndAccessibility';
+import { SettingsProvider, SettingsModal, KeyboardHelp, useResponsiveLayout, SettingsButton, AccessibilityStyles } from './components/SettingsAndAccessibility';
 import RoomTransition from './components/RoomTransition';
 import NpcDialogue from './components/NpcDialogue';
+import VirtualJoystick from './components/VirtualJoystick';
 
 const App: React.FC = () => {
     const [gameState, setGameState] = useState<GameState>(GameState.CHARACTER_CREATION);
@@ -35,6 +36,9 @@ const App: React.FC = () => {
     const kickTimerRef = useRef<number | null>(null);
     const [isSpawning, setIsSpawning] = useState(false);
     const [interactingWithNpc, setInteractingWithNpc] = useState<Npc | null>(null);
+
+    // Joystick movement vector ref
+    const movementVectorRef = useRef({ x: 0, y: 0 });
 
     // Handle room transition animation
     useEffect(() => {
@@ -167,81 +171,92 @@ const App: React.FC = () => {
 
     useEffect(() => {
         const gameLoop = setInterval(() => {
-            if (gameState !== GameState.PLAYING || currentRoom !== 'METHODOLOGY') return;
+            if (gameState !== GameState.PLAYING) return;
 
-            setNpcs(currentNpcs => currentNpcs.map(npc => {
-                let newNpc = { ...npc, position: { ...npc.position }, targetPosition: { ...npc.targetPosition } };
-                const roomStations = ROOM_DATA['METHODOLOGY'].stations || [];
-                if (roomStations.length === 0) return newNpc;
 
-                if (newNpc.state === 'working') {
-                    newNpc.workTimer -= 1;
-                    if (newNpc.workTimer <= 0) {
-                        newNpc.state = 'walking';
-                        const newTargetStation = roomStations[Math.floor(Math.random() * roomStations.length)];
-                        newNpc.targetPosition = {
-                            x: newTargetStation.position.x + newTargetStation.size.w / 2 - PLAYER_SIZE / 2,
-                            y: newTargetStation.position.y + newTargetStation.size.h + 5,
-                        };
-                    }
-                } else if (newNpc.state === 'walking') {
-                    const dx = newNpc.targetPosition.x - newNpc.position.x;
-                    const dy = newNpc.targetPosition.y - newNpc.position.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
+            // 1. Process Player Movement from Joystick
+            const vec = movementVectorRef.current;
+            if (vec.x !== 0 || vec.y !== 0) {
+                const moveSpeed = PLAYER_SPEED; // Multiplier can be adjusted or scaled by vector magnitude if needed
+                movePlayer(vec.x * moveSpeed, vec.y * moveSpeed);
+            }
 
-                    if (distance < NPC_SPEED) {
-                        newNpc.position = newNpc.targetPosition;
-                        newNpc.state = 'working';
-                        newNpc.workTimer = Math.random() * 200 + 150; // Pause for a bit longer
-                    } else {
-                        // Calculate next position
-                        const nextX = newNpc.position.x + (dx / distance) * NPC_SPEED;
-                        const nextY = newNpc.position.y + (dy / distance) * NPC_SPEED;
+            // 2. Process NPCs (Existing Logic)
+            if (currentRoom === 'METHODOLOGY') {
+                setNpcs(currentNpcs => currentNpcs.map(npc => {
+                    let newNpc = { ...npc, position: { ...npc.position }, targetPosition: { ...npc.targetPosition } };
+                    const roomStations = ROOM_DATA['METHODOLOGY'].stations || [];
+                    if (roomStations.length === 0) return newNpc;
 
-                        // Check collision with player
-                        const playerRect = {
-                            left: playerRef.current.position.x,
-                            top: playerRef.current.position.y,
-                            right: playerRef.current.position.x + PLAYER_SIZE,
-                            bottom: playerRef.current.position.y + PLAYER_SIZE
-                        };
+                    if (newNpc.state === 'working') {
+                        newNpc.workTimer -= 1;
+                        if (newNpc.workTimer <= 0) {
+                            newNpc.state = 'walking';
+                            const newTargetStation = roomStations[Math.floor(Math.random() * roomStations.length)];
+                            newNpc.targetPosition = {
+                                x: newTargetStation.position.x + newTargetStation.size.w / 2 - PLAYER_SIZE / 2,
+                                y: newTargetStation.position.y + newTargetStation.size.h + 5,
+                            };
+                        }
+                    } else if (newNpc.state === 'walking') {
+                        const dx = newNpc.targetPosition.x - newNpc.position.x;
+                        const dy = newNpc.targetPosition.y - newNpc.position.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
 
-                        const npcRect = {
-                            left: nextX,
-                            top: nextY,
-                            right: nextX + PLAYER_SIZE,
-                            bottom: nextY + PLAYER_SIZE
-                        };
-
-                        const isCollidingWithPlayer = !(
-                            playerRect.right < npcRect.left ||
-                            playerRect.left > npcRect.right ||
-                            playerRect.bottom < npcRect.top ||
-                            playerRect.top > npcRect.bottom
-                        );
-
-                        if (isCollidingWithPlayer) {
-                            // Block movement
-                            // Scout Shout logic
-                            const now = Date.now();
-                            if (!newNpc.lastShoutTime || now - newNpc.lastShoutTime > 3000) {
-                                showNotification("NPC: \"Watch where you going doofus!\"");
-                                if (npcAudioRef.current) {
-                                    npcAudioRef.current.currentTime = 0;
-                                    npcAudioRef.current.play().catch(e => console.error("Audio play failed", e));
-                                }
-                                newNpc.lastShoutTime = now;
-                            }
+                        if (distance < NPC_SPEED) {
+                            newNpc.position = newNpc.targetPosition;
+                            newNpc.state = 'working';
+                            newNpc.workTimer = Math.random() * 200 + 150; // Pause for a bit longer
                         } else {
-                            // Move normally
-                            newNpc.position.x = nextX;
-                            newNpc.position.y = nextY;
+                            // Calculate next position
+                            const nextX = newNpc.position.x + (dx / distance) * NPC_SPEED;
+                            const nextY = newNpc.position.y + (dy / distance) * NPC_SPEED;
+
+                            // Check collision with player
+                            const playerRect = {
+                                left: playerRef.current.position.x,
+                                top: playerRef.current.position.y,
+                                right: playerRef.current.position.x + PLAYER_SIZE,
+                                bottom: playerRef.current.position.y + PLAYER_SIZE
+                            };
+
+                            const npcRect = {
+                                left: nextX,
+                                top: nextY,
+                                right: nextX + PLAYER_SIZE,
+                                bottom: nextY + PLAYER_SIZE
+                            };
+
+                            const isCollidingWithPlayer = !(
+                                playerRect.right < npcRect.left ||
+                                playerRect.left > npcRect.right ||
+                                playerRect.bottom < npcRect.top ||
+                                playerRect.top > npcRect.bottom
+                            );
+
+                            if (isCollidingWithPlayer) {
+                                // Block movement
+                                // Scout Shout logic
+                                const now = Date.now();
+                                if (!newNpc.lastShoutTime || now - newNpc.lastShoutTime > 3000) {
+                                    showNotification("NPC: \"Watch where you going doofus!\"");
+                                    if (npcAudioRef.current) {
+                                        npcAudioRef.current.currentTime = 0;
+                                        npcAudioRef.current.play().catch(e => console.error("Audio play failed", e));
+                                    }
+                                    newNpc.lastShoutTime = now;
+                                }
+                            } else {
+                                // Move normally
+                                newNpc.position.x = nextX;
+                                newNpc.position.y = nextY;
+                            }
                         }
                     }
-                }
 
-                return newNpc;
-            }));
+                    return newNpc;
+                }));
+            }
         }, 50);
 
         return () => clearInterval(gameLoop);
@@ -518,8 +533,21 @@ const App: React.FC = () => {
                 {gameState === GameState.INTRO_ANIMATION && <IntroAnimation onComplete={handleIntroComplete} character={player.character} />}
 
                 {(gameState === GameState.PLAYING || gameState === GameState.INTERACTING) && (
-                    <div className="relative transition-all duration-300" style={{ width: responsiveConfig.width, height: responsiveConfig.height }}>
-                        <div className="absolute inset-0 bg-gray-700 border-4 border-blue-400 shadow-lg shadow-blue-500/50 rounded-lg overflow-hidden" style={{ boxShadow: 'inset 0 0 100px rgba(0,0,0,0.3)', transform: `scale(${responsiveConfig.scale})`, transformOrigin: 'center center' }}>
+                    <div className="relative w-full h-full overflow-hidden touch-none">
+
+                        {/* 1. LAYER: GAME WORLD (Scaled & Centered) */}
+                        <div
+                            ref={responsiveConfig.containerRef}
+                            className="absolute left-1/2 top-1/2 shadow-2xl bg-gray-800"
+                            style={{
+                                width: 800, // Base Game Width
+                                height: 600, // Base Game Height
+                                transform: `translate(-50%, -50%) scale(${responsiveConfig.scale})`,
+                                transformOrigin: 'center center',
+                                boxShadow: '0 0 50px rgba(0,0,0,0.5)',
+                                // Safe area aware margins if needed, or handle in parent
+                            }}
+                        >
                             <GameWorld
                                 player={player}
                                 roomData={roomData}
@@ -532,24 +560,41 @@ const App: React.FC = () => {
                                 }}
                                 isSpawning={isSpawning}
                             />
-                            <Hud
-                                objective={getObjective()}
-                                inventory={inventory}
-                                inventoryIcons={INVENTORY_ICONS}
-                                currentRoom={currentRoom}
-                                unlockedRooms={unlockedRooms}
-                            />
+
+                            {/* Room Transition within Game Scale to match geometry */}
                             <RoomTransition room={currentRoom} />
-                            {/* Settings button in top-left */}
-                            <div className="absolute top-20 left-2 z-[1000]">
-                                <SettingsButton onClick={() => setShowSettings(true)} />
-                            </div>
-                            {notification && (
-                                <div className="absolute top-24 left-1/2 -translate-x-1/2 bg-red-800 bg-opacity-90 text-white px-4 py-2 rounded-lg text-base border-2 border-red-400 shadow-lg animate-fade-in-up z-[2000] pointer-events-none">
-                                    {notification}
-                                </div>
-                            )}
                         </div>
+
+                        {/* 2. LAYER: UI OVERLAY (Native Resolution) */}
+                        <div className="absolute inset-0 pointer-events-none safe-area-inset">
+                            {/* HUD - Has its own pointer-events-auto internally where needed */}
+                            <div className="w-full h-full relative">
+                                <Hud
+                                    objective={getObjective()}
+                                    inventory={inventory}
+                                    inventoryIcons={INVENTORY_ICONS}
+                                    currentRoom={currentRoom}
+                                    unlockedRooms={unlockedRooms}
+                                    // Pass layout info if HUD needs to adapt
+                                    isMobile={responsiveConfig.isMobile}
+                                    isPortrait={responsiveConfig.isPortrait}
+                                />
+
+                                {/* Settings button in top-left */}
+                                <div className="absolute top-4 left-4 z-[1000] pointer-events-auto">
+                                    <SettingsButton onClick={() => setShowSettings(true)} />
+                                </div>
+
+                                {/* Notifications */}
+                                {notification && (
+                                    <div className="absolute top-20 left-1/2 -translate-x-1/2 bg-red-800 bg-opacity-90 text-white px-4 py-2 rounded-lg text-base border-2 border-red-400 shadow-lg animate-fade-in-up z-[2000] pointer-events-none whitespace-nowrap">
+                                        {notification}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* 3. LAYER: MODALS & CONTROLS (Native Resolution) */}
                         {interactingWith && currentStep && (
                             <InteractionModal
                                 interactiveObject={interactingWith}
@@ -562,6 +607,7 @@ const App: React.FC = () => {
                                 isAnimating={isModalAnimating}
                             />
                         )}
+
                         {/* NPC Dialogue Modal */}
                         {interactingWithNpc && (
                             <NpcDialogue
@@ -569,12 +615,14 @@ const App: React.FC = () => {
                                 onClose={() => setInteractingWithNpc(null)}
                             />
                         )}
-                        {/* Touch controls for mobile */}
+
+                        {/* Virtual Joystick for mobile */}
                         {responsiveConfig.isMobile && gameState === GameState.PLAYING && (
-                            <TouchControls
-                                onMove={(dx, dy) => movePlayer(dx, dy)}
+                            <VirtualJoystick
+                                onMove={(vec) => {
+                                    movementVectorRef.current = vec;
+                                }}
                                 onInteract={handleInteraction}
-                                speed={PLAYER_SPEED}
                             />
                         )}
                     </div>

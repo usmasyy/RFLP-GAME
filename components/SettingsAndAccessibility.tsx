@@ -467,41 +467,96 @@ export interface ResponsiveConfig {
     height: number;
     scale: number;
     isMobile: boolean;
+    isPortrait: boolean;
+    containerRef: React.RefObject<HTMLDivElement>;
+    screenToGame: (screenX: number, screenY: number) => { x: number, y: number } | null;
 }
 
 export const useResponsiveLayout = (baseWidth = 800, baseHeight = 600): ResponsiveConfig => {
-    const [config, setConfig] = useState<ResponsiveConfig>({
+    const containerRef = React.useRef<HTMLDivElement>(null);
+    const [config, setConfig] = useState<Omit<ResponsiveConfig, 'containerRef' | 'screenToGame'>>({
         width: baseWidth,
         height: baseHeight,
         scale: 1,
         isMobile: false,
+        isPortrait: false,
     });
 
     useEffect(() => {
         const updateSize = () => {
-            const padding = 16; // Reduced padding
-            const maxWidth = Math.min(window.innerWidth - padding, 2560); // Support 4k-ish, effectively full width
-            const maxHeight = Math.min(window.innerHeight - 80, 1440); // Reduce bottom margin
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const isPortrait = viewportHeight > viewportWidth;
 
-            const scaleX = maxWidth / baseWidth;
-            const scaleY = maxHeight / baseHeight;
-            // Allow scaling up to 3x for large monitors, but ensure it fits
-            const scale = Math.min(scaleX, scaleY, 3.0);
+            // Check for mobile user agent as well as screen size
+            const isMobile = viewportWidth < 768 || 'ontouchstart' in window;
+
+            // Calculate scale based on container constraints
+            // We want to fit the GameWorld (800x600) into the available space
+            // minus potential UI areas (safe areas, HUD space)
+
+            let availableWidth = viewportWidth;
+            let availableHeight = viewportHeight;
+
+            // Apply safe area constraints (simulated or real)
+            // Note: In a real environment we'd use env() variables or a plugin
+            // For now, we assume full viewport but add padding logic if needed
+
+            const paddingX = 16;
+            const paddingY = 16;
+
+            availableWidth -= paddingX;
+            availableHeight -= paddingY;
+
+            const scaleX = availableWidth / baseWidth;
+            const scaleY = availableHeight / baseHeight;
+
+            // Constrain scale
+            let scale = Math.min(scaleX, scaleY);
+            scale = Math.max(0.3, Math.min(scale, 2.0)); // Constraint: Min 0.3, Max 2.0
 
             setConfig({
-                width: Math.round(baseWidth * scale),
-                height: Math.round(baseHeight * scale),
+                width: Math.floor(baseWidth * scale),
+                height: Math.floor(baseHeight * scale),
                 scale,
-                isMobile: window.innerWidth < 768 || 'ontouchstart' in window,
+                isMobile,
+                isPortrait,
             });
         };
 
         updateSize();
         window.addEventListener('resize', updateSize);
-        return () => window.removeEventListener('resize', updateSize);
+        window.addEventListener('orientationchange', updateSize);
+        return () => {
+            window.removeEventListener('resize', updateSize);
+            window.removeEventListener('orientationchange', updateSize);
+        };
     }, [baseWidth, baseHeight]);
 
-    return config;
+    const screenToGame = React.useCallback((screenX: number, screenY: number) => {
+        if (!containerRef.current) return null;
+
+        const rect = containerRef.current.getBoundingClientRect();
+
+        // Calculate position relative to container
+        const relativeX = screenX - rect.left;
+        const relativeY = screenY - rect.top;
+
+        // Convert to game coordinates (unscaled)
+        const gameX = relativeX / config.scale;
+        const gameY = relativeY / config.scale;
+
+        // Clamp to game bounds
+        if (gameX < 0 || gameX > baseWidth || gameY < 0 || gameY > baseHeight) {
+            // Optional: return null if out of bounds? Or clamp?
+            // For now, let's clamp for robustness or return actual values
+            // Returning actual values allows for "drag off screen" logic if needed
+        }
+
+        return { x: gameX, y: gameY };
+    }, [config.scale, baseWidth, baseHeight]);
+
+    return { ...config, containerRef, screenToGame };
 };
 
 // ============================================================================
