@@ -735,6 +735,8 @@ export const InteractiveSouthernBlotting: React.FC<MiniGameProps> = ({ onComplet
     ];
 
     const handleNextStep = () => {
+        if (uvExposed) return; // Prevent multiple clicks
+
         if (step === 3) {
             setIsTransferring(true);
         } else if (step === 4) {
